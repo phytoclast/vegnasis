@@ -1,3 +1,5 @@
+library(dplyr)
+
 #This function rounds heights to the nearest meter for plants taller than 8 meters, to the nearest tenth meter for plants less than 3 meters, and to the nearest half meter for intermediate heights.
 ht.round <- function(ht){
   ifelse(ht >= 8,round(ht,0),
@@ -30,6 +32,4 @@ diam.medieval <- function(cm){
 
 # syns <- read.csv('data/plants/m.ac.csv')
 
-#This function aggregates cover among species within the same stratum or guild assuming random crown distributions, and not exceeding 100%.
 
-cover.agg <- function(x){round(100*(1-10^(sum(log10(1-(x/100.001))))),1)}
