@@ -9,7 +9,9 @@ clean.veg <- function(x){
   #                                 speciescancovpct, speciescancovclass, speciescomppct, speciescompbywtpct,
   #                                 akstratumcoverclass, akstratumcoverclasspct))
 
-  x <- x %>% left_join(plant.hts, by=c('plantsciname'='Scientific.Name'))
+  x <- x %>% left_join(plant.hts, by=c('plantsciname'='Scientific.Name')) %>%
+    left_join(subset(taxon.habits, select=c(Scientific.Name, GH)), by=c('plantsciname'='Scientific.Name')) %>%
+    left_join(subset(gho, select=c(Revised.Symbol, Habitname,ESIS.Group)), by=c('GH'='Revised.Symbol'))
   x <- x %>% mutate(Ht_m = case_when(
     !is.na(Ht_m) ~ Ht_m,
     planttypegroup %in%  "tree" ~ 25,
@@ -72,7 +74,7 @@ clean.veg <- function(x){
     diam.min = diam.metric(overstorydbhmin),
     diam.max = diam.metric(overstorydbhmax))
   colnames(x)
-  x <- x %>% subset(select= c("vegplotid","plantsym","plantsciname","planttypegroup",
+  x <- x %>% subset(select= c("vegplotid","plantsym","plantsciname","GH","Habitname","ESIS.Group","planttypegroup",
                               "plantnativity","cover","ht.min","ht.max","diam.min","diam.max"))
   return(x)
 }
