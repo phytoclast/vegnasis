@@ -1,106 +1,107 @@
-"ID","order1","order2","Habitname","ESIS.Group","Old.Symbol","Intermediate.Revision","Revised.Symbol","First","Second","Last"
-1,0,0,"","","","","","","",""
-2,1,1,"Tree","Tree","t","T","T","T","",""
-3,2,2,"Shrub/Subshrub","Shrub/Subshrub","","S","S","S","",""
-4,3,3,"Liana","Vine/Liana","v","L","L","L","",""
-5,4,4,"Herb","Forb/Herb","","H","H","H","",""
-6,5,5,"Forb","Forb/Herb","","HF","H.F","H",".","F"
-7,6,6,"Graminoid","Forb/Herb","","HG","H.G","H",".","G"
-8,7,7,"Epiphyte","Vine/Liana","e","E","E","E","",""
-9,8,8,"Nonvascular","Nonvascular","","N","N.","N",".",""
-10,9,9,"Bryophyte","Nonvascular","M","NB","N.B","N",".","B"
-11,10,10,"Lichen","Biological Crusts","L","NL","N.L","N",".","L"
-12,11,11,"Algae","Biological Crusts","A",NA,"N.A","N",".","A"
-13,100,12,"broadleaf tree","Tree","","","T.B","T",".","B"
-14,100,13,"broadleaf deciduous tree","Tree","Dt","TBD","T.BD","T",".","BD"
-15,100,14,"short broadleaf deciduous tree","Tree","Dt1","TBD1","T1BD","T","1","BD"
-16,100,15,"tall broadleaf deciduous tree","Tree","Dt2","TBD2","T2BD","T","2","BD"
-17,100,16,"broadleaf evergreen tree","Tree","Bt","TBE","T.BE","T",".","BE"
-18,100,17,"short broadleaf evergreen tree","Tree","Bt1","TBE1","T1BE","T","1","BE"
-19,100,18,"tall broadleaf evergreen tree","Tree","Bt2","TBE2","T2BE","T","2","BE"
-20,100,19,"short sclerophyllous tree","Tree","","","T1BES","T","1","BES"
-21,100,20,"tall sclerophyllous tree","Tree","Bt2","TBE2","T2BES","T","2","BES"
-22,100,21,"graminoid tree","Tree","Gt","TG","T.G","T",".","G"
-23,100,22,"short graminoid tree","Tree","Gt1","TG1","T1G","T","1","G"
-24,100,23,"short microphyllous deciduous tree","Tree","","","T1MD","T","1","MD"
-25,100,24,"microphyllous evergreen tree","Tree","","","T.ME","T",".","ME"
-26,100,25,"short microphyllous evergreen tree","Tree","","","T1ME","T","1","ME"
-27,100,26,"needleleaf deciduous tree","Tree","Nt","TND","T.ND","T",".","ND"
-28,100,27,"short needleleaf deciduous tree","Tree","Nt1","TND1","T1ND","T","1","ND"
-29,100,28,"tall needleleaf deciduous tree","Tree","Nt2","TND2","T2ND","T","2","ND"
-30,100,29,"needleleaf evergreen tree","Tree","Et","TNE","T.NE","T",".","NE"
-31,100,30,"short needleleaf evergreen tree","Tree","Et1","TNE1","T1NE","T","1","NE"
-32,100,31,"tall needleleaf evergreen tree","Tree","Et2","TNE2","T2NE","T","2","NE"
-33,100,32,"rosette tree","Tree","Rt","TP","T.P","T",".","P"
-34,100,33,"short rosette tree","Tree","Rt1","TP1","T1P","T","1","P"
-35,100,34,"tall rosette tree","Tree","Rt2","TP2","T2P","T","2","P"
-36,100,35,"succulent tree","Tree","Ct","TU","T.U","T",".","U"
-37,100,36,"short succulent tree","Tree","Ct1","TU1","T1U","T","1","U"
-38,150,37,"tree fern","Tree Fern","Ot","TF","T.F","T",".","F"
-39,190,39,"short parasitic tree","Tree","Pt1","TBP1","T1Bi","T","1","Bi"
-40,190,38,"parasitic tree","Tree","Pt","TBP","T.Bi","T",".","Bi"
-41,200,40,"broadleaf deciduous shrub/subshrub","Shrub/Subshrub","","","S.B","S",".","B"
-42,200,41,"broadleaf deciduous shrub/subshrub","Shrub/Subshrub","","","S.BD","S",".","BD"
-43,200,42,"broadleaf deciduous subshrub","Shrub/Subshrub","Du","SBD1","S1BD","S","1","BD"
-44,200,43,"broadleaf deciduous shrub","Shrub/Subshrub","Ds","SBD2","S2BD","S","2","BD"
-45,200,44,"broadleaf evergreen shrub/subshrub","Shrub/Subshrub","","","S.BE","S",".","BE"
-46,200,45,"broadleaf evergreen subshrub","Shrub/Subshrub","Bu","SBE1","S1BE","S","1","BE"
-47,200,46,"broadleaf evergreen shrub","Shrub/Subshrub","Bs","SBE2","S2BE","S","2","BE"
-48,200,47,"sclerophyllous subshrub","Shrub/Subshrub","Bu","SBE1","S1BES","S","1","BES"
-49,200,48,"sclerophyllous shrub","Shrub/Subshrub","","","S2BES","S","2","BES"
-50,200,49,"fern shrub/subshrub","Shrub/Subshrub","","","S.F","S",".","F"
-51,200,50,"graminoid subshrub","Shrub/Subshrub","Gu","SG1","S1G","S","1","G"
-52,200,51,"graminoid shrub","Shrub/Subshrub","Gs","SG2","S2G","S","2","G"
-53,200,52,"microphyllous deciduous subshrub","Shrub/Subshrub","","","S1MD","S","1","MD"
-54,200,53,"microphyllous deciduous shrub","Shrub/Subshrub","","","S2MD","S","2","MD"
-55,200,54,"microphyllous evergreen subshrub","Shrub/Subshrub","","","S1ME","S","1","ME"
-56,200,55,"microphyllous evergreen shrub","Shrub/Subshrub","","","S2ME","S","2","ME"
-57,200,56,"needleleaf deciduous shrub","Shrub/Subshrub","Ns","SND2","S2ND","S","2","ND"
-58,200,57,"needleleaf evergreen shrub/subshrub","Shrub/Subshrub","","","S.NE","S",".","NE"
-59,200,58,"needleleaf evergreen subshrub","Shrub/Subshrub","Eu","SNE1","S1NE","S","1","NE"
-60,200,59,"needleleaf evergreen shrub","Shrub/Subshrub","Es","SNE2","S2NE","S","2","NE"
-61,200,60,"rosette shrub/subshrub","Shrub/Subshrub","","","S.P","S",".","P"
-62,200,61,"rosette subshrub","Shrub/Subshrub","Ru","SP1","S1P","S","1","P"
-63,200,62,"rosette shrub","Shrub/Subshrub","Rs","SP2","S2P","S","2","P"
-64,200,63,"succulent shrub/subshrub","Shrub/Subshrub","","","S.U","S",".","U"
-65,200,64,"succulent subshrub","Shrub/Subshrub","Cu","SU1","S1U","S","1","U"
-66,200,65,"succulent shrub","Shrub/Subshrub","Cs","SU2","S2U","S","2","U"
-67,250,66,"subshrub fern","Tree Fern","Ou","SF1","S1F","S","1","F"
-68,250,67,"shrub fern","Tree Fern","Os","SF2","S2F","S","2","F"
-69,290,68,"parasitic subshrub","Shrub/Subshrub","Pu","SBP1","S1Bi","S","1","Bi"
-70,290,69,"parasitic shrub","Shrub/Subshrub","Ps","SBP2","S2Bi","S","2","Bi"
-71,290,70,"microphyllous parasitic subshrub","Shrub/Subshrub","","","S1Mi","S","1","Mi"
-72,300,71,"broadleaf vine","Vine/Liana","","","L.B","L",".","B"
-73,300,72,"broadleaf deciduous vine","Vine/Liana","Dv","LBD","L.BD","L",".","BD"
-74,300,73,"broadleaf evergreen vine","Vine/Liana","Bv","LBE","L.BE","L",".","BE"
-75,300,74,"graminoid vine","Vine/Liana","Gv","LG","L.G","L",".","G"
-76,300,75,"microphyllous evergreen vine","Vine/Liana","Ev","LNE","L.ME","L",".","ME"
-77,300,76,"succulent vine","Vine/Liana","Cv","LU","L.U","L",".","U"
-78,400,77,"aquatic herb","Forb/Herb","Ah","HA","H.A","H",".","A"
-79,400,78,"annual aquatic herb","Forb/Herb","Ah1","HA1","H1A","H","1","A"
-80,400,79,"perennial aquatic herb","Forb/Herb","Ah2","HA2","H2A","H","2","A"
-81,400,80,"annual forb","Forb/Herb","Fh1","HF1","H1F","H","1","F"
-82,400,81,"perennial forb","Forb/Herb","Fh2","HF2","H2F","H","2","F"
-83,400,82,"succulent forb","Forb/Herb","","","H.FS","H",".","FS"
-84,400,83,"annual succulent forb","Forb/Herb","Ch1","HFS1","H1FS","H","1","FS"
-85,400,84,"perennial succulent forb","Forb/Herb","Ch2","HFS2","H2FS","H","2","FS"
-86,400,85,"herbaceous vine","Forb/Herb","","","H.FV","H",".","FV"
-87,400,86,"annual herbaceous vine","Vine/Liana","Vh1","HFV1","H1FV","H","1","FV"
-88,400,87,"perennial herbaceous vine","Vine/Liana","Vh2","HFV2","H2FV","H","2","FV"
-89,420,88,"cool season graminoid","Grass/grass-like","Gh","HGC","H.GC","H",".","GC"
-90,420,89,"annual cool season graminoid","Grass/grass-like","Gh1","HGC1","H1GC","H","1","GC"
-91,420,90,"perennial cool season graminoid","Grass/grass-like","Gh2","HGC2","H2GC","H","2","GC"
-92,420,91,"warm season graminoid","Grass/grass-like","","HGW","H.GW","H",".","GW"
-93,420,92,"annual warm season graminoid","Grass/grass-like","Wh1","HGW1","H1GW","H","1","GW"
-94,420,93,"perennial warm season graminoid","Grass/grass-like","Wh2","HGW2","H2GW","H","2","GW"
-95,450,94,"seedless forb","Fern/fern ally","Oh","HFE","H.FE","H",".","FE"
-96,490,95,"parasitic herb","Forb/Herb","Ph","HFP","H.Fi","H",".","Fi"
-97,490,96,"annual parasitic forb","Forb/Herb","Ph1","HFP1","H1Fi","H","1","Fi"
-98,490,97,"perennial parasitic herb","Forb/Herb","Ph2","HFP2","H2Fi","H","2","Fi"
-99,490,98,"parasitic herb","Forb/Herb","","","H.i","H",".","i"
-100,900,99,"freeliving epiphyte","Vine/Liana","Fe","EF","E.F","E",".","F"
-101,900,100,"parasitic epiphyte","Vine/Liana","Pe","EP","E.i","E",".","i"
-102,1000,101,"parasitic plant","","","","i","i","",""
-103,100,16.5,"sclerophyllous tree","Tree","Bt","TBE","T.BES","T",".","BES"
-104,150,37.3,"short tree fern","Tree Fern","Ot","TF1","T1F","T","1","F"
-105,150,37.6,"tall tree fern","Tree Fern","Ot","TF2","T2F","T","2","F"
+"ID","order1","order2","Habitname","ESIS.Group","Old.Symbol","Intermediate.Revision","Revised.Symbol","First","Second","Last","ht.max"
+1,0,0,"","","","","","","","",0
+2,1,1,"Tree","Tree","t","T","T","T","","",24
+3,2,2,"Shrub/Subshrub","Shrub/Subshrub","","S","S","S","","",3
+4,3,3,"Liana","Vine/Liana","v","L","L","L","","",12
+5,4,4,"Herb","Forb/Herb","","H","H","H","","",0.6
+6,5,5,"Forb","Forb/Herb","","HF","H.F","H",".","F",0.6
+7,6,6,"Graminoid","Forb/Herb","","HG","H.G","H",".","G",0.6
+8,7,7,"Epiphyte","Vine/Liana","e","E","E","E","","",12
+9,8,8,"Nonvascular","Nonvascular","","N","N.","N",".","",0
+10,9,9,"Bryophyte","Nonvascular","M","NB","N.B","N",".","B",0
+11,10,10,"Lichen","Biological Crusts","L","NL","N.L","N",".","L",0
+12,11,11,"Algae","Biological Crusts","A",NA,"N.A","N",".","A",0
+13,100,12,"broadleaf tree","Tree","","","T.B","T",".","B",0
+14,100,13,"broadleaf deciduous tree","Tree","Dt","TBD","T.BD","T",".","BD",0
+15,100,14,"short broadleaf deciduous tree","Tree","Dt1","TBD1","T1BD","T","1","BD",12
+16,100,15,"tall broadleaf deciduous tree","Tree","Dt2","TBD2","T2BD","T","2","BD",24
+17,100,16,"broadleaf evergreen tree","Tree","Bt","TBE","T.BE","T",".","BE",0
+18,100,17,"short broadleaf evergreen tree","Tree","Bt1","TBE1","T1BE","T","1","BE",12
+19,100,18,"tall broadleaf evergreen tree","Tree","Bt2","TBE2","T2BE","T","2","BE",24
+20,100,19,"short sclerophyllous tree","Tree","","","T1BES","T","1","BES",12
+21,100,20,"tall sclerophyllous tree","Tree","Bt2","TBE2","T2BES","T","2","BES",24
+22,100,21,"graminoid tree","Tree","Gt","TG","T.G","T",".","G",0
+23,100,22,"short graminoid tree","Tree","Gt1","TG1","T1G","T","1","G",12
+24,100,23,"short microphyllous deciduous tree","Tree","","","T1MD","T","1","MD",12
+25,100,24,"microphyllous evergreen tree","Tree","","","T.ME","T",".","ME",0
+26,100,25,"short microphyllous evergreen tree","Tree","","","T1ME","T","1","ME",12
+27,100,26,"needleleaf deciduous tree","Tree","Nt","TND","T.ND","T",".","ND",0
+28,100,27,"short needleleaf deciduous tree","Tree","Nt1","TND1","T1ND","T","1","ND",12
+29,100,28,"tall needleleaf deciduous tree","Tree","Nt2","TND2","T2ND","T","2","ND",24
+30,100,29,"needleleaf evergreen tree","Tree","Et","TNE","T.NE","T",".","NE",0
+31,100,30,"short needleleaf evergreen tree","Tree","Et1","TNE1","T1NE","T","1","NE",12
+32,100,31,"tall needleleaf evergreen tree","Tree","Et2","TNE2","T2NE","T","2","NE",24
+33,100,32,"rosette tree","Tree","Rt","TP","T.P","T",".","P",0
+34,100,33,"short rosette tree","Tree","Rt1","TP1","T1P","T","1","P",12
+35,100,34,"tall rosette tree","Tree","Rt2","TP2","T2P","T","2","P",24
+36,100,35,"succulent tree","Tree","Ct","TU","T.U","T",".","U",0
+37,100,36,"short succulent tree","Tree","Ct1","TU1","T1U","T","1","U",12
+38,150,37,"tree fern","Tree Fern","Ot","TF","T.F","T",".","F",0
+39,190,39,"short parasitic tree","Tree","Pt1","TBP1","T1Bi","T","1","Bi",12
+40,190,38,"parasitic tree","Tree","Pt","TBP","T.Bi","T",".","Bi",0
+41,200,40,"broadleaf deciduous shrub/subshrub","Shrub/Subshrub","","","S.B","S",".","B",0
+42,200,41,"broadleaf deciduous shrub/subshrub","Shrub/Subshrub","","","S.BD","S",".","BD",0
+43,200,42,"broadleaf deciduous subshrub","Shrub/Subshrub","Du","SBD1","S1BD","S","1","BD",0.3
+44,200,43,"broadleaf deciduous shrub","Shrub/Subshrub","Ds","SBD2","S2BD","S","2","BD",3
+45,200,44,"broadleaf evergreen shrub/subshrub","Shrub/Subshrub","","","S.BE","S",".","BE",0
+46,200,45,"broadleaf evergreen subshrub","Shrub/Subshrub","Bu","SBE1","S1BE","S","1","BE",0.3
+47,200,46,"broadleaf evergreen shrub","Shrub/Subshrub","Bs","SBE2","S2BE","S","2","BE",3
+48,200,47,"sclerophyllous subshrub","Shrub/Subshrub","Bu","SBE1","S1BES","S","1","BES",0.3
+49,200,48,"sclerophyllous shrub","Shrub/Subshrub","","","S2BES","S","2","BES",3
+50,200,49,"fern shrub/subshrub","Shrub/Subshrub","","","S.F","S",".","F",0
+51,200,50,"graminoid subshrub","Shrub/Subshrub","Gu","SG1","S1G","S","1","G",0.3
+52,200,51,"graminoid shrub","Shrub/Subshrub","Gs","SG2","S2G","S","2","G",3
+53,200,52,"microphyllous deciduous subshrub","Shrub/Subshrub","","","S1MD","S","1","MD",0.3
+54,200,53,"microphyllous deciduous shrub","Shrub/Subshrub","","","S2MD","S","2","MD",3
+55,200,54,"microphyllous evergreen subshrub","Shrub/Subshrub","","","S1ME","S","1","ME",0.3
+56,200,55,"microphyllous evergreen shrub","Shrub/Subshrub","","","S2ME","S","2","ME",3
+57,200,56,"needleleaf deciduous shrub","Shrub/Subshrub","Ns","SND2","S2ND","S","2","ND",3
+58,200,57,"needleleaf evergreen shrub/subshrub","Shrub/Subshrub","","","S.NE","S",".","NE",0
+59,200,58,"needleleaf evergreen subshrub","Shrub/Subshrub","Eu","SNE1","S1NE","S","1","NE",0.3
+60,200,59,"needleleaf evergreen shrub","Shrub/Subshrub","Es","SNE2","S2NE","S","2","NE",3
+61,200,60,"rosette shrub/subshrub","Shrub/Subshrub","","","S.P","S",".","P",0
+62,200,61,"rosette subshrub","Shrub/Subshrub","Ru","SP1","S1P","S","1","P",0.3
+63,200,62,"rosette shrub","Shrub/Subshrub","Rs","SP2","S2P","S","2","P",3
+64,200,63,"succulent shrub/subshrub","Shrub/Subshrub","","","S.U","S",".","U",0
+65,200,64,"succulent subshrub","Shrub/Subshrub","Cu","SU1","S1U","S","1","U",0.3
+66,200,65,"succulent shrub","Shrub/Subshrub","Cs","SU2","S2U","S","2","U",3
+67,250,66,"subshrub fern","Tree Fern","Ou","SF1","S1F","S","1","F",0.3
+68,250,67,"shrub fern","Tree Fern","Os","SF2","S2F","S","2","F",3
+69,290,68,"parasitic subshrub","Shrub/Subshrub","Pu","SBP1","S1Bi","S","1","Bi",0.3
+70,290,69,"parasitic shrub","Shrub/Subshrub","Ps","SBP2","S2Bi","S","2","Bi",3
+71,290,70,"microphyllous parasitic subshrub","Shrub/Subshrub","","","S1Mi","S","1","Mi",0.3
+72,300,71,"broadleaf vine","Vine/Liana","","","L.B","L",".","B",12
+73,300,72,"broadleaf deciduous vine","Vine/Liana","Dv","LBD","L.BD","L",".","BD",12
+74,300,73,"broadleaf evergreen vine","Vine/Liana","Bv","LBE","L.BE","L",".","BE",12
+75,300,74,"graminoid vine","Vine/Liana","Gv","LG","L.G","L",".","G",12
+76,300,75,"microphyllous evergreen vine","Vine/Liana","Ev","LNE","L.ME","L",".","ME",12
+77,300,76,"succulent vine","Vine/Liana","Cv","LU","L.U","L",".","U",12
+106,300,76.5,"parasitic vine","Shrub/Subshrub","Pv","LBP","L.Bi","L",".","Bi",12
+78,400,77,"aquatic herb","Forb/Herb","Ah","HA","H.A","H",".","A",0.6
+79,400,78,"annual aquatic herb","Forb/Herb","Ah1","HA1","H1A","H","1","A",0.6
+80,400,79,"perennial aquatic herb","Forb/Herb","Ah2","HA2","H2A","H","2","A",0.6
+81,400,80,"annual forb","Forb/Herb","Fh1","HF1","H1F","H","1","F",0.6
+82,400,81,"perennial forb","Forb/Herb","Fh2","HF2","H2F","H","2","F",0.6
+83,400,82,"succulent forb","Forb/Herb","","","H.FS","H",".","FS",0.6
+84,400,83,"annual succulent forb","Forb/Herb","Ch1","HFS1","H1FS","H","1","FS",0.6
+85,400,84,"perennial succulent forb","Forb/Herb","Ch2","HFS2","H2FS","H","2","FS",0.6
+86,400,85,"herbaceous vine","Forb/Herb","","","H.FV","H",".","FV",0.6
+87,400,86,"annual herbaceous vine","Vine/Liana","Vh1","HFV1","H1FV","H","1","FV",0.6
+88,400,87,"perennial herbaceous vine","Vine/Liana","Vh2","HFV2","H2FV","H","2","FV",0.6
+89,420,88,"cool season graminoid","Grass/grass-like","Gh","HGC","H.GC","H",".","GC",0.6
+90,420,89,"annual cool season graminoid","Grass/grass-like","Gh1","HGC1","H1GC","H","1","GC",0.6
+91,420,90,"perennial cool season graminoid","Grass/grass-like","Gh2","HGC2","H2GC","H","2","GC",0.6
+92,420,91,"warm season graminoid","Grass/grass-like","","HGW","H.GW","H",".","GW",0.6
+93,420,92,"annual warm season graminoid","Grass/grass-like","Wh1","HGW1","H1GW","H","1","GW",0.6
+94,420,93,"perennial warm season graminoid","Grass/grass-like","Wh2","HGW2","H2GW","H","2","GW",0.6
+95,450,94,"seedless forb","Fern/fern ally","Oh","HFE","H.FE","H",".","FE",0.6
+96,490,95,"parasitic herb","Forb/Herb","Ph","HFP","H.Fi","H",".","Fi",0.6
+97,490,96,"annual parasitic forb","Forb/Herb","Ph1","HFP1","H1Fi","H","1","Fi",0.6
+98,490,97,"perennial parasitic herb","Forb/Herb","Ph2","HFP2","H2Fi","H","2","Fi",0.6
+99,490,98,"parasitic herb","Forb/Herb","","","H.i","H",".","i",0.6
+100,900,99,"freeliving epiphyte","Vine/Liana","Fe","EF","E.F","E",".","F",12
+101,900,100,"parasitic epiphyte","Vine/Liana","Pe","EP","E.i","E",".","i",12
+102,1000,101,"parasitic plant","","","","i","i","","",0
+103,100,16.5,"sclerophyllous tree","Tree","Bt","TBE","T.BES","T",".","BES",0
+104,150,37.3,"short tree fern","Tree Fern","Ot","TF1","T1F","T","1","F",12
+105,150,37.6,"tall tree fern","Tree Fern","Ot","TF2","T2F","T","2","F",24

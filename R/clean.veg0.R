@@ -1,7 +1,7 @@
 #This function takes veg plot inported from NASIS (veg.spp <- soilDB::get_vegplot_species_from_NASIS_db()) and consolidates the redundant cover and height fields, and fills in missing heights.
 
 
-clean.veg <- function(x){
+clean.veg0 <- function(x){
   # plant.hts <- read.delim('data/plants/Plant_heights.txt')
 
   # x <- subset(x, select = c(vegplotid, plantsym, plantsciname, planttypegroup, plantnativity, plantheightcllowerlimit, plantheightclupperlimit, livecanopyhtbottom, livecanopyhttop,
