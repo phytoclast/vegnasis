@@ -9,7 +9,7 @@ summary.strata <-  function(x, breaks){
 
     if(nrow(y0)>0){
       y0 <- y0 %>% mutate(stratum=i, stratum.label = paste0(brks[i], "-", ifelse(i==nbks, "+",brks[i+1])))
-      y1 <- y0 %>% group_by(vegplotid, planttypegroup, stratum, stratum.label) %>% summarise(Cover = cover.agg(cover))
+      y1 <- y0 %>% group_by(plot, type, stratum, stratum.label) %>% summarise(Cover = cover.agg(cover))
 
     if(is.null(y)){y <- y1}else{y <- rbind(y, y1)}}
   }
@@ -27,7 +27,7 @@ summary.crown.thickness <-  function(x, breaks){
 
     if(nrow(y0)>0){
       y0 <- y0 %>% mutate(stratum=i, stratum.label = paste0(brks[i], "-", ifelse(i==nbks, "+",brks[i+1])))
-      y1 <- y0 %>% group_by(vegplotid, planttypegroup, stratum, stratum.label) %>% summarise(Cover = cover.agg(cover))
+      y1 <- y0 %>% group_by(plot, type, stratum, stratum.label) %>% summarise(Cover = cover.agg(cover))
 
     if(is.null(y)){y <- y1}else{y <- rbind(y, y1)}}
   }
