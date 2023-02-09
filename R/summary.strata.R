@@ -1,6 +1,6 @@
 #This function summarises cover by stratum membership and growth habit. Inputs require a data frame processed by clean.veg and  user supplied vector of stratum height breaks. ----
 
-summary.strata <-  function(x, breaks){
+summary.strata <-  function(x, breaks=c(0.5,5,15)){
   y <- NULL
   nbks <- length(breaks)+1
   brks <- c(0,breaks,1000)
@@ -18,7 +18,7 @@ summary.strata <-  function(x, breaks){
 
 #This function summarises crown overlap by stratum and growth habit. Inputs require a data frame processed by clean.veg and  user supplied vector of stratum height breaks. ----
 breaks <- c(0.1, 0.5, 2, 5, 10, 20, 30)
-summary.crown.thickness <-  function(x, breaks){
+summary.crown.thickness <-  function(x, breaks=c(0.5,5,15)){
   y <- NULL
   nbks <- length(breaks)+1
   brks <- c(0,breaks,1000)
