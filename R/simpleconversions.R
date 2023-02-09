@@ -30,6 +30,4 @@ diam.medieval <- function(cm){
   round(as.numeric(cm)/2.54,1)
 }
 
-# syns <- read.csv('data/plants/m.ac.csv')
-
 
