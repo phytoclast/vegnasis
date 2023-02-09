@@ -20,7 +20,7 @@ clean.veg <- function(x){
       TRUE ~ 0),
 
 
-    strat.ht.max = case_when(
+    stratum.max = case_when(
       !is.na(plantheightclupperlimit) ~ ht.metric(plantheightclupperlimit),
       akstratumcoverclass %in% "tree regeneration generally less than 4.5 m (15 ft) tall" ~ 4.5,
       akstratumcoverclass %in% "stunted tree generally less than 4.5 m (15 ft) tall" ~ 4.5,
@@ -39,7 +39,7 @@ clean.veg <- function(x){
       akstratumcoverclass %in% "mosses" ~ 0,
       TRUE ~ NA_real_),
 
-    strat.ht.min = case_when(
+    stratum.min = case_when(
       !is.na(plantheightcllowerlimit) ~ ht.metric(plantheightcllowerlimit),
       akstratumcoverclass %in% "tree regeneration generally less than 4.5 m (15 ft) tall" ~ 0,
       akstratumcoverclass %in% "stunted tree generally less than 4.5 m (15 ft) tall" ~ 0,
@@ -58,13 +58,17 @@ clean.veg <- function(x){
       akstratumcoverclass %in% "mosses" ~ 0,
       TRUE ~ NA_real_),
 
-    live.ht.min = ht.metric(livecanopyhtbottom),
-    live.ht.max = ht.metric(livecanopyhttop),
+    crown.min = ht.metric(livecanopyhtbottom),
+    crown.max = ht.metric(livecanopyhttop),
 
     diam.min = diam.metric(overstorydbhmin),
-    diam.max = diam.metric(overstorydbhmax))
+    diam.max = diam.metric(overstorydbhmax),
+    plot = vegplotid,
+    taxon = plantsciname,
+    type = planttypegroup,
+    nativity = plantnativity)
 
-  x <- x %>% subset(select= c("vegplotid","plantsym","plantsciname","planttypegroup",
-                              "plantnativity","cover","strat.ht.min","strat.ht.max","live.ht.min","live.ht.max","diam.min","diam.max"))
+  x <- x %>% subset(select= c("plot","plantsym","taxon","type",
+                              "nativity","cover","stratum.min","stratum.max","crown.min","crown.max","diam.min","diam.max"))
   return(x)
 }
