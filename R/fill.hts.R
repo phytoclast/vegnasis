@@ -67,5 +67,5 @@ fill.hts.df <- function(df){
 
   df <- df |> mutate(ht.max = ht.round(ht.max),ht.min = ht.round(ht.min))
 
-  return(df[,c("plot","taxon","type","nativity","cover","ht.min","ht.max","stratum.min","stratum.max","crown.min","crown.max","taxon.max","stand.max")])
+  return(df[,c("plot","taxon","type","nativity","cover","ht.min","ht.max","stratum.min","stratum.max","crown.min","crown.max","diam.min","diam.max","taxon.max","stand.max")])
 }
