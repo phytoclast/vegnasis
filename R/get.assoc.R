@@ -20,9 +20,9 @@ x2 <- x2 |> group_by(plot,taxon) |> mutate(maxcover = max(cover), maxht = max(ht
 x2 <- x2 |> subset((ht.max == maxht & !taxon %in% "" & !is.na(taxon)))
 
 x2 <- x2 |> group_by(plot,stratum) |> mutate(srank = order(order(-cover,-ht.max)))
-x2 <- x2 |> group_by(plot) |> mutate(rank = order(order(-cover,-ht.max)))
+x2 <- x2 |> group_by(plot) |> mutate(rank = order(order(-cover,-ht.max)), plotmaxcover = max(cover))
 x2 <- x2 |> group_by(plot, stratum) |> mutate(maxcover = max(cover), maxht = NULL)
-x2 <- x2 |> subset(((maxcover == cover & cover >= 10) | rank <=5) & srank <=3)
+x2 <- x2 |> subset(((maxcover == cover & cover >= 10) | (rank <=5 & cover*2 >= plotmaxcover)| (rank <=2 & cover >= 1) & srank <=3))
 x2 <- x2 |> group_by(plot) |> mutate(rank = order(order(-as.numeric(stratum), srank)))
 
 associations <- x2 |> subset(select = c(plot)) |> unique()
