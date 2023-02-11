@@ -1,14 +1,14 @@
 Package: vegnasis
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Tools to summarize vegetation plot data.
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Greg J. Schmidt
+Maintainer: Greg J. Schmidt <greg.schmidt@USDA.gov>
+Description: These functions were developed in 2023 to standardize calculations necessary to summarize plot data for input into ecological sites databases, reducing complexity of scripts revised each year for new projects. In addition, it is planned to eventually produce a set of vegetation profile plots to compliment the capabilities of the AQP package to produce soil profile diagrams.
+License: GPL (>= 3)
 Encoding: UTF-8
 LazyData: true
+Language: en-US
 Depends: 
     R (>= 2.10),
     dplyr,
