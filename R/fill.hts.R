@@ -40,12 +40,15 @@ fill.hts <- function(plot = NA_character_ ,
 
 
 fill.hts.df <- function(df){
+  #Ceiling for the taxon
   df$taxon.max = get.ht.max(df$taxon)
+  #Establish ceiling for the plot, important so that vines and epiphytes do not exceed height of tallest measured vegetation.
 
   df <- df |> group_by(plot) |> mutate(stand.max = pmax(max(stratum.max, na.rm = TRUE, warnings =FALSE), max(crown.max, na.rm = TRUE, warnings =FALSE), na.rm = TRUE, warnings =FALSE),
                                        base.max = pmax(max(stratum.min, na.rm = TRUE, warnings =FALSE), max(crown.min, na.rm = TRUE, warnings =FALSE), na.rm = TRUE, warnings =FALSE ),
                                        stand.max =  ifelse(is.na(stand.max) | base.max >= stand.max, NA_real_, stand.max),
                                        base.max = NULL)
+  #Populate plant height for each species within its stratum. Empirical (field measured) "live canopy" heights always get priority over default heights. Membership within a higher stratum can also override taxon default height.
   df <- df |> mutate(ht.max = case_when(
     !is.na(crown.max) ~ crown.max,
     !is.na(stratum.max) ~ pmin(stratum.max, taxon.max),
@@ -58,13 +61,13 @@ fill.hts.df <- function(df){
       type %in%  "grass/grasslike" ~ 0.6,
       type %in%  "moss" ~ 0,
       TRUE ~ 0))
-
+#Establish a default live crown bottom height if not recorded in field.
   df <- df |> mutate(
     ht.max = ifelse(!is.na(stratum.min) & stratum.min >=  ht.max, stratum.min + (stratum.max-stratum.min)/10, ht.max),
     ht.min =  case_when(
       !is.na(crown.min) ~ crown.min,
       TRUE ~ ht.max/2))
-
+#Round the number of decimal places with higher precision reserved for shorter plants.
   df <- df |> mutate(ht.max = ht.round(ht.max),ht.min = ht.round(ht.min))
 
   return(df[,c("plot","taxon","type","nativity","cover","ht.min","ht.max","stratum.min","stratum.max","crown.min","crown.max","diam.min","diam.max","taxon.max","stand.max")])
