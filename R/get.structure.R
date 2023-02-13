@@ -5,7 +5,7 @@ get.structure <- function(x, simple = TRUE){
     x <- x |> mutate(stratum = case_when(
       is.na(ht.max) | is.na(type) ~ 'excluded',
       ht.max > 5  & type %in% c('shrub/vine', 'tree')  ~ 'tree',
-      type %in% c('tree') ~ 'saplings',
+      type %in% c('tree') ~ 'sapling',
       type %in% c('shrub/vine') ~ 'shrub',
       type %in% c('grass/grasslike') ~ 'grass',
       type %in% c('forb') ~ 'forb',
