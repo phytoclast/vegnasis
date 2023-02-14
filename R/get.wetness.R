@@ -4,7 +4,7 @@ get.wetness <- function(x, region = 'NCNE'){
   x <- x |> group_by(plot, taxon) |> summarise(cover=cover.agg(cover))
 
   #Lookup default plant hydric indicator status ----
-  region = 'NCNE'
+  # region = 'NCNE'
   hydric <- hydric |> mutate(status = case_when(
     region == 'AGCP' ~ AGCP,
     region == 'AW' ~ AW,
