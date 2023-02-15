@@ -12,7 +12,10 @@ This function looks up a default growth habit ("life form") code for a taxon. Co
 
 "L" = lianas and woody vines normally rooted in the ground and dependent on other plants for structural support;
 
-"E" = epiphytes normally not rooted in the ground, established in the branches or trunks of other plants (mostly trees) -- can be either parasitic or autotrophic, and includes both woody and herbaceous examples.
+"E" = epiphytes normally not rooted in the ground, established in the branches or trunks of other plants (mostly trees) -- can be either parasitic or autotrophic, and includes both woody and herbaceous examples;
+
+"N" = Nonvascular autotrophs, including bryophytes, lichens, and algae. Most of the time when nonvascular autotrophs are listed in a plot, it is due to their dominance in the ground stratum, however any positive height attributed to the plants should be assumed to be indicate an epiphytic position within the shrub tree stratum, and not the stature of the plant itself, which is always arbitrarily assigned a zero height when on the ground even if some mosses do aproach 0.1 m tall.
+
 
 
 
