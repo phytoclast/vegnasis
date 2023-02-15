@@ -74,4 +74,11 @@ fill.type <- function(taxa, type=NA){
   return(nasis) }
 
 
+#Lookup the NASIS life form "type" according to default growth habit of each taxon. Include column of existing types if existing types are to be preserved while filling in only missing values. This version is intended for cleaned data frames.
+
+fill.type.df <- function(df){
+    df$type <- fill.type(df$taxon, df$type)
+  return(df) }
+
+
 
