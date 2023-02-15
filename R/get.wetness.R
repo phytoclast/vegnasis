@@ -10,6 +10,7 @@ get.wetness <- function(x, region = 'NCNE'){
     region == 'AW' ~ AW,
     region == 'CB' ~ CB,
     region == 'EMP' ~ EMP,
+    region == 'GP' ~ GP,
     region == 'HI' ~ HI,
     region == 'MW' ~ MW,
     region == 'NCNE' ~ NCNE,
