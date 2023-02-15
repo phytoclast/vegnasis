@@ -58,5 +58,5 @@ fill.hts.df <- function(df){
   df$taxon.max <- hts.new$taxon.max
   df$stand.max <- hts.new$stand.max
 
-  return(df[,c("plot","taxon","type","nativity","cover","ht.min","ht.max","stratum.min","stratum.max","crown.min","crown.max","diam.min","diam.max","stand.max","taxon.max")])
+  return(df[,c("plot","symbol","taxon","type","nativity","cover","ht.min","ht.max","stratum.min","stratum.max","crown.min","crown.max","diam.min","diam.max","stand.max","taxon.max")])
 }

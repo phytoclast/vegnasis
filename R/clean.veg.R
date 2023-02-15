@@ -64,11 +64,12 @@ clean.veg <- function(x){
     diam.min = diam.metric(overstorydbhmin),
     diam.max = diam.metric(overstorydbhmax),
     plot = vegplotid,
+    symbol = plantsym,
     taxon = plantsciname,
     type = planttypegroup,
     nativity = plantnativity)
 
-  x <- x %>% subset(select= c("plot","plantsym","taxon","type",
+  x <- x %>% subset(select= c("plot","symbol","taxon","type",
                               "nativity","cover","stratum.min","stratum.max","crown.min","crown.max","diam.min","diam.max"))
   return(x)
 }
