@@ -13,9 +13,8 @@ Army corps regions:
 'HI' = HI;
 'MW' = Midwest;
 'NCNE' = Northcentral & Northeast;
-'AK' = Alaska.
-
-'WMVC' = Western Mountains, Valleys, and Coast
+'AK' = Alaska;
+'WMVC' = Western Mountains, Valleys, and Coast.
 }
 \usage{
 get.wetness(x, region = 'NCNE')
