@@ -1,5 +1,5 @@
 #This function fill in missing nativity status based on user input of region. If no region is specified, the default is native to the United States.
-fill.nativity <- function(taxa, nativity=NA, region=NA){
+fill.nativity <- function(taxa,  region=NA, nativity=NA){
   x  <-  data.frame(taxa=taxa, nativity = nativity)
   #first try straight join ----
   x <- x |> left_join(natdat, by = c('taxa'='ac.binomial'), multiple = 'first')
