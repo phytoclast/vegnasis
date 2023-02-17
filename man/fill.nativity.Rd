@@ -47,7 +47,8 @@ fill.nativity(taxa,  region=NA, nativity=NA)
 \examples{
 veg.raw <- vegnasis::nasis.veg
 veg <- clean.veg(veg.raw)
-veg$nativity <- fill.nativity(taxa=veg$taxon, region="Northeast", nativity = veg$nativity))
+veg$nativity <- NA #To remove existing values if new values are needed. Otherwise, existing values will be preserved and only missing values will be filled.
+veg$nativity <- fill.nativity(taxa=veg$taxon, region="Northeast", nativity = veg$nativity)
 # Altenative using pipes.
 veg <- veg |> mutate(nativity = fill.nativity(taxa=taxon, region="Northeast", nativity = nativity))
 }
