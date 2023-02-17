@@ -35,7 +35,7 @@ This function fills in missing nativity data based taxon status across broad reg
 
 }
 \usage{
-fill.type(taxa,  region=NA, nativity=NA)
+fill.nativity(taxa,  region=NA, nativity=NA)
 }
 \arguments{
 \item{taxa}{Taxon names.}
