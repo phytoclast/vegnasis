@@ -43,5 +43,5 @@ fill.nativity <- function(taxa,  region=NA, nativity=NA){
 
 #Convenience function to allow filling of missing nativity on cleaned vegetation data frame.
 fill.nativity.df <- function(df, region=NA){
-    df$nativity <- fill.nativity(fill.nativity(df$taxon, region=region, df$nativity))
+    df$nativity <- fill.nativity(df$taxon, region=region, df$nativity)
     return(df)}
