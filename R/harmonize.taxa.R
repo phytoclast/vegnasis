@@ -1,9 +1,15 @@
 #upgrade taxonomy ----
 #This function synonymizes taxa with BONAP or Kew's Plants of the World Online circa 2022.
-harmonize.taxa <- function(taxa){
+harmonize.taxa <- function(taxa, fix=FALSE){
   x  <-  data.frame(taxa=taxa)
-  x <- x |> left_join(syns[,c('acc','syn','ac.binomial')], by=c('taxa'='syn'), multiple = 'first')
+  if(fix){
+  fixtaxa <- data.frame(america=c('Equisetum prealtum', 'Athyrium angustum', 'Cypripedium parviflorum' , 'Osmunda spectabilis'), auctnon=c('Equisetum hyemale', 'Athyrium filix-femina', 'Cypripedium calceolus', 'Osmunda regalis'))
+  x <- x |> left_join(fixtaxa, by=c('taxa'='auctnon'), multiple = 'first')
+  x <- x |> mutate(taxa = ifelse(is.na(america), taxa, america))
+  }
+ x <- x |> left_join(syns[,c('acc','syn','ac.binomial')], by=c('taxa'='syn'), multiple = 'first')
   x <- x |> mutate(ac.binomial = ifelse(is.na(ac.binomial), taxa, ac.binomial))
+
   return(x$ac.binomial)}
 
 #fill USDA PLANTS Symbols ----
