@@ -23,6 +23,7 @@ tree <- x |> mutate(cover=Tree, stratum.min = subcanopyupper, stratum.max = NA_r
 
 x <- rbind(field, shrub, subcan, tree) |> select(Observation_Label, AcTaxon, cover, stratum.min, stratum.max, crown.min, crown.max, Dmin, Dmax)
 colnames(x) <- c('plot', 'taxon', 'cover', 'stratum.min', 'stratum.max', 'crown.min', 'crown.max', 'diam.min', 'diam.max')
+x <- x |> mutate(cover = ifelse(cover > 100, 100, cover)) |> subset(cover > 0)
 x <- x |> mutate(symbol=NA, type=NA, nativity=NA) |> select(plot, symbol, taxon, type, nativity, cover, stratum.min, stratum.max, crown.min, crown.max, diam.min, diam.max)
 return(x)
 }
