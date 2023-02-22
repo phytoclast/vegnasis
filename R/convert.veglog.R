@@ -18,12 +18,14 @@ obst <- obstaxa |> select(Observation_ID, AcTaxon, Habit, Field, Shrub, Subcanop
 x <- obss |> left_join(obst, by=c('Observation_ID'='Observation_ID'), multiple='all')
 field <- x |> mutate(cover=Field, stratum.min = 0, stratum.max = fieldupper, crown.min = Fmin, crown.max = Fmax, BA = NA_real_, Dmin = NA_real_, Dmax = NA_real_)
 shrub <- x |> mutate(cover=Shrub, stratum.min = fieldupper, stratum.max = shrubupper, crown.min = Smin, crown.max = Smax, BA = NA_real_, Dmin = NA_real_, Dmax = NA_real_)
-subcan <- x |> mutate(cover=Subcanopy, stratum.min = shrubupper, stratum.max = subcanopyupper, crown.min = SCmin, crown.max = SCmax, BA = ifelse(Tree == 0 & Subcanopy > 0, BA,NA_real_), Dmin = ifelse(Tree == 0 & Subcanopy > 0, Dmin, NA_real_), Dmax = ifelse(Tree == 0 & Subcanopy > 0, Dmax, NA_real_))
-tree <- x |> mutate(cover=Tree, stratum.min = subcanopyupper, stratum.max = NA_real_, crown.min = Tmin, crown.max = Tmax, BA = ifelse(Tree > 0, BA,NA_real_), Dmin = ifelse(Tree > 0, Dmin, NA_real_), Dmax = ifelse(Tree > 0, Dmax, NA_real_))
+subcan <- x |> mutate(cover=Subcanopy, stratum.min = shrubupper, stratum.max = subcanopyupper, crown.min = SCmin, crown.max = SCmax, BA = ifelse(Tree == 0 & Subcanopy > 0, tree.ct.BA(BA, BA_Factor),NA_real_), Dmin = ifelse(Tree == 0 & Subcanopy > 0, Dmin, NA_real_), Dmax = ifelse(Tree == 0 & Subcanopy > 0, Dmax, NA_real_))
+tree <- x |> mutate(cover=Tree, stratum.min = subcanopyupper, stratum.max = NA_real_, crown.min = Tmin, crown.max = Tmax, BA = ifelse(Tree > 0, tree.ct.BA(BA, BA_Factor),NA_real_), Dmin = ifelse(Tree > 0, Dmin, NA_real_), Dmax = ifelse(Tree > 0, Dmax, NA_real_))
 
-x <- rbind(field, shrub, subcan, tree) |> select(Observation_Label, AcTaxon, cover, stratum.min, stratum.max, crown.min, crown.max, Dmin, Dmax)
-colnames(x) <- c('plot', 'taxon', 'cover', 'stratum.min', 'stratum.max', 'crown.min', 'crown.max', 'diam.min', 'diam.max')
+x <- rbind(field, shrub, subcan, tree) |> select(Observation_Label, AcTaxon, cover, stratum.min, stratum.max, crown.min, crown.max, Dmin, Dmax, BA)
+colnames(x) <- c('plot', 'taxon', 'cover', 'stratum.min', 'stratum.max', 'crown.min', 'crown.max', 'diam.min', 'diam.max', 'BA')
 x <- x |> mutate(cover = ifelse(cover > 100, 100, cover)) |> subset(cover > 0)
-x <- x |> mutate(symbol=NA, type=NA, nativity=NA) |> select(plot, symbol, taxon, type, nativity, cover, stratum.min, stratum.max, crown.min, crown.max, diam.min, diam.max)
+x <- x |> mutate(symbol=NA, type=NA, nativity=NA) |> select(plot, symbol, taxon, type, nativity, cover, stratum.min, stratum.max, crown.min, crown.max, diam.min, diam.max, BA)
+x <- x |> mutate(BA = ifelse(BA <= 0,NA_real_,BA))
+
 return(x)
 }

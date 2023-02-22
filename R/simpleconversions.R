@@ -29,5 +29,13 @@ diam.metric <- function(inch){
 diam.medieval <- function(cm){
   round(as.numeric(cm)/2.54,1)
 }
-
-
+#For taking raw tree count and prism factor and calculating basal area in square meters per hectare. Basal area factors less than 5 (e.g. baf=2) are assumed to be SI, while factors 5 and above are assumed USC.
+tree.ct.BA <- function(x, baf=10) {
+  case_when(baf < 5 ~ x * baf,
+            TRUE ~ round(x * baf*10000/43560,1))}
+#Tree basal area unit conversion from square meters per hectare to square feet per acre.
+BA.to.USC<-function(ba){
+  round(ba*43560/10000,1)}
+#Tree basal area unit conversion from square feet per acre to square meters per hectare.
+BA.to.SI<-function(ba){
+  round(ba*10000/43560,1)}

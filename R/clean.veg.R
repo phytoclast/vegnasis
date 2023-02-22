@@ -67,9 +67,10 @@ clean.veg <- function(x){
     symbol = plantsym,
     taxon = plantsciname,
     type = planttypegroup,
-    nativity = plantnativity)
+    nativity = plantnativity,
+    BA = round(speciesbasalarea*10000/43560,1))
 
   x <- x %>% subset(select= c("plot","symbol","taxon","type",
-                              "nativity","cover","stratum.min","stratum.max","crown.min","crown.max","diam.min","diam.max"))
+                              "nativity","cover","stratum.min","stratum.max","crown.min","crown.max","diam.min","diam.max","BA"))
   return(x)
 }
