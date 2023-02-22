@@ -63,6 +63,7 @@ clean.veg <- function(x){
 
     diam.min = diam.metric(overstorydbhmin),
     diam.max = diam.metric(overstorydbhmax),
+    diam = ifelse(is.na(diam.min), diam.max, (diam.max+diam.min)/2),
     plot = vegplotid,
     symbol = plantsym,
     taxon = plantsciname,
@@ -71,6 +72,6 @@ clean.veg <- function(x){
     BA = round(speciesbasalarea*10000/43560,1))
 
   x <- x %>% subset(select= c("plot","symbol","taxon","type",
-                              "nativity","cover","stratum.min","stratum.max","crown.min","crown.max","diam.min","diam.max","BA"))
+                              "nativity","cover","stratum.min","stratum.max","crown.min","crown.max","diam.min","diam.max",'diam',"BA"))
   return(x)
 }
