@@ -97,7 +97,7 @@ get.structure <- function(x, simple = TRUE){
     x.ht <- veg |> group_by(plot) |> summarise(ht.max = max(ht.max))
 
     x2 <- x |> group_by(plot, stratum) |> summarise(cover = cover.agg(cover))
-    x3 <- data.frame(plot = unique(x2$plot), tree = 0, sapling = 0, shrub=0, herb=0, moss=0)
+    x3 <- data.frame(plot = unique(x2$plot), tree = 0, shrub=0, herb=0, moss=0)
     x3 <- x3 |> left_join(subset(x2, stratum %in% 'tree')) |> mutate(tree=ifelse(is.na(cover),0,cover), stratum=NULL, cover=NULL)
     x3 <- x3 |> left_join(subset(x2, stratum %in% 'shrub')) |> mutate(shrub=ifelse(is.na(cover),0,cover), stratum=NULL, cover=NULL)
     x3 <- x3 |> left_join(subset(x2, stratum %in% 'herb')) |> mutate(herb=ifelse(is.na(cover),0,cover), stratum=NULL, cover=NULL)
