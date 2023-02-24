@@ -111,7 +111,7 @@ BA.to.cover <- function(x){
 # F-statistic: 134.5 on 1 and 101 DF,  p-value: < 2.2e-16
 #This function fills in tree diameters scaled with tree heights and to be used in estimating crown widths.
 fill.diameters <- function(x){
-  y = exp(0.70799 + 0.61045*h^0.5)
+  y = exp(0.70799 + 0.61045*x^0.5)
   return(y)}
 
 
