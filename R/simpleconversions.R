@@ -113,18 +113,5 @@ BA.to.cover <- function(x){
 fill.diameters <- function(x){
   y = exp(0.70799 + 0.61045*h^0.5)
   return(y)}
-round(d, 0)
 
-#For future function for drawing trees
-get.crown.diam.ratio <- function(cover, dbh, ba){
-  #cover = aggregate overstory cover
-  #dbh = stand quadratic mean diameter
-  #ba = stand basal area count
 
-  m2pertree = 3.141592*(dbh/200)^2
-  treesperha = ba/m2pertree
-  coverpertreeperha = 1-(1-cover)^(1/treesperha)
-  crown.width = 2*(coverpertreeperha*10000/3.141592)^0.5
-  crown.stem.ratio = crown.width/dbh*100
-  return(crown.stem.ratio)#crown stem ratio meter per meter
-}
