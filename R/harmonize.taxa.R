@@ -19,3 +19,10 @@ fill.usda.symbols <- function(taxa, symbol=NA){
   x <- x |> left_join(usdaplants[,c('taxon','sym')], by=c('taxa'='taxon'), multiple = 'first')
   x <- x |> mutate(symbol = ifelse(is.na(symbol), sym, symbol))
   return(x$symbol)}
+
+#This function fills in missing plant names from USDA symbols if they exist.
+fill.taxon.from.symbols <- function(symbol, taxa=NA){
+  x  <-  data.frame(symbol=symbol, taxa=taxa)
+  x <- x |> left_join(usdaplants[,c('taxon','sym')], by=c('symbol'='sym'), multiple = 'first')
+  x <- x |> mutate(taxon = ifelse(is.na(taxa), taxon, taxa))
+  return(x$taxon)}
