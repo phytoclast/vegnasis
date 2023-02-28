@@ -54,7 +54,7 @@ fill.hts <- function(plot = NA_character_ ,
 
 fill.hts.df <- function(df){
 
-  hts.new <- fill.hts(plot = df$plot ,
+  hts.new <- fill.hts(plot = df$plot,
                       taxon = df$taxon,
                       type = df$taxon,
                       stratum.min = df$stratum.min,
@@ -67,5 +67,5 @@ fill.hts.df <- function(df){
   df$taxon.max <- hts.new$taxon.max
   df$stand.max <- hts.new$stand.max
 
-  return(df[,c("plot","symbol","taxon","type","nativity","cover","ht.min","ht.max","stratum.min","stratum.max","crown.min","crown.max","diam.min","diam.max","diam","BA","stand.max","taxon.max")])
+  return(df[,c("plot","label","name","symbol","taxon","type","nativity","cover","ht.min","ht.max","stratum.min","stratum.max","crown.min","crown.max","diam.min","diam.max","diam","BA","stand.max","taxon.max")])
 }

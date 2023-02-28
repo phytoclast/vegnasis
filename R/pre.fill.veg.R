@@ -2,6 +2,7 @@
 
 pre.fill.veg <- function(x){
   if(!'plot' %in% colnames(x)){x$plot=NA_character_}
+  if(!'label' %in% colnames(x)){x$label=NA_character_}
   if(!'symbol' %in% colnames(x)){x$symbol=NA_character_}
   if(!'taxon' %in% colnames(x)){x$taxon=NA_character_}
   if(!'type' %in% colnames(x)){x$type=NA_character_}
@@ -16,7 +17,7 @@ pre.fill.veg <- function(x){
   if(!'diam' %in% colnames(x)){x$diam=NA_real_}
   if(!'BA' %in% colnames(x)){x$BA=NA_real_}
 
-    x <- x %>% subset(select= c("plot","symbol","taxon","type",
+    x <- x %>% subset(select= c("plot","label","symbol","taxon","type",
                                 "nativity","cover","stratum.min","stratum.max","crown.min","crown.max","diam.min","diam.max",'diam',"BA"))
   return(x)
 }

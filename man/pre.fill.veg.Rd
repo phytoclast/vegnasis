@@ -4,7 +4,9 @@
 \description{
 Several vegnasis functions require data frames with a predefined standard set of column names to operate. This function processes a data frame, retaining existing standardized columns, removing non-standard columns, and establishing missing standardized columns with missing data. Prior to using this function, steps are initially taken to manually assign existing data to standardized column names as much as possible, whereas this function builds the remaining missing structure to allow subsequent vegnasis functions to operate. Units of measurement are assumed to be SI for the purposes of analysis and compatibility with vegetation science literature. Conversions to USC units, if desired, should take place only as a final step after analysis.
 
-"plot" = unique identifer for plot.
+"plot" = Unique identifer for plot.
+
+"label" = Convenient contextual name for plot.
 
 "symbol"= USDA PLANTS symbol.
 

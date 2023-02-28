@@ -21,14 +21,14 @@ clean.veg.log <- function(obssites, obstaxa){
   subcan <- x |> mutate(cover=Subcanopy, stratum.min = shrubupper, stratum.max = subcanopyupper, crown.min = SCmin, crown.max = SCmax, BA = ifelse(Tree == 0 & Subcanopy > 0, tree.ct.BA(BA, BA_Factor),NA_real_), Dmin = ifelse(Tree == 0 & Subcanopy > 0, Dmin, NA_real_), Dmax = ifelse(Tree == 0 & Subcanopy > 0, Dmax, NA_real_))
   tree <- x |> mutate(cover=Tree, stratum.min = subcanopyupper, stratum.max = NA_real_, crown.min = Tmin, crown.max = Tmax, BA = ifelse(Tree > 0, tree.ct.BA(BA, BA_Factor),NA_real_), Dmin = ifelse(Tree > 0, Dmin, NA_real_), Dmax = ifelse(Tree > 0, Dmax, NA_real_))
 
-  x <- rbind(field, shrub, subcan, tree) |> select(Observation_Label, AcTaxon, cover, stratum.min, stratum.max, crown.min, crown.max, Dmin, Dmax, BA)
+  x <- rbind(field, shrub, subcan, tree) |> select(Observation_ID, Observation_Label, AcTaxon, cover, stratum.min, stratum.max, crown.min, crown.max, Dmin, Dmax, BA)
 
-  colnames(x) <- c('plot', 'taxon', 'cover', 'stratum.min', 'stratum.max', 'crown.min', 'crown.max', 'diam.min', 'diam.max', 'BA')
+  colnames(x) <- c('plot', 'label', 'taxon', 'cover', 'stratum.min', 'stratum.max', 'crown.min', 'crown.max', 'diam.min', 'diam.max', 'BA')
   x <- x |> mutate(symbol=NA, type=NA, nativity=NA,
                    cover = ifelse(cover > 100, 100, cover),
                    diam = ifelse(is.na(diam.min), diam.max, (diam.max+diam.min)/2),
                    BA = ifelse(BA <= 0,NA_real_,BA))|>
     subset(cover > 0)|>
-    select(plot, symbol, taxon, type, nativity, cover, stratum.min, stratum.max, crown.min, crown.max, diam.min, diam.max, diam, BA)
+    select(plot, label, symbol, taxon, type, nativity, cover, stratum.min, stratum.max, crown.min, crown.max, diam.min, diam.max, diam, BA)
   return(x)
 }
