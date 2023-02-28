@@ -14,6 +14,6 @@ clean.veg(x)
 
 
 \examples{
-x.spp <- soilDB::get_vegplot_species_from_NASIS_db()
-x.cleaned <- clean.veg(x.spp)
+veg.raw <- soilDB::get_vegplot_species_from_NASIS_db()
+veg <- clean.veg(veg.raw)
 }

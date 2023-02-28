@@ -29,6 +29,18 @@ diam.metric <- function(inch){
 diam.medieval <- function(cm){
   round(as.numeric(cm)/2.54,1)
 }
+
+#This function converts plant height from NASIS to meters.
+
+biomass.metric <- function(lbpac){
+  round(as.numeric(lbpac)*0.45359237*1/43560/0.3048^2*10000,0)
+}
+
+#This function converts plant heights from meters to feet.
+
+biomass.medieval <- function(kgpha){
+  round(as.numeric(kgpha)/(0.45359237*1/43560/0.3048^2*10000),0)
+}
 #For taking raw tree count and prism factor and calculating basal area in square meters per hectare. Basal area factors less than 5 (e.g. baf=2) are assumed to be SI, while factors 5 and above are assumed USC.
 tree.ct.BA <- function(x, baf=10) {
   case_when(baf < 5 ~ x * baf,
