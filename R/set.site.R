@@ -28,6 +28,7 @@ match.sites <- function(x,y,maxdist = 30, maxdays = NA){
 
   xplots <- x$plot
   x$link <- NA_character_
+  x$dist <- NA_real_
 
   for(i in 1:length(xplots)){#i=500
     yf <- y
@@ -41,7 +42,7 @@ match.sites <- function(x,y,maxdist = 30, maxdays = NA){
 
       mindist <- min(yf$dist, na.rm = TRUE)
       y0 <- yf %>% subset(dist %in% mindist)
-      x[i,] <- x[i,] |> mutate(link = ifelse(mindist <= maxdist,  y0$plot[1], link))
+      x[i,] <- x[i,] |> mutate(link = ifelse(mindist <= maxdist,  y0$plot[1], link), dist = ifelse(mindist <= maxdist,  y0$dist[1], dist))
     }
   }
   return(x)
