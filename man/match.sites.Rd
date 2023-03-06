@@ -2,7 +2,7 @@
 \alias{match.sites}
 \title{Match two site data frames}
 \description{
-This function take two data frames with standardized plot id, coordinate, and date columns, and compares time and location for an approximate match. Used, for example, to match established site locations of soil pedons to independently acquired sites with vegetation plot data. Both sets of data require GPS coordinates in decimal degrees.
+This function take two data frames with standardized plot id, coordinate, and date columns, and compares time and location for an approximate match. Used, for example, to match established site locations of soil pedons to independently acquired sites with vegetation plot data. Both sets of data require GPS coordinates in decimal degrees. The return data frame has a "link" column with the plot id from the closest matching established site.
 
 }
 \usage{
