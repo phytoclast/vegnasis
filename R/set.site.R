@@ -13,12 +13,12 @@ set.site <- function(plot, lat, lon, date = NA_integer_, year = NA_integer_, mon
                                                                                   month = month,
                                                                                   day = day))),as.character(date)))
                    ,
-                   # year = ifelse(is.na(year), as.integer(format(date, format="%Y")),as.integer(year)),
-                   # month = ifelse(is.na(month), as.integer(format(date, format="%m")),as.integer(month)),
-                   # day = ifelse(is.na(day), as.integer(format(date, format="%d")),as.integer(day)),
-                   year = NULL,
-                   month = NULL,
-                   day = NULL)
+                   year = ifelse(is.na(year), as.integer(format(date, format="%Y")),as.integer(year)),
+                   month = ifelse(is.na(month), as.integer(format(date, format="%m")),as.integer(month)),
+                   day = ifelse(is.na(day), as.integer(format(date, format="%d")),as.integer(day)))
+                   # year = NULL,
+                   # month = NULL,
+                   # day = NULL)
   return(x)
 }
 
