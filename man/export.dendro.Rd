@@ -22,6 +22,9 @@ veg <- clean.veg(veg.raw)
 m <- make.plot.matrix(veg, tr = 'log')
 d = vegan::vegdist(m, method='bray')
 t <- cluster::agnes(d, method = 'ward')|> as.hclust()
+k = 3
+groups <- cutree(t, k = k)
+groups <- dendrogrouporder(t, groups)
 a = 'Vegetation of Wexford County'
 folder = 'output'
 export.dendro(a,d,t,groups,folder)
