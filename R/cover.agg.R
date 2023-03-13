@@ -5,7 +5,7 @@ cover.agg <- function(x){
     round(100*(1-10^(sum(log10(1-(x/100.0001))))),1)}}
 
 #Aggregate cover assuming crowns of same stratum minimally overlap overlap. Parameter 's' 0-1 governs the degree that crowns are allowed to overlap.
-cover.agg.stratum <- function(x, s=0.5){
+cover.agg.stratum <- function(x, s=1/3){
   if (max(x) > 100){warning("Cover cannot exceed 100%!")}else{
     round(pmin(100,sum(x))*(1-s)+100*(1-10^(sum(log10(1-(x/100.0001)))))*s,1)
         }}
