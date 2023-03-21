@@ -72,3 +72,51 @@ dendrogrouporder <- function(t,groups){
   names(newgroups) <- newlabels$labels
   return(newgroups)
 }
+
+
+#This function plots dendrogram colored according to group.
+plot.dendro <- function(a,d,t,groups){
+  require(ape)
+  require(cluster)
+  require(vegan)
+  require(dendextend)
+
+  t <- as.hclust(t)
+  #make cuts and reformat dendrogram
+  groups <- groups
+
+  soilplot <- names(groups)
+  clust <- unname(groups)
+  groupdf <- as.data.frame(cbind(soilplot, clust))
+  groupdf$clust <- (as.numeric(as.character(groupdf$clust)))
+  # maxcluster <- max(groupdf$clust)
+  # numberzeros <- nrow(groupdf[(groupdf$clust == 0),])
+  # whichrecords <- which(groupdf$clust == 0)
+  # if (nrow(groupdf[groupdf$clust == 0,]) != 0){
+  #   for (i in 1:numberzeros){ #assign all zero clusters to unique cluster number.
+  #     groupdf[whichrecords[i],]$clust <- maxcluster+i}}
+
+  newlabels <- t$labels
+  newlabels <- as.data.frame(newlabels)
+  newlabels$row <- row(newlabels)[,1]
+  newlabels <- merge(newlabels, groupdf, by.x='newlabels', by.y ='soilplot')
+  newlabels$newlabels <- paste(newlabels$clust, newlabels$newlabels)
+  newlabels <- newlabels[order(newlabels$row),1]
+  newtree <- t
+  newtree$labels <- newlabels
+
+  dend1 <- color_branches(as.dendrogram(as.hclust(newtree)), clusters = groups[order.dendrogram(as.dendrogram(t))])
+  dend1 <- color_labels(dend1, col = get_leaves_branches_col(dend1))
+
+  #output file
+
+  # w <- 800
+  # h <- nrow(groupdf)*12+80
+  # u <- 12
+  # png(filename=filename,width = w, height = h, units = "px", pointsize = u)
+
+  par(mar = c(2,0,1,13))
+  plot(dend1, horiz = TRUE, main=paste(a), font=1, cex=0.84)
+
+
+}
