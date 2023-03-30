@@ -124,3 +124,13 @@ trees_per_ha <- function(b,d){
   t = b/((d/200)^2*3.141592)
   return(t)
 }
+
+
+# Estimated crown width based on density in stems per ha, and total cover for that taxon/stratum.
+est_crown_width <- function(density, cover, diam){
+  cf = 0.8 #correction factor to average between two cover aggregate methods. More research needed.
+  crownarea <- (1-(1-cover/100)^(1/density))*10000*(1-cf) + cover/100*10000/treesperha*(cf)
+  c.w <- 2*(crownarea/3.141592)^0.5
+  crown.width <- pmin(0.50*diam,pmax(0.02*diam),c.w)#constrain crown width to between 2 and 50 times stem diameter.
+  return(crown.width)
+}
