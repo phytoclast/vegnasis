@@ -1,5 +1,4 @@
-#This function takes veg plot inported from NASIS (veg.spp <- soilDB::get_vegplot_species_from_NASIS_db()) and consolidates the redundant cover and height fields, and fills in missing heights.
-
+#This function takes veg plot imported from NASIS (veg.spp <- soilDB::get_vegplot_species_from_NASIS_db()) and consolidates the redundant cover and height fields, and fills in missing heights.
 
 clean.veg <- function(x){
   x <- x %>% mutate(
@@ -16,9 +15,14 @@ clean.veg <- function(x){
       speciescancovclass %in% "51 to 75" ~ (50+75)/2,
       speciescancovclass %in% "76 to 95%" ~ (75+95)/2,
       speciescancovclass %in% "> 95%" ~ (95+100)/2,
+      !is.na(understorygrcovpct)  ~ as.numeric(understorygrcovpct),
+      understorygrcovclass %in% "trace to 1%" ~ (1)/2,
+      understorygrcovclass %in% "2 to 9%" ~ (2+9)/2,
+      understorygrcovclass %in% "10 to 19%" ~ (10+19)/2,
+      understorygrcovclass %in% "20 to 29%" ~ (20+29)/2,
+      understorygrcovclass %in% "30% or more" ~ (30+59)/2,
       !is.na(speciescomppct) ~ as.numeric(speciescomppct),
       TRUE ~ 0),
-
 
     stratum.max = case_when(
       !is.na(plantheightclupperlimit) ~ ht.metric(plantheightclupperlimit),
@@ -37,6 +41,7 @@ clean.veg <- function(x){
       akstratumcoverclass %in% "medium forb between about 10 and 60 cm (4 and 24 in) tall" ~ 0.6,
       akstratumcoverclass %in% "tall forb generally greater than 60 cm (24 in) tall" ~ NA_real_,
       akstratumcoverclass %in% "mosses" ~ 0,
+      vegetationstratalevel %in% "understory" ~ 5,
       TRUE ~ NA_real_),
 
     stratum.min = case_when(
@@ -56,6 +61,7 @@ clean.veg <- function(x){
       akstratumcoverclass %in% "medium forb between about 10 and 60 cm (4 and 24 in) tall" ~ 0.1,
       akstratumcoverclass %in% "tall forb generally greater than 60 cm (24 in) tall" ~ 0.6,
       akstratumcoverclass %in% "mosses" ~ 0,
+      vegetationstratalevel %in% "overstory" ~ 5,
       TRUE ~ NA_real_),
 
     crown.min = ht.metric(livecanopyhtbottom),
