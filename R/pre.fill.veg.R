@@ -12,13 +12,12 @@ pre.fill.veg <- function(x){
   if(!'stratum.max' %in% colnames(x)){x$stratum.max=NA_real_}
   if(!'crown.min' %in% colnames(x)){x$crown.min=NA_real_}
   if(!'crown.max' %in% colnames(x)){x$crown.max=NA_real_}
-  if(!'diam.min' %in% colnames(x)){x$diam.min=NA_real_}
-  if(!'diam.max' %in% colnames(x)){x$diam.max=NA_real_}
-  if(!'diam' %in% colnames(x)){x$diam=NA_real_}
+  if(!'dbh.min' %in% colnames(x)){x$dbh.min=NA_real_}
+  if(!'dbh.max' %in% colnames(x)){x$dbh.max=NA_real_}
   if(!'BA' %in% colnames(x)){x$BA=NA_real_}
 
     x <- x %>% subset(select= c("plot","label","symbol","taxon","type",
-                                "nativity","cover","stratum.min","stratum.max","crown.min","crown.max","diam.min","diam.max",'diam',"BA"))
+                                "nativity","cover","stratum.min","stratum.max","crown.min","crown.max","dbh.min","dbh.max","BA"))
   return(x)
 }
 

@@ -20,13 +20,13 @@ ht.medieval <- function(m){
 
 #This function converts tree diameters from NASIS to centimeters.
 
-diam.metric <- function(inch){
+dbh.metric <- function(inch){
   round(as.numeric(inch)*2.54,0)
 }
 
 #This function converts tree diameters from centimeters to inches.
 
-diam.medieval <- function(cm){
+dbh.medieval <- function(cm){
   round(as.numeric(cm)/2.54,1)
 }
 

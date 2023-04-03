@@ -26,11 +26,9 @@ Several vegnasis functions require data frames with a predefined standard set of
 
 "crown.max" = top height (m) of live canopy for members of this taxon occupying this stratum.
 
-"diam.min" = mimimum diameter (cm) of trees measured (usually at "breast height", 1.37 or 1.4 m above the grown, a.k.a. 'DBH').
+"dbh.min" = mimimum diameter (cm) of trees measured (usually at "breast height", 1.37 or 1.4 m above the grown, a.k.a. 'DBH').
 
-"diam.max"= maximum diameter (cm) of trees measured (usually at "breast height", 1.37 or 1.4 m above the grown, a.k.a. 'DBH').
-
-'diam' = mean diameter (cm) of trees measured using a variable radius plot (BA prism) or quadratic mean diameter of all trees within a fixed plot. Defaults to a mean of the maximum and minimum diameter if not all trees were measured.
+"dbh.max"= maximum diameter (cm) of trees measured (usually at "breast height", 1.37 or 1.4 m above the grown, a.k.a. 'DBH').
 
 "BA" = basal area (square meters per hectare).
 

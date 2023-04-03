@@ -22,6 +22,7 @@ clean.veg <- function(x){
       understorygrcovclass %in% "20 to 29%" ~ (20+29)/2,
       understorygrcovclass %in% "30% or more" ~ (30+59)/2,
       !is.na(speciescomppct) ~ as.numeric(speciescomppct),
+      !is.na(speciesbasalarea) ~ BA.to.cover(speciesbasalarea*10000/43560),
       TRUE ~ 0),
 
     stratum.max = case_when(
@@ -67,9 +68,9 @@ clean.veg <- function(x){
     crown.min = ht.metric(livecanopyhtbottom),
     crown.max = ht.metric(livecanopyhttop),
 
-    diam.min = diam.metric(overstorydbhmin),
-    diam.max = diam.metric(overstorydbhmax),
-    diam = ifelse(is.na(diam.min), diam.max, (diam.max+diam.min)/2),
+    dbh.min = dbh.metric(overstorydbhmin),
+    dbh.max = dbh.metric(overstorydbhmax),
+
     plot = vegplotid,
     label = vegplotname,
     # date = obsdate,
@@ -80,7 +81,7 @@ clean.veg <- function(x){
     BA = round(speciesbasalarea*10000/43560,1))
 
   x <- x %>% subset(select= c("plot","label","symbol","taxon","type",
-                              "nativity","cover","stratum.min","stratum.max","crown.min","crown.max","diam.min","diam.max",'diam',"BA"))
+                              "nativity","cover","stratum.min","stratum.max","crown.min","crown.max","dbh.min","dbh.max","BA"))
   return(x)
 }
 
@@ -126,9 +127,8 @@ clean.veg.transect <- function(x){
     crown.min = ht.metric(specieslivecanhtbotave),
     crown.max = ht.metric(specieslivecanhttopave),
 
-    diam.min = diam.metric(overstorydbhmin),
-    diam.max = diam.metric(overstorydbhmax),
-    diam = ifelse(is.na(diam.min), diam.max, (diam.max+diam.min)/2),
+    dbh.min = dbh.metric(overstorydbhmin),
+    dbh.max = dbh.metric(overstorydbhmax),
     plot = vegplotid,
     label = vegplotname,
     # date = obsdate,
@@ -139,6 +139,6 @@ clean.veg.transect <- function(x){
     BA = round(speciesbasalarea*10000/43560,1))
 
   x <- x %>% subset(select= c("plot","label","symbol","taxon","type",
-                              "nativity","cover","foliar","biomass", "rbiomass","stratum.min","stratum.max","crown.min","crown.max","diam.min","diam.max",'diam',"BA"))
+                              "nativity","cover","foliar","biomass", "rbiomass","stratum.min","stratum.max","crown.min","crown.max","dbh.min","dbh.max","BA"))
   return(x)
 }

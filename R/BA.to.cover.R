@@ -35,6 +35,8 @@
 # Achieved convergence tolerance: 1.49e-08
 #2023-03-28 reanalysis with western tree cover seemed to fall short. Probably a lack of commitment in western offices to get the total canopy cover as many excluded plots had cover only in understory, while used basal area for canopy members.
 
+
+
 BA.to.cover <- function(x, c=NA){
   df <- data.frame(x=x,c=c)
   b1= 94.49218
@@ -111,10 +113,38 @@ BA.to.cover <- function(x, c=NA){
 # F-statistic: 302.9 on 1 and 174 DF,  p-value: < 2.2e-16
 
 #Function fills in missing diameters using a vector of heights. Intended to provide reasonable estimates for graphing tree shapes.
-fill.diameters <- function(x, d=NA){
+#REVISION 20230402 Downloaded Treedb from Native Tree Society
+# treedb <- read.csv('data/treedb.csv') |> subset(dbh < 900 & ht.max > 5 & dbh > 10) #take out outlyers.
+#
+# forest <- treedb |> mutate(ht=ht.max, lht=log(ht), ldiam=log(dbh),
+#                            ht2 = ht^2, ht.5 = ht^0.5, diam.5 = dbh^0.5, diam2 = dbh^2, lcw = log(cw)) |> subset(!is.na(ht) & !is.na(dbh))
+# #To test bends in the curve, several transformations to see which fit was best.
+# cor(forest[,c('dbh','ldiam','diam.5','diam2','ht','lht','ht.5','ht2','cw','lcw')], use = 'pairwise.complete.obs')
+#
+# mod <- lm(log(dbh)~log(ht.max)+0, data=forest)
+# summary(mod)
+# Call:
+#   lm(formula = log(dbh) ~ log(ht.max) + 0, data = forest)
+#
+# Residuals:
+#   Min       1Q   Median       3Q      Max
+# -1.77038 -0.28567 -0.04015  0.26151  3.01887
+#
+# Coefficients:
+#   Estimate Std. Error t value Pr(>|t|)
+# log(ht.max) 1.248705   0.000975    1281   <2e-16 ***
+#   ---
+#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#
+# Residual standard error: 0.4443 on 17494 degrees of freedom
+# Multiple R-squared:  0.9894,	Adjusted R-squared:  0.9894
+# F-statistic: 1.64e+06 on 1 and 17494 DF,  p-value: < 2.2e-16
+
+fill.diameters <- function(x, dbh.max=NA,dbh.min=NA){
+  d <- ifelse(is.na(dbh.min), dbh.max, (dbh.max+dbh.min)/2)
   df <- data.frame(x=x,d=d)
-  df$y = exp(1.14555*log(df$x)+0.04577)
-  y = ifelse(is.na(df$d), df$y,df$d)
+  df$y = ifelse(x > 5, exp(1.248705*log(df$x)), NA_real_)
+  y = round(ifelse(is.na(df$d), df$y,df$d),1)
   return(y)}
 
 #Function estimates number of trees per hectare based on stem diameter and basal area.
@@ -125,12 +155,55 @@ trees_per_ha <- function(b,d){
   return(t)
 }
 
+BA_per_ha <- function(dens,dbh){
+  BA = round(dens*(dbh/200)^2*3.141592,1)
+  return(BA)
+}
 
 # Estimated crown width based on density in stems per ha, and total cover for that taxon/stratum.
-est_crown_width <- function(density, cover, diam){
-  cf = 0.8 #correction factor to average between two cover aggregate methods. More research needed.
-  crownarea <- (1-(1-cover/100)^(1/density))*10000*(1-cf) + cover/100*10000/density*(cf)
-  c.w <- 2*(crownarea/3.141592)^0.5
-  crown.width <- pmin(60,0.50*diam,pmax(0.02*diam, c.w ,1))#constrain crown width to between 2 and 50 times stem diameter and 1 to 60 m.
+# mod1 <- minpack.lm::nlsLM(cw ~ b1*(1-exp(b2*dbh))^(b3), data=forest , start = list(b1=100, b2=-1, b3=1))
+# summary(mod1)
+# Formula: cw ~ b1 * (1 - exp(b2 * dbh))^(b3)
+#
+# Parameters:
+#   Estimate Std. Error t value Pr(>|t|)
+# b1 69.690000  22.148667   3.146  0.00169 **
+#   b2 -0.002392   0.001376  -1.738  0.08245 .
+# b3  0.857591   0.078129  10.977  < 2e-16 ***
+#   ---
+#   Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#
+# Residual standard error: 6.032 on 1162 degrees of freedom
+#
+# Number of iterations to convergence: 42
+# Achieved convergence tolerance: 1.49e-08
+
+est_crown_width <- function(dbh){
+  b1= 69.690000
+  b2= -0.002392
+  b3=  0.857591
+  crown.width = round(b1*(1-exp(b2*dbh))^(b3),1)
   return(crown.width)
 }
+
+#old formula
+# est_crown_width <- function(density, cover, diam){
+#   cf = 0.8 #correction factor to average between two cover aggregate methods. More research needed.
+#   crownarea <- (1-(1-cover/100)^(1/density))*10000*(1-cf) + cover/100*10000/density*(cf)
+#   c.w <- 2*(crownarea/3.141592)^0.5
+#   crown.width <- round(pmin(pmax(pmin(0.50*diam,pmax(0.02*diam, c.w)),1),30),1)#constrain crown width to between 2 and 50 times stem diameter and 1 to 30 m.
+#   return(crown.width)
+# }
+
+#function estimates (poorly) the required number of individuals of given crown width for a target canopy cover.
+density_from_cw <- function(cover,cw){
+  cf=0.8
+  c =cover
+  w = (cw/2)^2*3.141592
+  n1 <- log(1-c/100)/log(1-w/10000)
+  n2 <- c/(100*(w/10000))
+  n3 <- n1*(1-cf)+n2*cf
+  return(round(n3,0))
+}
+
+
