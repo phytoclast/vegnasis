@@ -143,7 +143,7 @@ BA.to.cover <- function(x, c=NA){
 fill.diameters <- function(x, dbh.max=NA,dbh.min=NA){
   d <- ifelse(is.na(dbh.min), dbh.max, (dbh.max+dbh.min)/2)
   df <- data.frame(x=x,d=d)
-  df$y = ifelse(x > 5, exp(1.248705*log(df$x)), NA_real_)
+  df$y = pmax(exp(1.248705*log(df$x)),0.5)
   y = round(ifelse(is.na(df$d), df$y,df$d),1)
   return(y)}
 
