@@ -46,7 +46,7 @@ for (i in 1:nrow(strats)){#i=1
   thistrat = strats$seq[i]
   nstems = strats$stems[i]
   newstumps <- sample(stand$stumpid, size = nstems, prob = stand$wtn, replace = T)
-  stand <- stand |> mutate(wtn = ifelse(stand$stumpid %in% newstumps, 0, wtn),
+  stand <- stand |> mutate(wtn = ifelse(stand$stumpid %in% newstumps, 0.0001, wtn),
                            stratid = ifelse(stand$stumpid %in% newstumps, thistrat,stratid))
 }
 
