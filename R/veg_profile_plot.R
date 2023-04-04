@@ -37,31 +37,31 @@ veg_profile_plot <- function(plants, ytrans = 'identity', yratio=1, units = 'm',
 
   plants2 <- rbind(crowns1,crowns2,crowns3,crowns4,crowns5,stems1,stems2,stems3,stems4,stems5)
 
-  ground = data.frame(xn=c(0,50,50,0),zn=c(0,0,-0.5,-0.5), fill=groundcolor, color=groundcolor)
+  ground = data.frame(xn=c(0,50,50,0),zn=c(0,0,-2,-2), fill=groundcolor, color=groundcolor)
   pcolor <- c(plants2$color, ground$color) |> unique() |> sort()
   pfill <- c(plants2$fill, ground$fill) |> unique()|> sort()
 
-  if(units %in% c('inches', 'in')){
-    yunits = paste0('height (', units,')')
-    xunits = paste0('ground distance (', units,')')
-    ybreaks = c(-100:(1000/5))*200*0.3048/12
-    xbreaks = c(-100:(1000/5))*200*0.3048/12
-    ylabels = c(-100:(1000/5))*200
-    xlabels = c(-100:(1000/5))*200
-  }else if  (units %in% c('feet', 'ft')){
+  if(units %in% c('feet', 'ft')){
     yunits = paste0('height (', units,')')
     xunits = paste0('ground distance (', units,')')
     ybreaks = c(-100:(500/5))*20*0.3048
     xbreaks = c(-100:(500/5))*20*0.3048
     ylabels = c(-100:(500/5))*20
     xlabels = c(-100:(500/5))*20
-  }else if  (units %in% c('cm')){
-    yunits = paste0('height (', units,')')
-    xunits = paste0('ground distance (', units,')')
-    ybreaks = c(-100:(500/5))*500*0.01
-    xbreaks = c(-100:(500/5))*500*0.01
-    ylabels = c(-100:(500/5))*500
-    xlabels = c(-100:(500/5))*500
+  # }else if  (units %in% c('inches', 'in')){
+  #   yunits = paste0('height (', units,')')
+  #   xunits = paste0('ground distance (', units,')')
+  #   ybreaks = c(-100:(1000/5))*200*0.3048/12
+  #   xbreaks = c(-100:(1000/5))*200*0.3048/12
+  #   ylabels = c(-100:(1000/5))*200
+  #   xlabels = c(-100:(1000/5))*200
+  # }else if  (units %in% c('cm')){
+  #   yunits = paste0('height (', units,')')
+  #   xunits = paste0('ground distance (', units,')')
+  #   ybreaks = c(-100:(500/5))*500*0.01
+  #   xbreaks = c(-100:(500/5))*500*0.01
+  #   ylabels = c(-100:(500/5))*500
+  #   xlabels = c(-100:(500/5))*500
   }else{
     yunits = 'height (m)'
     xunits = 'ground distance (m)'
@@ -85,6 +85,7 @@ veg_profile_plot <- function(plants, ytrans = 'identity', yratio=1, units = 'm',
     scale_fill_manual(values=pfill)+
     scale_color_manual(values=pcolor)+
     theme(legend.position = "none",
+
           panel.background = element_rect(fill = skycolor,
                                           colour = "black",
                                           linewidth = 0.5, linetype = "solid"),
@@ -93,8 +94,9 @@ veg_profile_plot <- function(plants, ytrans = 'identity', yratio=1, units = 'm',
           panel.grid.minor = element_line(linewidth = 0.1, linetype = 'solid',
                                           colour = rgb(0.1, 0.1, 0.1, gridalpha/3))
     )+
-    coord_fixed(ratio = yratio)+
-    scale_y_continuous(name = yunits, trans = ytrans, labels = ylabels, breaks = ybreaks, minor_breaks = ybreaks/5, limits = c(-0.5,zmax+5))+
-    scale_x_continuous(name = xunits ,breaks = xbreaks, labels = xlabels, minor_breaks =xbreaks/5, limits = c(xnmin-5,xnmax+5))
+    coord_fixed(ratio = yratio, ylim=c(-1,zmax+5),xlim=c(0,50), expand = FALSE)+
+    scale_y_continuous(name = yunits, trans = ytrans, labels = ylabels, breaks = ybreaks, minor_breaks = ybreaks/5, limits = c(-5,zmax+5))+#
+    scale_x_continuous(name = xunits ,breaks = xbreaks, labels = xlabels, minor_breaks =xbreaks/5, limits = c(xnmin-5,xnmax+5))#
+
 
   }
