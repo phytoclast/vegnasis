@@ -1,3 +1,30 @@
+#convert svg ----
+library(svgparser)
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
+
+convert.SVG <- function(filename){
+
+  blob <- svgparser::read_svg(filename, obj_type = 'data.frame')
+
+  blob$x <- (blob$x - (max(blob$x) + min(blob$x))/2) / (max(blob$x) - min(blob$x))
+  blob$y <- 1-1*(blob$y - min(blob$y)) / (max(blob$y) - min(blob$y))
+  blob <- subset(blob, select=c(x,y))
+  return(blob)
+
+}
+
+blob <- convert.SVG('blob.svg')
+trunk <- convert.SVG('trunk.svg')
+palm <- convert.SVG('palm.svg')
+
+write.csv(blob, 'blob.csv', row.names = F)
+write.csv(trunk, 'trunk.csv', row.names = F)
+write.csv(palm, 'palm.csv', row.names = F)
+
+#convert to template ----
+
+
+
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
 
