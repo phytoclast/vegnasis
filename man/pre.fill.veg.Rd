@@ -48,7 +48,7 @@ pre.fill.veg(x)
  abund <- c(80,10,30,10,10)
  mydata <- data.frame(obsite=obsite, obsspp=obsspp, abund=abund)
 
- #Identify columns containing data cooresponding to standard column names.
+ #Identify columns containing data corresponding to standard column names.
  mydata <- mydata |> mutate(taxon=obsspp, cover=abund, plot=obsite)
  veg <- mydata |> pre.fill.veg()
  }
