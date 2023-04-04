@@ -22,7 +22,7 @@ prepare_strata <- function(veg){
                                            grepl('^T', habit)  ~ 'blob',
                                            grepl('^S', habit) & grepl('P', habit) ~ 'palm',
                                            grepl('^S', habit) & grepl('F', habit) ~ 'palm',
-                                           grepl('^S', habit) & ~ 'cloud1',
+                                           grepl('^S', habit) ~ 'cloud1',
                                            grepl('FE', habit) ~ 'ferny',
                                            grepl('^H', habit) & grepl('F', habit) ~ 'forby',
                                            grepl('^H', habit) & type %in% 'grass/grasslike' ~ 'grassy'),
