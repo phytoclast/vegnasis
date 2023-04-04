@@ -16,10 +16,12 @@ prepare_strata <- function(veg){
                        cw = ifelse(ht.max <= 5, cw, round(cw*BA.ratio^-0.5,1)))
 
   veg <- veg |> mutate(habit= get.habit.code(taxon),
-                       crshape = case_when(grepl('^T', habit) & grepl('N', habit) ~ 'conifer1',
+                       crshape = case_when(grepl('^T', habit) & grepl('NE', habit) ~ 'conifer1',
+                                           grepl('^T', habit) & grepl('N', habit) ~ 'conifer3',
                                            grepl('^T', habit) & grepl('P', habit) ~ 'palm',
                                            grepl('^T', habit) & grepl('F', habit) ~ 'palm',
-                                           grepl('^T', habit)  ~ 'blob',
+                                           grepl('^T', habit) & grepl('BE', habit) ~ 'blob2',
+                                           grepl('^T', habit)  ~ 'blob1',
                                            grepl('^S', habit) & grepl('P', habit) ~ 'palm',
                                            grepl('^S', habit) & grepl('F', habit) ~ 'palm',
                                            grepl('^S', habit) ~ 'cloud1',
