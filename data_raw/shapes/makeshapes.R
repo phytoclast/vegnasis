@@ -43,7 +43,7 @@ forby <- data.frame(x=c(-0.04, -0.04, -0.32, -0.38, -0.45, -0.50, -0.45, -0.38, 
 ferny <- data.frame(x=c(-0.09, -0.12, -0.16, -0.22, -0.31, -0.50, -0.28, -0.12, -0.15, -0.10, -0.06, -0.06, -0.13, -0.05, -0.01,  0.06,  0.02,  0.00,  0.03, -0.05, -0.04,  0.02,  0.10,  0.09,  0.24, 0.50,  0.27,  0.17,  0.11,  0.03, -0.03, -0.09),
                     y=c(0, 0.13, 0.2, 0.1, 0.29, 0.41, 0.43, 0.32, 0.24, 0.15, 0.02, 0.38, 0.44, 0.88, 0.96, 1, 0.94, 0.85, 0.42, 0.38, 0.03, 0.16, 0.28, 0.4, 0.45, 0.44, 0.27, 0.12, 0.25, 0.13, 0, 0), name='ferny', fill='green', color='darkgreen')
 
-shapes <- rbind(conifer1,conifer2,cloud1,flattop,flattop2,blob,trunk,triangle,dome,sticks,grassy,forby,ferny)
+shapes <- rbind(conifer1,conifer2,cloud1,flattop,flattop2,blob,trunk,triangle,dome,sticks,grassy,forby,ferny,palm)
 colnames(shapes) <- c("x","z","shape","fill","color")
 saveRDS(shapes,'shapes.RDS')
 shapes <- readRDS('shapes.RDS')

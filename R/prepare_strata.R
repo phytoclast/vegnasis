@@ -9,7 +9,7 @@ veg <- veg |> mutate(cw =  case_when(type %in% 'tree' | ht.max > 5 ~ pmax(est_cr
 veg <- veg |> mutate(density =  density_from_cw(cover, cw))
 veg <- veg |> mutate(BA.r =  BA_per_ha(density, dbh.r))
 
-veg <- veg |> group_by(plot) |> mutate(BA.sum = sum(BA, na.rm = T), BA.rsum = sum(BA.r, na.rm = T), BA.sum = ifelse(is.na(BA.sum), BA.rsum,BA.sum), BA.ratio = BA.sum/BA.rsum,  BA.rsum = NULL)#
+veg <- veg |> group_by(plot) |> mutate(BA.sum = sum(BA, na.rm = T), BA.rsum = sum(BA.r, na.rm = T), BA.sum = ifelse(is.na(BA.sum) | BA.sum <=0, BA.rsum,BA.sum), BA.ratio = BA.sum/BA.rsum,  BA.rsum = NULL)#
 
 veg <- veg |> mutate(BA.r = ifelse(ht.max <= 5, BA.r, round(BA.r*BA.ratio,1)),
                      density = ifelse(ht.max <= 5, density, round(density*BA.ratio,0)),
@@ -17,7 +17,9 @@ veg <- veg |> mutate(BA.r = ifelse(ht.max <= 5, BA.r, round(BA.r*BA.ratio,1)),
 
 veg <- veg |> mutate(habit= get.habit.code(taxon),
                      crshape = case_when(grepl('^T', habit) & grepl('N', habit) ~ 'conifer1',
+                                         grepl('^T', habit) & grepl('P', habit) ~ 'palm',
                                          grepl('^T', habit)  ~ 'blob',
+                                         type %in% 'shrub/vine' & grepl('P', habit) ~ 'palm',
                                          type %in% 'shrub/vine' ~ 'cloud1',
                                          grepl('FE', habit) ~ 'ferny',
                                          grepl('F', habit) ~ 'forby',
