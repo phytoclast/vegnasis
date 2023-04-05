@@ -51,7 +51,7 @@ veg_profile_plot <- function(plants, ytrans = 'identity', yratio=1, units = 'm',
   yunits = paste0('height (', units,')')
   xunits = paste0('ground distance (', units,')')
   ybreaks = seq(floor(ylim[1]/ucf/yticks)*yticks-yticks,
-                floor(ylim[1]/ucf/yticks)*yticks+yticks,
+                floor(ylim[2]/ucf/yticks)*yticks+yticks,
                 yticks)*ucf
   xbreaks = seq(floor(xlim[1]/ucf/xticks)*xticks-xticks,floor(xlim[2]/ucf/xticks)*xticks+xticks,xticks)*ucf
   yminor = seq(floor(ylim[1]/ucf-yticks),floor(ylim[2]/ucf+yticks),yticks/5)*ucf
