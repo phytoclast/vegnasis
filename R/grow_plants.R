@@ -69,8 +69,8 @@ grow_plants <- function(veg, plength = 50, pwidth=20){
   plants <- plants |> group_by(stumpid) |>
     mutate(ht.max = max(z), crwd = max(x)-min(x),
            xpp = xp + runif(1, min = -0.8, max = 0.8),#shift position on grid
-           zr = rnorm(1,ht.max, ht.max/10)/ht.max,#deviation in height
-           xr = (rnorm(1,ht.max, ht.max/10)/ht.max+rnorm(1,crwd, crwd/10)/crwd)/2,#deviation in width partially related to height
+           zr = rnorm(1,(ht.max+0.01), (ht.max+0.01)/10)/(ht.max+0.01),#deviation in height # added 1 cm so that super short plants don't disappear.
+           xr = (rnorm(1,(ht.max+0.01), (ht.max+0.01)/10)/(ht.max+0.01)+rnorm(1,crwd, crwd/10)/crwd)/2,#deviation in width partially related to height
            xn = x*xr+xpp,#resized width and put on new position
            zn = z*zr*(1-1/15))#resized height adjusted downward show that variation is less than max height in the field
 
