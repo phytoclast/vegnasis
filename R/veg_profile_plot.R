@@ -1,13 +1,13 @@
-veg_profile_plot <- function(plants, ytrans = 'identity', yratio=1, units = 'm', skycolor = "#D9F2FF80", fadecolor = "#D9F2FF", gridalpha=0.3, groundcolor="#808066", xlim=c(0,50), ylim=c(-1,NA), xticks=5, yticks=5){
+veg_profile_plot <- function(plants, ytrans = 'identity', yratio=1, units = 'm', skycolor = "#D9F2FF80", fadecolor = "#D9F2FF", gridalpha=0.3, groundcolor="#808066", xlim=c(0,50), ylim=c(-1, zmax+5), xticks=5, yticks=5){
   require(ggplot2)
 
   #rearrange stems depth drawing order
   plants <- plants |> arrange(yp,stumpid, objid, ptord)
-  zmax <- max(plants$zn)
-  xnmax <- max(plants$xn)
-  xnmin <- min(plants$xn)
-  ypmax <- max(plants$yp)
-  ypmin <- min(plants$yp)
+  zmax <- max(plants$zn, na.rm =TRUE)
+  xnmax <- max(plants$xn, na.rm =TRUE)
+  xnmin <- min(plants$xn, na.rm =TRUE)
+  ypmax <- max(plants$yp, na.rm =TRUE)
+  ypmin <- min(plants$yp, na.rm =TRUE)
   ypwid <- ypmax-ypmin
   plants <- plants |> mutate(depth = case_when(yp < ypmin+ypwid*(1/5) ~ 'E',
                                                yp < ypmin+ypwid*(2/5) ~ 'D',
@@ -41,16 +41,18 @@ veg_profile_plot <- function(plants, ytrans = 'identity', yratio=1, units = 'm',
   #round up all the colors used to correctly assign objects in alphabetical order.
   pcolor <- c(plants2$color, ground$color) |> unique() |> sort()
   pfill <- c(plants2$fill, ground$fill) |> unique()|> sort()
-  #set unit coversions for the basis of the tickmarks
+  #set unit conversions for the basis of the tickmarks
   ucf = case_when(units %in% c('feet', 'ft') ~ 0.3048,
                   units %in% c('inches', 'in') ~ 0.3048/12,
                   units %in% c('cm') ~ 0.01,
                   TRUE ~ 1)
   units = ifelse(ucf == 1, 'm',units)
-  ylim[2] = ifelse(is.na(ylim[2]), zmax+5, ylim[2])
+
   yunits = paste0('height (', units,')')
   xunits = paste0('ground distance (', units,')')
-  ybreaks = seq(floor(ylim[1]/ucf/yticks)*yticks-yticks,floor(ylim[2]/ucf/yticks)*yticks+yticks,yticks)*ucf
+  ybreaks = seq(floor(ylim[1]/ucf/yticks)*yticks-yticks,
+                floor(ylim[1]/ucf/yticks)*yticks+yticks,
+                yticks)*ucf
   xbreaks = seq(floor(xlim[1]/ucf/xticks)*xticks-xticks,floor(xlim[2]/ucf/xticks)*xticks+xticks,xticks)*ucf
   yminor = seq(floor(ylim[1]/ucf-yticks),floor(ylim[2]/ucf+yticks),yticks/5)*ucf
   xminor = seq(floor(xlim[1]/ucf-xticks),floor(xlim[2]/ucf+xticks),xticks/5)*ucf
@@ -86,4 +88,4 @@ veg_profile_plot <- function(plants, ytrans = 'identity', yratio=1, units = 'm',
     scale_x_continuous(name = xunits ,breaks = xbreaks, labels = xlabels, minor_breaks = xminor, limits = c(xnmin-5,xnmax+5))#
 
 
-  }
+}
