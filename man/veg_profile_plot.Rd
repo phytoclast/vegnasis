@@ -28,7 +28,7 @@ veg_profile_plot(plants, ytrans = 'identity', yratio=1, units = 'm', skycolor = 
 veg.raw <-  vegnasis::nasis.veg
 veg <- clean.veg(veg.raw)
 veg.select <- subset(veg,  grepl('2022MI165021.P',plot))
-plants <- prepare_strata(veg.select)
+plants <- grow_plants(veg.select)
 #standard aspect ratio
 veg_profile_plot(plants)
 #transformed aspect ratio

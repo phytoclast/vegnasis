@@ -1,4 +1,4 @@
-veg_profile_plot <- function(plants, ytrans = 'identity', yratio=1, units = 'm', skycolor = "#D9F2FF80", fadecolor = "#D9F2FF", gridalpha=0.3, groundcolor="#808066", xlim=c(0,50), ylim=c(-1,zmax+5), xticks=5, yticks=5){
+veg_profile_plot <- function(plants, ytrans = 'identity', yratio=1, units = 'm', skycolor = "#D9F2FF80", fadecolor = "#D9F2FF", gridalpha=0.3, groundcolor="#808066", xlim=c(0,50), ylim=c(-1,NA), xticks=5, yticks=5){
   require(ggplot2)
 
   #rearrange stems depth drawing order
@@ -47,10 +47,13 @@ veg_profile_plot <- function(plants, ytrans = 'identity', yratio=1, units = 'm',
                   units %in% c('cm') ~ 0.01,
                   TRUE ~ 1)
   units = ifelse(ucf == 1, 'm',units)
+  ylim[2] = ifelse(is.na(ylim[2]), zmax+5, ylim[2])
   yunits = paste0('height (', units,')')
   xunits = paste0('ground distance (', units,')')
-  ybreaks = (floor(ylim[1]/yticks/ucf-2):floor(ylim[2]/yticks/ucf+2))*yticks*ucf
-  xbreaks = (floor(xlim[1]/xticks/ucf-2):floor(xlim[2]/xticks/ucf+2))*xticks*ucf
+  ybreaks = seq(floor(ylim[1]/ucf/yticks)*yticks-yticks,floor(ylim[2]/ucf/yticks)*yticks+yticks,yticks)*ucf
+  xbreaks = seq(floor(xlim[1]/ucf/xticks)*xticks-xticks,floor(xlim[2]/ucf/xticks)*xticks+xticks,xticks)*ucf
+  yminor = seq(floor(ylim[1]/ucf-yticks),floor(ylim[2]/ucf+yticks),yticks/5)*ucf
+  xminor = seq(floor(xlim[1]/ucf-xticks),floor(xlim[2]/ucf+xticks),xticks/5)*ucf
   ylabels = ybreaks/ucf
   xlabels =  xbreaks/ucf
 
@@ -79,8 +82,8 @@ veg_profile_plot <- function(plants, ytrans = 'identity', yratio=1, units = 'm',
                                           colour = rgb(0.1, 0.1, 0.1, gridalpha/3))
     )+
     coord_fixed(ratio = yratio, ylim=ylim,xlim=xlim, expand = FALSE)+
-    scale_y_continuous(name = yunits, trans = ytrans, labels = ylabels, breaks = ybreaks, minor_breaks = ybreaks/5, limits = c(-5,zmax+5))+#
-    scale_x_continuous(name = xunits ,breaks = xbreaks, labels = xlabels, minor_breaks =xbreaks/5, limits = c(xnmin-5,xnmax+5))#
+    scale_y_continuous(name = yunits, trans = ytrans, labels = ylabels, breaks = ybreaks, minor_breaks = yminor, limits = c(-5,zmax+5))+#
+    scale_x_continuous(name = xunits ,breaks = xbreaks, labels = xlabels, minor_breaks = xminor, limits = c(xnmin-5,xnmax+5))#
 
 
   }
