@@ -14,7 +14,10 @@ ht.metric <- function(ft){
 
 #This function converts plant heights from meters to feet.
 
-ht.medieval <- function(m){
+# ht.medieval <- function(m){
+#   round(as.numeric(m)/0.3048,1)
+# }
+ht.USC <- function(m){
   round(as.numeric(m)/0.3048,1)
 }
 
@@ -26,7 +29,11 @@ dbh.metric <- function(inch){
 
 #This function converts tree diameters from centimeters to inches.
 
-dbh.medieval <- function(cm){
+# dbh.medieval <- function(cm){
+#   round(as.numeric(cm)/2.54,1)
+# }
+
+dbh.USC <- function(cm){
   round(as.numeric(cm)/2.54,1)
 }
 
@@ -37,6 +44,10 @@ biomass.metric <- function(lbpac){
 }
 
 #This function converts plant heights from meters to feet.
+
+# biomass.medieval <- function(kgpha){
+#   round(as.numeric(kgpha)/(0.45359237*1/43560/0.3048^2*10000),0)
+# }
 
 biomass.medieval <- function(kgpha){
   round(as.numeric(kgpha)/(0.45359237*1/43560/0.3048^2*10000),0)

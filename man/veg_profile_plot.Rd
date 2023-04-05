@@ -6,7 +6,7 @@ This function takes a processed set of strata from one vegetation plot record an
 
 }
 \usage{
-veg_profile_plot(plants, ytrans = 'identity', yratio=1, units = 'm', skycolor = "#D9F2FF80", fadecolor = "#D9F2FF", gridalpha=0.3, groundcolor="#808066")
+veg_profile_plot(plants, ytrans = 'identity', yratio=1, units = 'm', skycolor = "#D9F2FF80", fadecolor = "#D9F2FF", gridalpha=0.3, groundcolor="#808066", xlim=c(0,50), ylim=c(-1,zmax+5), xticks=5, yticks=5)
 }
 \arguments{
 \item{plants}{Processed strata with plant templates.}
@@ -17,6 +17,10 @@ veg_profile_plot(plants, ytrans = 'identity', yratio=1, units = 'm', skycolor = 
 \item{fadecolor}{Sets the color of the background haze into which the forground color is blended to simulate depth.}
 \item{gridalpha}{A number from 0 to 1 to vary the visibility (opacity) of the background scale grid. Use 0 for no grid.}
 \item{groundcolor}{Sets the color of the bare ground.}
+\item{xlim}{A vector setting the maximum and minimum limits of the x-axis of the graph (meters only). Default is 0-50 m.}
+\item{ylim}{A vector setting the maximum and minimum limits of the y-axis (or "z"" for up and down) of the graph (meters only). Default is from -1 to 5 m above tree highest vegetation.}
+\item{xticks}{The interval for major grid lines along the x-axis, expressed in prescribed units of measure (default is 5 m).}
+\item{yticks}{The interval for major grid lines along the y-axis, expressed in prescribed units of measure (default is 5 m).}
 }
 
 
