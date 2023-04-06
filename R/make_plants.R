@@ -53,9 +53,13 @@ make_herb <- function(ht.max,crwd, crshape){
 
 make_plant<- function(fun, ht.max, ht.min,crwd,dbh, crshape, stshape){
   if(fun %in% 'T'){
-    plant <- make_tree(ht.max, ht.min,crwd,dbh, crshape, stshape)}else
-      if(fun %in% 'S'){
-        plant <- make_shrub(ht.max, ht.min, crwd, crshape, stshape)}else
-        {
-          plant <- make_herb(ht.max,crwd, crshape)}
+    plant <- make_tree(ht.max, ht.min,crwd,dbh, crshape, stshape)
+  }else
+    if(fun %in% 'S'){
+      plant <- make_shrub(ht.max, ht.min, crwd, crshape, stshape)}else
+      {
+        plant <- make_herb(ht.max,crwd, crshape)
+      }
+  plant <- plant |> mutate(fill=NULL,color=NULL)
+  return(plant)
 }
