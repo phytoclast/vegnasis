@@ -1,10 +1,16 @@
 #This function prepares strata for plotting.
 grow_plants <- function(veg, plength = 50, pwidth=20){
   veg <- veg  |> fill.type.df() |> fill.hts.df()
-
+  #check to see if habit code exists, then only fill in missing values---
+  if(!'habit'%in% colnames(veg)){veg <- veg |> mutate(habit = get.habit.code(taxon))
+  }else{#override default values
+    veg <- veg |> mutate(prehabit =get.habit.code(taxon),
+                         habit = ifelse(is.na(veg$habit),prehabit,habit),
+                         prehabit=NULL)
+  }
   veg <- veg |> mutate(dbh.r =  fill.diameters(ht.max,dbh.max,dbh.min))
-  veg <- veg |> mutate(cw =  case_when(type %in% 'tree' | ht.max > 5 ~ pmax(est_crown_width(dbh.r),1),
-                                       type %in% 'shrub/vine' ~ pmax(pmin(3,ht.max),1),
+  veg <- veg |> mutate(cw =  case_when(grepl('^T', habit) | ht.max > 5 ~ pmax(est_crown_width(dbh.r),1),
+                                       grepl('^S', habit) ~ pmax(pmin(3,ht.max),1),
                                        TRUE ~ 1))
   veg <- veg |> mutate(density =  density_from_cw(cover, cw))
   veg <- veg |> mutate(BA.r =  BA_per_ha(density, dbh.r))
@@ -15,8 +21,8 @@ grow_plants <- function(veg, plength = 50, pwidth=20){
                        density = ifelse(ht.max <= 5, density, round(density*BA.ratio,0)),
                        cw = ifelse(ht.max <= 5, cw, round(cw*BA.ratio^-0.5,1)))
 
-  veg <- veg |> mutate(habit= get.habit.code(taxon),
-                       crshape = case_when(grepl('^T', habit) & grepl('NE', habit) ~ 'conifer1',
+
+  veg <- veg |> mutate(crshape = case_when(grepl('^T', habit) & grepl('NE', habit) ~ 'conifer1',
                                            grepl('^T', habit) & grepl('N', habit) ~ 'conifer3',
                                            grepl('^T', habit) & grepl('P', habit) ~ 'palm',
                                            grepl('^T', habit) & grepl('F', habit) ~ 'palm',
@@ -24,20 +30,21 @@ grow_plants <- function(veg, plength = 50, pwidth=20){
                                            grepl('^T', habit)  ~ 'blob1',
                                            grepl('^S', habit) & grepl('P', habit) ~ 'palm',
                                            grepl('^S', habit) & grepl('F', habit) ~ 'palm',
+                                           grepl('^S', habit) & grepl('BE', habit) ~ 'blob2',
                                            grepl('^S', habit) ~ 'cloud1',
                                            grepl('FE', habit) ~ 'ferny',
                                            grepl('^H', habit) & grepl('F', habit) ~ 'forby',
                                            grepl('^H', habit) & type %in% 'grass/grasslike' ~ 'grassy'),
                        stshape = case_when(grepl('^T', habit) & grepl('N', habit) ~ 'trunk',
                                            grepl('^T', habit)  ~ 'trunk',
-                                           type %in% 'shrub/vine' ~ 'sticks',
+                                           grepl('^S', habit)  ~ 'sticks',
                                            grepl('FE', habit) ~ NA,
                                            grepl('F', habit) ~ NA,
                                            type %in% 'grass/grasslike' ~ NA),
                        fun=case_when(grepl('^T', habit)  ~ 'T',
                                      grepl('^S', habit)  ~ 'S',
                                      grepl('^H', habit)  ~ 'H'),
-                       stems = round(plength*pwidth/10000*density,0) #count number of stem objects required for tenth hectare plot or alternative dimensions.
+                       stems = round(plength*pwidth/10000*density,0) #count number of stem objects required plot size.
   )
   strats <- veg |> subset(fun %in% c('T','S','H') & stems > 0) |> arrange(plot,-ht.max, -cover)#reduce to strata which have models and are not empty of stems
   strats$seq <- c(1:nrow(strats))

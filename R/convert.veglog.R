@@ -23,10 +23,13 @@ clean.veg.log <- function(obssites, obstaxa){
 
   x <- rbind(field, shrub, subcan, tree) |> select(Observation_ID, Observation_Label, AcTaxon, cover, stratum.min, stratum.max, crown.min, crown.max, Dmin, Dmax, BA)
 
+
   colnames(x) <- c('plot', 'label', 'taxon', 'cover', 'stratum.min', 'stratum.max', 'crown.min', 'crown.max', 'dbh.min', 'dbh.max', 'BA')
   x <- x |> mutate(symbol=NA, type=NA, nativity=NA,
                    cover = ifelse(cover > 100, 100, cover),
-                   BA = ifelse(BA <= 0,NA_real_,BA))|>
+                   # habit = NA_character_,
+                   BA = ifelse(BA <= 0,NA_real_,BA),
+                   )|>
     subset(cover > 0)|>
     select(plot, label, symbol, taxon, type, nativity, cover, stratum.min, stratum.max, crown.min, crown.max, dbh.min, dbh.max, BA)
   return(x)

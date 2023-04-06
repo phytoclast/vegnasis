@@ -78,6 +78,7 @@ clean.veg <- function(x){
     taxon = plantsciname,
     type = planttypegroup,
     nativity = plantnativity,
+    #habit = NA_character_,
     BA = round(speciesbasalarea*10000/43560,1))
 
   x <- x %>% subset(select= c("plot","label","symbol","taxon","type",

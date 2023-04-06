@@ -14,6 +14,8 @@ Several vegnasis functions require data frames with a predefined standard set of
 
 "type" = Growth habit or form such as 'tree', 'shrub/vine', 'grass/grasslike', 'forb', 'moss', etc.
 
+"habit" = More detailed life form/growth habit involving standardized code optionally filled by get.habit.code() function.
+
 "nativity" = 'native' or 'introduced' status within the geographic area or the plot.
 
 "cover" = crown or canopy cover (not the same as foliar cover).
