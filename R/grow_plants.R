@@ -6,8 +6,7 @@ grow_plants <- function(veg, plength = 50, pwidth=20){
   }else{#override default values
     veg <- veg |> mutate(prehabit =get.habit.code(taxon),
                          habit = ifelse(is.na(veg$habit),prehabit,habit),
-                         prehabit=NULL)
-  }
+                         prehabit=NULL)}
   veg <- veg |> mutate(dbh.r =  fill.diameters(ht.max,dbh.max,dbh.min))
   veg <- veg |> mutate(cw =  case_when(grepl('^T', habit) | ht.max > 5 ~ pmax(est_crown_width(dbh.r),1),
                                        grepl('^S', habit) ~ pmax(pmin(3,ht.max),1),
@@ -21,7 +20,7 @@ grow_plants <- function(veg, plength = 50, pwidth=20){
                        density = ifelse(ht.max <= 5, density, round(density*BA.ratio,0)),
                        cw = ifelse(ht.max <= 5, cw, round(cw*BA.ratio^-0.5,1)))
 
-  veg <- veg |> mutate(crshape = case_when(grepl('^T', habit) & grepl('NE', habit) ~ 'conifer1',
+  veg <- veg |> mutate(crshape0 = case_when(grepl('^T', habit) & grepl('NE', habit) ~ 'conifer1',
                                            grepl('^T', habit) & grepl('N', habit) ~ 'conifer3',
                                            grepl('^T', habit) & grepl('P', habit) ~ 'palm',
                                            grepl('^T', habit) & grepl('F', habit) ~ 'palm',
@@ -34,56 +33,78 @@ grow_plants <- function(veg, plength = 50, pwidth=20){
                                            grepl('FE', habit) ~ 'ferny',
                                            grepl('^H', habit) & grepl('F', habit) ~ 'forby',
                                            grepl('^H', habit) & type %in% 'grass/grasslike' ~ 'grassy'),
-                       crfill = case_when(grepl('^T', habit) & grepl('NE', habit) ~ '#1A801A',
-                                          grepl('^T', habit) & grepl('N', habit) ~ 'green',
-                                          grepl('^T', habit) & grepl('P', habit) ~ 'green',
-                                          grepl('^T', habit) & grepl('F', habit) ~ 'green',
-                                          grepl('^T', habit) & grepl('BE', habit) ~ '#1A801A',
-                                          grepl('^T', habit)  ~ '#4DE600',
-                                          grepl('^S', habit) & grepl('P', habit) ~ 'green',
-                                          grepl('^S', habit) & grepl('F', habit) ~ 'green',
-                                          grepl('^S', habit) & grepl('BE', habit) ~ '#1A801A',
-                                          grepl('^S', habit) ~ 'green',
-                                          grepl('FE', habit) ~ 'green',
-                                          grepl('^H', habit) & grepl('F', habit) ~ 'magenta',
-                                          grepl('^H', habit) & type %in% 'grass/grasslike' ~ 'yellowgreen'),
-                       crcolor = case_when(grepl('^T', habit) & grepl('NE', habit) ~ 'darkgreen',
-                                          grepl('^T', habit) & grepl('N', habit) ~ 'darkgreen',
-                                          grepl('^T', habit) & grepl('P', habit) ~ 'darkgreen',
-                                          grepl('^T', habit) & grepl('F', habit) ~ 'darkgreen',
-                                          grepl('^T', habit) & grepl('BE', habit) ~ 'darkgreen',
-                                          grepl('^T', habit)  ~ 'darkgreen',
-                                          grepl('^S', habit) & grepl('P', habit) ~ 'darkgreen',
-                                          grepl('^S', habit) & grepl('F', habit) ~ 'darkgreen',
-                                          grepl('^S', habit) & grepl('BE', habit) ~ 'darkgreen',
-                                          grepl('^S', habit) ~ 'darkgreen',
-                                          grepl('FE', habit) ~ 'darkgreen',
-                                          grepl('^H', habit) & grepl('F', habit) ~ 'darkgreen',
-                                          grepl('^H', habit) & type %in% 'grass/grasslike' ~ '#4D8000'),
+                       crfill0 = case_when(grepl('^T', habit) & grepl('NE', habit) ~ '#1A801A',
+                                           grepl('^T', habit) & grepl('N', habit) ~ 'green',
+                                           grepl('^T', habit) & grepl('P', habit) ~ 'green',
+                                           grepl('^T', habit) & grepl('F', habit) ~ 'green',
+                                           grepl('^T', habit) & grepl('BE', habit) ~ '#1A801A',
+                                           grepl('^T', habit)  ~ '#4DE600',
+                                           grepl('^S', habit) & grepl('P', habit) ~ 'green',
+                                           grepl('^S', habit) & grepl('F', habit) ~ 'green',
+                                           grepl('^S', habit) & grepl('BE', habit) ~ '#1A801A',
+                                           grepl('^S', habit) ~ 'green',
+                                           grepl('FE', habit) ~ 'green',
+                                           grepl('^H', habit) & grepl('F', habit) ~ 'magenta',
+                                           grepl('^H', habit) & type %in% 'grass/grasslike' ~ 'yellowgreen'),
+                       crcolor0 = case_when(grepl('^T', habit) & grepl('NE', habit) ~ 'darkgreen',
+                                            grepl('^T', habit) & grepl('N', habit) ~ 'darkgreen',
+                                            grepl('^T', habit) & grepl('P', habit) ~ 'darkgreen',
+                                            grepl('^T', habit) & grepl('F', habit) ~ 'darkgreen',
+                                            grepl('^T', habit) & grepl('BE', habit) ~ 'darkgreen',
+                                            grepl('^T', habit)  ~ 'darkgreen',
+                                            grepl('^S', habit) & grepl('P', habit) ~ 'darkgreen',
+                                            grepl('^S', habit) & grepl('F', habit) ~ 'darkgreen',
+                                            grepl('^S', habit) & grepl('BE', habit) ~ 'darkgreen',
+                                            grepl('^S', habit) ~ 'darkgreen',
+                                            grepl('FE', habit) ~ 'darkgreen',
+                                            grepl('^H', habit) & grepl('F', habit) ~ 'darkgreen',
+                                            grepl('^H', habit) & type %in% 'grass/grasslike' ~ '#4D8000'),
 
-                       stshape = case_when(grepl('^T', habit) & grepl('N', habit) ~ 'trunk',
+                       stshape0 = case_when(grepl('^T', habit) & grepl('N', habit) ~ 'trunk',
                                            grepl('^T', habit)  ~ 'trunk',
                                            grepl('^S', habit)  ~ 'sticks',
                                            grepl('FE', habit) ~ NA,
                                            grepl('F', habit) ~ NA,
                                            type %in% 'grass/grasslike' ~ NA),
-                       stfill = case_when(grepl('^T', habit) & grepl('N', habit) ~ 'orange',
+                       stfill0 = case_when(grepl('^T', habit) & grepl('N', habit) ~ 'orange',
                                            grepl('^T', habit)  ~ 'orange',
                                            grepl('^S', habit)  ~ 'orange',
                                            grepl('FE', habit) ~ NA,
                                            grepl('F', habit) ~ NA,
                                            type %in% 'grass/grasslike' ~ NA),
-                       stcolor = case_when(grepl('^T', habit) & grepl('N', habit) ~ 'brown',
-                                           grepl('^T', habit)  ~ 'brown',
-                                           grepl('^S', habit)  ~ 'brown',
-                                           grepl('FE', habit) ~ NA,
-                                           grepl('F', habit) ~ NA,
-                                           type %in% 'grass/grasslike' ~ NA),
+                       stcolor0 = case_when(grepl('^T', habit) & grepl('N', habit) ~ 'brown',
+                                            grepl('^T', habit)  ~ 'brown',
+                                            grepl('^S', habit)  ~ 'brown',
+                                            grepl('FE', habit) ~ NA,
+                                            grepl('F', habit) ~ NA,
+                                            type %in% 'grass/grasslike' ~ NA),
                        fun=case_when(grepl('^T', habit)  ~ 'T',
                                      grepl('^S', habit)  ~ 'S',
                                      grepl('^H', habit)  ~ 'H'),
                        stems = round(plength*pwidth/10000*density,0) #count number of stem objects required plot size.
   )
+#Check if user defined values exist for shape, fill, and color.
+  if('crshape' %in% colnames(veg)){
+    veg <- veg |> mutate(crshape = ifelse(is.na(crshape), crshape0, crshape), crshape0=NULL)}else{
+      veg <- veg |> mutate(crshape = crshape0, crshape0=NULL)}
+  if('crfill' %in% colnames(veg)){
+    veg <- veg |> mutate(crfill = ifelse(is.na(crfill), crfill0, crfill), crfill0=NULL)}else{
+      veg <- veg |> mutate(crfill = crfill0, crfill0=NULL)}
+  if('crcolor' %in% colnames(veg)){
+    veg <- veg |> mutate(crcolor = ifelse(is.na(crcolor), crcolor0, crcolor), crcolor0=NULL)}else{
+      veg <- veg |> mutate(crcolor = crcolor0, crcolor0=NULL)}
+
+  if('stshape' %in% colnames(veg)){
+    veg <- veg |> mutate(stshape = ifelse(is.na(stshape), stshape0, stshape), stshape0=NULL)}else{
+      veg <- veg |> mutate(stshape = stshape0, stshape0=NULL)}
+  if('stfill' %in% colnames(veg)){
+    veg <- veg |> mutate(stfill = ifelse(is.na(stfill), stfill0, stfill), stfill0=NULL)}else{
+      veg <- veg |> mutate(stfill = stfill0, stfill0=NULL)}
+  if('stcolor' %in% colnames(veg)){
+    veg <- veg |> mutate(stcolor = ifelse(is.na(stcolor), stcolor0, stcolor), stcolor0=NULL)}else{
+      veg <- veg |> mutate(stcolor = stcolor0, stcolor0=NULL)}
+
+
   strats <- veg |> subset(fun %in% c('T','S','H') & stems > 0) |> arrange(plot,-ht.max, -cover)#reduce to strata which have models and are not empty of stems
   strats$seq <- c(1:nrow(strats))
   strats <- strats |> group_by(plot) |> mutate(seqmin = min(seq), seq = seq-seqmin+1, seqmin = NULL)

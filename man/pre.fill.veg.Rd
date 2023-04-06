@@ -34,6 +34,17 @@ Several vegnasis functions require data frames with a predefined standard set of
 
 "BA" = basal area (square meters per hectare).
 
+"crshape" = Optional user defined crown shape name (catalog under development).
+
+"crfill" = Optional user defined color for crown fill as color name or hexcode.
+
+"crcolor" = Optional user defined color for crown outline as color name or hexcode.
+
+"stshape" = Optional user defined stem shape name (catalog under development).
+
+"stfill" = Optional user defined color for stem fill as color name or hexcode.
+
+"stcolor" = Optional user defined color for stem outline as color name or hexcode.
 }
 \usage{
 pre.fill.veg(x)

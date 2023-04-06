@@ -1,7 +1,7 @@
 Package: vegnasis
 Type: Package
 Title: Tools to summarize vegetation plot data.
-Version: 0.2.1
+Version: 0.2.2
 Author: Greg J. Schmidt
 Maintainer: Greg J. Schmidt <greg.schmidt@USDA.gov>
 Description: These functions were developed in 2023 to standardize calculations necessary to summarize plot data for input into ecological sites databases, reducing complexity of scripts revised each year for new projects. In addition, it is planned to eventually produce a set of vegetation profile plots to compliment the capabilities of the AQP package to produce soil profile diagrams.
