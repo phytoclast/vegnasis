@@ -1,0 +1,103 @@
+veg_profile_plot0 <- function(plants, ytrans = 'identity', yratio=1, units = 'm', skycolor = "#D9F2FF80", fadecolor = "#D9F2FF", gridalpha=0.3, groundcolor="#808066", xlim=c(0,50), ylim=c(-1, zmax+5), xticks=5, yticks=5, xslope=0, yslope=0){
+  require(ggplot2)
+
+  #rearrange stems depth drawing order
+  xnmax <- max(plants$xn, na.rm =TRUE)
+  xnmin <- min(plants$xn, na.rm =TRUE)
+  ypmax <- max(plants$yp, na.rm =TRUE)
+  ypmin <- min(plants$yp, na.rm =TRUE)
+  ypwid <- ypmax-ypmin
+  plants <- plants |> arrange(yp,stumpid, objid, ptord) |> mutate(zn = zn+(xp*xslope/100)+((yp-ypmin)*yslope/100)) #implement slope
+  zmax <- max(plants$zn, na.rm =TRUE)
+  plants <- plants |> mutate(depth = case_when(yp < ypmin+ypwid*(1/5) ~ 'A',
+                                               yp < ypmin+ypwid*(2/5) ~ 'B',
+                                               yp < ypmin+ypwid*(3/5) ~ 'C',
+                                               yp < ypmin+ypwid*(4/5) ~ 'D',
+                                               TRUE ~ 'E'))
+  ground.A = data.frame(xn=c(xnmin,xnmax,xnmax,xnmin),zn=c(ypwid*yslope/100,xslope/100*xnmax+ypwid*yslope/100,-10,-10),
+fill=colormixer(groundcolor, fadecolor, 0.8), color=groundcolor)
+  ground.B = data.frame(xn=c(xnmin,xnmax,xnmax,xnmin),zn=c(ypwid*(4/5)*yslope/100,xslope/100*xnmax+ypwid*(4/5)*yslope/100,-10,-10), fill=colormixer(groundcolor, fadecolor, 0.5), color=groundcolor)
+  ground.C = data.frame(xn=c(xnmin,xnmax,xnmax,xnmin),zn=c(ypwid*(3/5)*yslope/100,xslope/100*xnmax+ypwid*(3/5)*yslope/100,-10,-10), fill=colormixer(groundcolor, fadecolor, 0.3), color=groundcolor)
+  ground.D = data.frame(xn=c(xnmin,xnmax,xnmax,xnmin),zn=c(ypwid*(2/5)*yslope/100,xslope/100*xnmax+ypwid*(2/5)*yslope/100,-10,-10), fill=colormixer(groundcolor, fadecolor, 0.2), color=groundcolor)
+  ground.E = data.frame(xn=c(xnmin,xnmax,xnmax,xnmin),zn=c(ypwid*(1/5)*yslope/100,xslope/100*xnmax+ypwid*(1/5)*yslope/100,-10,-10), fill=colormixer(groundcolor, fadecolor, 0.1), color=groundcolor)
+
+
+  crowns1 <- plants |> subset(depth %in% 'E' & obj %in% c('crown','herb')) |>
+    mutate(fill=colormixer(fill, fadecolor, 0.8), color=colormixer(color, fadecolor, 0.8))
+  crowns2 <- plants |> subset(depth %in% 'D' & obj %in% c('crown','herb')) |>
+    mutate(fill=colormixer(fill, fadecolor, 0.6), color=colormixer(color, fadecolor, 0.6))
+  crowns3 <- plants |> subset(depth %in% 'C' & obj %in% c('crown','herb')) |>
+    mutate(fill=colormixer(fill, fadecolor, 0.4), color=colormixer(color, fadecolor, 0.4))
+  crowns4 <- plants |> subset(depth %in% 'B' & obj %in% c('crown','herb'))|>
+    mutate(fill=colormixer(fill, fadecolor, 0.2), color=colormixer(color, fadecolor, 0.2))
+  crowns5 <- plants |> subset(depth %in% 'A' & obj %in% c('crown','herb'))
+
+  stems1 <- plants |> subset(depth %in% 'E' & obj %in% 'stem')|>
+    mutate(fill=colormixer(fill, fadecolor, 0.8), color=colormixer(color, fadecolor, 0.8))
+  stems2 <- plants |> subset(depth %in% 'D' & obj %in% 'stem')|>
+    mutate(fill=colormixer(fill, fadecolor, 0.6), color=colormixer(color, fadecolor, 0.6))
+  stems3 <- plants |> subset(depth %in% 'C' & obj %in% 'stem')|>
+    mutate(fill=colormixer(fill, fadecolor, 0.4), color=colormixer(color, fadecolor, 0.4))
+  stems4 <- plants |> subset(depth %in% 'B' & obj %in% 'stem')|>
+    mutate(fill=colormixer(fill, fadecolor, 0.2), color=colormixer(color, fadecolor, 0.2))
+  stems5 <- plants |> subset(depth %in% 'A' & obj %in% 'stem')
+
+  plants2 <- rbind(crowns1,crowns2,crowns3,crowns4,crowns5,stems1,stems2,stems3,stems4,stems5)
+
+  ground = data.frame(xn=c(xnmin,xnmax,xnmax,xnmin),zn=c(0,xslope/100*xnmax,-10,-10), fill=groundcolor, color=groundcolor)
+  #round up all the colors used to correctly assign objects in alphabetical order.
+  pcolor <- c(plants2$color, ground$color) |> unique() |> sort()
+  pfill <- c(plants2$fill, ground$fill, ground.A$fill,ground.B$fill,ground.C$fill,ground.D$fill,ground.E$fill) |> unique()|> sort()
+  #set unit conversions for the basis of the tickmarks
+  ucf = case_when(units %in% c('feet', 'ft') ~ 0.3048,
+                  units %in% c('inches', 'in') ~ 0.3048/12,
+                  units %in% c('cm') ~ 0.01,
+                  TRUE ~ 1)
+  units = ifelse(ucf == 1, 'm',units)
+
+  yunits = paste0('height (', units,')')
+  xunits = paste0('ground distance (', units,')')
+  ybreaks = seq(floor(ylim[1]/ucf/yticks)*yticks-yticks,
+                floor(ylim[2]/ucf/yticks)*yticks+yticks,
+                yticks)*ucf
+  xbreaks = seq(floor(xlim[1]/ucf/xticks)*xticks-xticks,floor(xlim[2]/ucf/xticks)*xticks+xticks,xticks)*ucf
+  yminor = seq(floor(ylim[1]/ucf-yticks),floor(ylim[2]/ucf+yticks),yticks/5)*ucf
+  xminor = seq(floor(xlim[1]/ucf-xticks),floor(xlim[2]/ucf+xticks),xticks/5)*ucf
+  ylabels = ybreaks/ucf
+  xlabels =  xbreaks/ucf
+
+  ggplot() +
+    geom_polygon(data=ground.A, aes(x=xn,y=zn, fill=fill, color=color), alpha=1, linewidth=0.1)+
+    geom_polygon(data=ground.B, aes(x=xn,y=zn, fill=fill, color=color), alpha=1, linewidth=0.1)+
+    geom_polygon(data=ground.C, aes(x=xn,y=zn, fill=fill, color=color), alpha=1, linewidth=0.1)+
+    geom_polygon(data=ground.D, aes(x=xn,y=zn, fill=fill, color=color), alpha=1, linewidth=0.1)+
+    geom_polygon(data=ground.E, aes(x=xn,y=zn, fill=fill, color=color), alpha=1, linewidth=0.1)+
+    geom_polygon(data=ground, aes(x=xn,y=zn, fill=fill, color=color), alpha=1, linewidth=0.1)+
+    geom_polygon(data=stems1, aes(x=xn,y=zn,group=objid, fill=fill, color=color), alpha=1, linewidth=0.01)+
+    geom_polygon(data=crowns1, aes(x=xn,y=zn,group=objid, fill=fill, color=color), alpha=1, linewidth=0.01)+
+    geom_polygon(data=stems2, aes(x=xn,y=zn,group=objid, fill=fill, color=color), alpha=1, linewidth=0.01)+
+    geom_polygon(data=crowns2, aes(x=xn,y=zn,group=objid, fill=fill, color=color), alpha=1, linewidth=0.01)+
+    geom_polygon(data=stems3, aes(x=xn,y=zn,group=objid, fill=fill, color=color), alpha=1, linewidth=0.01)+
+    geom_polygon(data=crowns3, aes(x=xn,y=zn,group=objid, fill=fill, color=color), alpha=1, linewidth=0.01)+
+    geom_polygon(data=stems4, aes(x=xn,y=zn,group=objid, fill=fill, color=color), alpha=1, linewidth=0.01)+
+    geom_polygon(data=crowns4, aes(x=xn,y=zn,group=objid, fill=fill, color=color), alpha=1, linewidth=0.01)+
+    geom_polygon(data=stems5, aes(x=xn,y=zn,group=objid, fill=fill, color=color), alpha=1, linewidth=0.01)+
+    geom_polygon(data=crowns5, aes(x=xn,y=zn,group=objid, fill=fill, color=color), alpha=1, linewidth=0.01)+
+    scale_fill_manual(values=pfill)+
+    scale_color_manual(values=pcolor)+
+    theme(legend.position = "none",
+
+          panel.background = element_rect(fill = skycolor,
+                                          colour = "black",
+                                          linewidth = 0.5, linetype = "solid"),
+          panel.grid.major = element_line(linewidth = 0.5, linetype = 'solid',
+                                          colour = rgb(0.1, 0.1, 0.1, gridalpha)),
+          panel.grid.minor = element_line(linewidth = 0.1, linetype = 'solid',
+                                          colour = rgb(0.1, 0.1, 0.1, gridalpha/3))
+    )+
+    coord_fixed(ratio = yratio, ylim=ylim,xlim=xlim, expand = FALSE)+
+    scale_y_continuous(name = yunits, trans = ytrans, labels = ylabels, breaks = ybreaks, minor_breaks = yminor, limits = c(-10,zmax+5))+#
+    scale_x_continuous(name = xunits ,breaks = xbreaks, labels = xlabels, minor_breaks = xminor, limits = c(xnmin-5,xnmax+5))#
+
+
+}
