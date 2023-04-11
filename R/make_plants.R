@@ -34,7 +34,7 @@ colormixer <- function(colorname, mixcolor, p){
 }
 
 #These functions take shapes and assemble them according to plant attributes by stratum.
-make_tree <- function(ht.max, ht.min,crwd,dbh, crshape, stshape){
+make_tree <- function(ht.max, ht.min, crwd, dbh, crshape, stshape){
   crown <- subset(shapes, shape %in% crshape) |> mutate(x=x*crwd, z=z*(ht.max-ht.min)+ht.min, obj='crown')
   base <- subset(shapes, shape %in% stshape) |> mutate(x=x*dbh/100*1.1, z=z*(ht.min), obj='stem')
   tree = rbind(crown, base)
