@@ -1,4 +1,4 @@
-veg_profile_plot0 <- function(plants, ytrans = 'identity', yratio=1, units = 'm', skycolor = "#D9F2FF80", fadecolor = "#D9F2FF", gridalpha=0.3, groundcolor="#808066", xlim=c(0,50), ylim=c(-1, zmax+5), xticks=5, yticks=5, xslope=0, yslope=0){
+veg_profile_plot0 <- function(plants, ytrans = 'identity', yratio=1, units = 'm', skycolor = "#D9F2FF80", fadecolor = "#D9F2FF", gridalpha=0.3, groundcolor="#808066", xlim=c(0,50), ylim=c(-1, zmax+5), xticks=5, yticks=5, xslope=0, yslope=0, xperiod=10, xamplitude=0){
   require(ggplot2)
 
   #rearrange stems depth drawing order
@@ -7,19 +7,22 @@ veg_profile_plot0 <- function(plants, ytrans = 'identity', yratio=1, units = 'm'
   ypmax <- max(plants$yp, na.rm =TRUE)
   ypmin <- min(plants$yp, na.rm =TRUE)
   ypwid <- ypmax-ypmin
-  plants <- plants |> arrange(yp,stumpid, objid, ptord) |> mutate(zn = zn+(xp*xslope/100)+((yp-ypmin)*yslope/100)) #implement slope
+  plants <- plants |> arrange(yp,stumpid, objid, ptord) |> mutate(zn = zn+(xp*xslope/100)+((yp-ypmin)*yslope/100)+
+                                                                    xamplitude+xamplitude*sin(xp/xperiod*3.141592*2)) #implement slope
   zmax <- max(plants$zn, na.rm =TRUE)
   plants <- plants |> mutate(depth = case_when(yp < ypmin+ypwid*(1/5) ~ 'A',
                                                yp < ypmin+ypwid*(2/5) ~ 'B',
                                                yp < ypmin+ypwid*(3/5) ~ 'C',
                                                yp < ypmin+ypwid*(4/5) ~ 'D',
                                                TRUE ~ 'E'))
-  ground.A = data.frame(xn=c(xnmin,xnmax,xnmax,xnmin),zn=c(ypwid*yslope/100,xslope/100*xnmax+ypwid*yslope/100,-10,-10),
-fill=colormixer(groundcolor, fadecolor, 0.8), color=groundcolor)
-  ground.B = data.frame(xn=c(xnmin,xnmax,xnmax,xnmin),zn=c(ypwid*(4/5)*yslope/100,xslope/100*xnmax+ypwid*(4/5)*yslope/100,-10,-10), fill=colormixer(groundcolor, fadecolor, 0.5), color=groundcolor)
-  ground.C = data.frame(xn=c(xnmin,xnmax,xnmax,xnmin),zn=c(ypwid*(3/5)*yslope/100,xslope/100*xnmax+ypwid*(3/5)*yslope/100,-10,-10), fill=colormixer(groundcolor, fadecolor, 0.3), color=groundcolor)
-  ground.D = data.frame(xn=c(xnmin,xnmax,xnmax,xnmin),zn=c(ypwid*(2/5)*yslope/100,xslope/100*xnmax+ypwid*(2/5)*yslope/100,-10,-10), fill=colormixer(groundcolor, fadecolor, 0.2), color=groundcolor)
-  ground.E = data.frame(xn=c(xnmin,xnmax,xnmax,xnmin),zn=c(ypwid*(1/5)*yslope/100,xslope/100*xnmax+ypwid*(1/5)*yslope/100,-10,-10), fill=colormixer(groundcolor, fadecolor, 0.1), color=groundcolor)
+  groundline = data.frame(xn=c(xnmin:xnmax,xnmax,xnmin),
+                          zn=c((xnmin:xnmax)*0,-10,-10))|> mutate(zn = ifelse(zn == 0,zn+xn*xslope/100+
+                                                                        xamplitude+xamplitude*sin(xn/xperiod*3.141592*2),zn))
+  ground.A = groundline |> mutate(zn = ifelse(zn >= 0,zn+ypwid*yslope/100,zn), fill=colormixer(groundcolor, fadecolor, 0.8), color=groundcolor)
+  ground.B = groundline |> mutate(zn = ifelse(zn >= 0,zn+ypwid*(4/5)*yslope/100,zn), fill=colormixer(groundcolor, fadecolor, 0.5), color=groundcolor)
+  ground.C = groundline |> mutate(zn = ifelse(zn >= 0,zn+ypwid*(3/5)*yslope/100,zn), fill=colormixer(groundcolor, fadecolor, 0.3), color=groundcolor)
+  ground.D = groundline |> mutate(zn = ifelse(zn >= 0,zn+ypwid*(2/5)*yslope/100,zn), fill=colormixer(groundcolor, fadecolor, 0.2), color=groundcolor)
+  ground.E = groundline |> mutate(zn = ifelse(zn >= 0,zn+ypwid*(1/5)*yslope/100,zn), fill=colormixer(groundcolor, fadecolor, 0.1), color=groundcolor)
 
 
   crowns1 <- plants |> subset(depth %in% 'E' & obj %in% c('crown','herb')) |>
@@ -44,7 +47,7 @@ fill=colormixer(groundcolor, fadecolor, 0.8), color=groundcolor)
 
   plants2 <- rbind(crowns1,crowns2,crowns3,crowns4,crowns5,stems1,stems2,stems3,stems4,stems5)
 
-  ground = data.frame(xn=c(xnmin,xnmax,xnmax,xnmin),zn=c(0,xslope/100*xnmax,-10,-10), fill=groundcolor, color=groundcolor)
+  ground = data.frame(groundline, fill=groundcolor, color=groundcolor)
   #round up all the colors used to correctly assign objects in alphabetical order.
   pcolor <- c(plants2$color, ground$color) |> unique() |> sort()
   pfill <- c(plants2$fill, ground$fill, ground.A$fill,ground.B$fill,ground.C$fill,ground.D$fill,ground.E$fill) |> unique()|> sort()
