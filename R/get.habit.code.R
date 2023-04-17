@@ -73,11 +73,45 @@ fill.type <- function(taxa, type=NA){
   nasis <- ifelse(is.na(x$type), x$nasis, x$type)
   return(nasis) }
 
+fill.type.ESIS <- function(taxa, type=NA){
+  x  <-  data.frame(taxa=taxa, type = type) |> mutate(GH0 = '', genus = str_split_fixed(taxa , '[[:blank:]]',3)[,1])
+  #first try straight join ----
+  x <- x |> left_join(taxon.habits[,c('Scientific.Name','GH')], by = c('taxa'='Scientific.Name'), multiple = 'first')
+  x <- x |> mutate(GH0 = ifelse(is.na(GH0)| GH0 %in% "", GH, as.character(GH0)))
+  x <- x[,1:4]
+  #then try synonym join ----
+  x <- x |> left_join(syns[,c('acc','syn')], by=c('taxa'='syn'), multiple = 'first') |> left_join(taxon.habits[,c('Scientific.Name','GH')], by = c('acc'='Scientific.Name'), multiple = 'first')
+  x <- x |> mutate(GH0 = ifelse(is.na(GH0)| GH0 %in% "", GH, as.character(GH0)))
+  x <- x[,1:4]
+  #finally try genus only ----
+  x <- x |> left_join(genus.habits, by = c('genus'='genus'), multiple = 'first')
+  x <- x |> mutate(GH0 = ifelse(is.na(GH0)| GH0 %in% "", GH, as.character(GH0)))
+  x <- x[,1:3]
+  x <- x |> mutate(esis = case_when(
+    grepl('^T.F', GH0)|grepl('^S.F', GH0) ~ 'Tree Fern',
+    grepl('^T', GH0) ~ 'Tree',
+    grepl('^S', GH0) ~ 'Shrub/Subshrub',
+    grepl('^L', GH0) | grepl('^E', GH0) ~ 'Vine/Liana',
+    grepl('^H.G', GH0)~ 'Grass/grass-like',
+    grepl('^H.FE', GH0)~ 'Fern/fern ally',
+    grepl('^H', GH0)~ 'Forb/Herb',
+    grepl('^N.B', GH0)~ 'Nonvascular',
+    grepl('^N.L', GH0)~ 'Biological Crusts',
+    grepl('^N', GH0)~ 'Biological Crusts',
+    TRUE ~ NA
+  ))
+  nasis <- ifelse(is.na(x$type), x$esis, x$type)
+  return(nasis) }
+
 
 #Lookup the NASIS life form "type" according to default growth habit of each taxon. Include column of existing types if existing types are to be preserved while filling in only missing values. This version is intended for cleaned data frames.
 
 fill.type.df <- function(df){
-    df$type <- fill.type(df$taxon, df$type)
+  df$type <- fill.type(df$taxon, df$type)
+  return(df) }
+
+fill.type.ESIS.df <- function(df){
+  df$type <- fill.type.ESIS(df$taxon, df$type)
   return(df) }
 
 
