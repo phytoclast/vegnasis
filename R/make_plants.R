@@ -29,9 +29,10 @@ colormixer <- function(colorname, mixcolor, p){
   new <- ccc |> mutate(r = r*(1-p)+mmm[1,1]*p,
                        g = g*(1-p)+mmm[2,1]*p,
                        b = b*(1-p)+mmm[3,1]*p)
-  new <- rgb(new$r/255,new$g/255,new$b/255)
+  new <- rgb(new$r,new$g,new$b, maxColorValue = 255)
   return(new)
 }
+
 
 #These functions take shapes and assemble them according to plant attributes by stratum.
 make_tree <- function(ht.max, ht.min, crwd, dbh, crshape, stshape){
