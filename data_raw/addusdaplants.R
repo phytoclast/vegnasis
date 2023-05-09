@@ -1,4 +1,4 @@
-usdaplants <- read.csv('data_raw/plantssym.csv')
+usdaplants <- read.csv('data_raw/plantssym.csv', encoding = 'latin1')
 PLANTS <- read.csv('data_raw/PLANTSdownloadData.txt')
 USDAfams <- read.csv('data_raw/USDAfams.csv')
 
