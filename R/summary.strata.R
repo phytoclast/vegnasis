@@ -5,7 +5,7 @@ summary.strata <-  function(x, breaks=c(0.5,5,15)){
   nbks <- length(breaks)+1
   brks <- c(0,breaks,1000)
   for(i in 1:(nbks)){#i = 8
-    y0 <- x %>% subset(ht.max < brks[i+1] & ht.max >= brks[i])
+    y0 <- x %>% subset(ht.max <= brks[i+1] & ht.max > brks[i])
 
     if(nrow(y0)>0){
       y0 <- y0 %>% mutate(stratum=i, stratum.label = paste0(brks[i], "-", ifelse(i==nbks, "+",brks[i+1])), bottom= brks[i], top = ifelse(i==nbks,brks[i]+1,brks[i+1]))
@@ -23,7 +23,7 @@ summary.crown.thickness <-  function(x, breaks=c(0.5,5,15)){
   nbks <- length(breaks)+1
   brks <- c(0,breaks,1000)
   for(i in 1:(nbks)){#i = 5
-    y0 <- x %>% subset(ht.min < brks[i+1] & ht.max >= brks[i])
+    y0 <- x %>% subset(ht.min <= brks[i+1] & ht.max > brks[i])
 
     if(nrow(y0)>0){
       y0 <- y0 %>% mutate(stratum=i, stratum.label = paste0(brks[i], "-", ifelse(i==nbks, "+",brks[i+1])), bottom= brks[i], top = ifelse(i==nbks,brks[i]+1,brks[i+1]))
