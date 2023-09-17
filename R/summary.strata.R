@@ -1,4 +1,4 @@
-#This function summarises cover by stratum membership and growth habit. Inputs require a data frame processed by clean.veg and  user supplied vector of stratum height breaks. ----
+#This function summarizes cover by stratum membership and growth habit. Inputs require a data frame processed by clean.veg and  user supplied vector of stratum height breaks. ----
 
 summary.strata <-  function(x, breaks=c(0.5,5,15)){
   y <- NULL
@@ -46,6 +46,40 @@ structure.fill.zero <- function(x){
 
 
 #Function summarizes a set of plot by max and minimum cover and cover weighted height.
+#' Aggregate Summary of Cover by Stratum for Multiple Relevé Plots
+#'
+#'Function summarizes a set of multiple plots by max and minimum cover and cover weighted height. Used for populating vegetation tables in NRCS EDIT database (formerly ESIS).
+#'
+#' @param x Species composition data frame with standardized height, cover, and growth habit columns.
+#' @param breaks Vector of user defined stratum breaks.
+#' @param lowerQ Lower percentile for cover (proportion 0-1, not percentage).
+#' @param upperQ Upper percentile for cover (proportion 0-1, not percentage).
+#' @param woodytypes A vector of woody habit "types" which will be treated among multiple strata. Others not listed will be maintained in the lowest stratum regardless of plant height.
+#'
+#' @return Data frame listing taxa in multiple rows by stratum and multiple measures of summarized abundances. Summary value column definitions:\cr
+#'  \code{Bottom}=  Mean of canopy bottom height weighted by cover.mean.\cr
+#'  \code{Top}=  Mean of canopy top height weighted by cover.mean.\cr
+#'  \code{cover.Low}= The lower quantile of canopy cover of the taxon within this stratum, considering absences from a given plot as zeros.\cr
+#'  \code{cover.High}= The upper quantile of canopy cover of the taxon within this stratum, considering absences from a given plot as zeros.\cr
+#'  \code{cover.mean}= The mean canopy cover of the taxon within this stratum, considering absences from a given plot as zeros.\cr
+#'  \code{cover.pp}= The mean canopy cover of the taxon within this stratum, when present in plot, considering strata where absent as zeros, but ignoring from calculation if absent from every stratum in a plot.\cr
+#'  \code{cover.ps}= The mean canopy cover of the taxon within this stratum, when present in the stratum (ignoring strata where absent).\cr
+#'  \code{frq.plot}= Proportion of plots that taxon occurs in.\cr
+#'  \code{frq.strat}= Proportion of strata that the taxon occurs in.\cr
+#'  \code{dbh.low}= Mean of DBH low values weighted by cover.mean.\cr
+#'  \code{dbh.high}= Mean of DBH high values weighted by cover.mean.\cr
+#'  \code{BA.Low}= Estimated lower quantile basal area of taxon/stratum (redistributed like BA.mean, see below).\cr
+#'  \code{BA.High}= Estimated upper quantile basal area of taxon/stratum (redistributed like BA.mean, see below).\cr
+#'  \code{BA.mean}= Estimated mean basal area of taxon/stratum based on total plot basal area redistributed according to the cover.mean of each taxon/stratum. \cr
+#'
+#'
+#' @export
+#'
+#' @examples x.spp <- soilDB::get_vegplot_species_from_NASIS_db()
+#' @examples x.cleaned <- clean.veg(x.spp)
+#' @examples x.filled <- fill.hts.df(x.cleaned)
+#' @examples x.ESIS <- summary.ESIS(x.filled, breaks = c(0.5, 5, 12))
+#'
 summary.ESIS <-  function(x, breaks=c(0.5,5,15), lowerQ=0.25, upperQ=0.75,woodytypes = c('tree','shrub/vine', 'epiphyte')){
   x=x |> mutate(dbh.min= ifelse(is.na(dbh.min), dbh.max,dbh.min))
   #frequency of whole plot
@@ -119,6 +153,20 @@ summary.ESIS <-  function(x, breaks=c(0.5,5,15), lowerQ=0.25, upperQ=0.75,woodyt
 }
 
 #Function takes results of ESIS summary and flattens record to single row per taxon, with mean cover by stratum columns.
+
+#' Flatten a summary of multiple relevé vegetation plots.
+#'
+#' @param veg.summ Data frame results from summary.ESIS() function.
+#'
+#' @return Data frame with the multiple strata as row coverted to columns and displaying each taxon in a single row.
+#' @export
+#'
+#' @examples veg <- vegnasis::nasis.veg |> clean.veg() #Get example data.
+#' @examples veg <- subset(veg, plot %in% unique(veg$plot)[1:5]) |> fill.hts.df() #Get arbitrary subset of example data.
+#' @examples veg.summ <-  summary.ESIS(veg) #Mutliple relevé summary.
+#' @examples veg.flat <- flat.summary(veg.summ) #Flatten multiple strata rows to columns.
+#' @examples # write.csv(veg.flat, 'veg.flat.csv', row.names = FALSE) #Save as spreadsheet to share.
+
 flat.summary <- function(veg.summ){
   breaks <- sort(unique(veg.summ$stratum.min))
   breaks <- breaks[breaks>0]
