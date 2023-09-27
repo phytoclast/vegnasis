@@ -4,10 +4,12 @@
 \alias{flat.summary}
 \title{Flatten a summary of multiple relevé vegetation plots.}
 \usage{
-flat.summary(veg.summ)
+flat.summary(veg.summ, breaks = NULL)
 }
 \arguments{
 \item{veg.summ}{Data frame results from summary.ESIS() function.}
+
+\item{breaks}{Specify original stratum breaks if input data is missing strata (e.g. breaks = c(0.5, 2, 5, 12)).}
 }
 \value{
 Data frame with the multiple strata as row coverted to columns and displaying each taxon in a single row.

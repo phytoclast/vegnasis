@@ -157,6 +157,7 @@ summary.ESIS <-  function(x, breaks=c(0.5,5,15), lowerQ=0.25, upperQ=0.75,woodyt
 #' Flatten a summary of multiple relevé vegetation plots.
 #'
 #' @param veg.summ Data frame results from summary.ESIS() function.
+#' @param breaks Specify original stratum breaks if input data is missing strata (e.g. breaks = c(0.5, 2, 5, 12)).
 #'
 #' @return Data frame with the multiple strata as row coverted to columns and displaying each taxon in a single row.
 #' @export
@@ -167,9 +168,10 @@ summary.ESIS <-  function(x, breaks=c(0.5,5,15), lowerQ=0.25, upperQ=0.75,woodyt
 #' @examples veg.flat <- flat.summary(veg.summ) #Flatten multiple strata rows to columns.
 #' @examples # write.csv(veg.flat, 'veg.flat.csv', row.names = FALSE) #Save as spreadsheet to share.
 
-flat.summary <- function(veg.summ){
-  breaks <- sort(unique(veg.summ$stratum.min))
-  breaks <- breaks[breaks>0]
+flat.summary <- function(veg.summ, breaks=NULL){
+  if(is.null(breaks))
+  {breaks <- sort(unique(veg.summ$stratum.min))
+  breaks <- breaks[breaks>0]}
   nbks <- length(breaks)+1
   brks <- c(0,breaks,1000)
   veg.con <- veg.summ |> group_by(taxon,symbol,type,frq.plot, taxon.cover,over.cover,type.top) |> summarise(
@@ -187,6 +189,6 @@ flat.summary <- function(veg.summ){
     if(i==1){altnames=altname}else{altnames=c(altnames,altname)}
   }
   veg.con <- veg.con |>
-    arrange(-type.top, type, -over.cover, -taxon.cover, -ht.max, taxon) |> subset(select = c('taxon','type','frq.plot',cnames,'ht.max','over.cover','taxon.cover'))
+    arrange(-type.top, type, -over.cover, -taxon.cover, -ht.max, taxon) |> subset(select = c('symbol','taxon','type','frq.plot',cnames,'ht.max','over.cover','taxon.cover'))
   colnames(veg.con)[colnames(veg.con) %in% c(cnames,'frq.plot')] <- c('frq',altnames)
   return(veg.con)}
