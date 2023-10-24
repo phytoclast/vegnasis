@@ -9,7 +9,7 @@ clean.veg.log <- function(obssites, obstaxa){
                                                     month = Mon,
                                                     day = Day))) |> subset(Year >2001)
 
-  obss <- obss |> select(Observation_ID, Observation_Label,Date,Latitude,Longitude,f3,s3,t2,Lichen.Cover..,Bryophyte.Cover..,Herb_Cover,Shrub_Cover,Subcanopy_Cover,Tree_Cover,BA_Factor)
+  obss <- obss |> select(Observation_ID, Observation_Label,Date,Latitude,Longitude,f3,s3,t2,Lichen_Cover,Moss_Cover,Herb_Cover,Shrub_Cover,Subcanopy_Cover,Tree_Cover,BA_Factor)
   colnames(obss) <- c("Observation_ID","Observation_Label", "Date","Latitude","Longitude","fieldupper","shrubupper","subcanopyupper", "Lichen", "Bryophyte", "Field.agg", "Shrub.agg","Subcanopy.agg","Tree.agg","BA_Factor")
 
   obst <- obstaxa |> select(Observation_ID, AcTaxon, Habit, Field, Shrub, Subcanopy, Tree, Fmin,Fmax,Smin,Smax,SCmin,SCmax,Tmin,Tmax,Dmin,Dmax,BA)
