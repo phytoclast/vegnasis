@@ -15,7 +15,8 @@ get.obl(x, region = "NCNE")
 wetness value
 }
 \description{
-This function gets wetness status using only obligate and faculative-wet species (obligate having twice the weights as fac-wet), and rates all faculative and upland species as zero.\n
+This function gets wetness status using only obligate and faculative-wet species (obligate having twice the weights as fac-wet), and rates all faculative and upland species as zero.
+
 Army corps regions: 'AGCP' = Atlantic and Gulf Coastal Plain; 'AW' = Arid West; 'CB' = Caribbean; 'EMP' = Eastern Mountains and Piedmont; 'GP' = Great Plains; 'HI' = HI; 'MW' = Midwest; 'NCNE' = Northcentral & Northeast; 'AK' = Alaska; 'WMVC' = Western Mountains, Valleys, and Coast.
 }
 \examples{

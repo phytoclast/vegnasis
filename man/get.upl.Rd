@@ -15,7 +15,8 @@ get.upl(x, region = "NCNE")
 dryness value
 }
 \description{
-This function gets upland status using only upland and faculative-upland species (upland having twice the weights as fac-up), and rates all faculative and wetland species as zero.\n
+This function gets upland status using only upland and faculative-upland species (upland having twice the weights as fac-up), and rates all faculative and wetland species as zero.
+
 Army corps regions: 'AGCP' = Atlantic and Gulf Coastal Plain; 'AW' = Arid West; 'CB' = Caribbean; 'EMP' = Eastern Mountains and Piedmont; 'GP' = Great Plains; 'HI' = HI; 'MW' = Midwest; 'NCNE' = Northcentral & Northeast; 'AK' = Alaska; 'WMVC' = Western Mountains, Valleys, and Coast.
 }
 \examples{
