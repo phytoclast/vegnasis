@@ -27,19 +27,17 @@ usethis::use_data(obs, overwrite = T)
 usethis::use_data(obsspp, overwrite = T)
 
 
+
+library(vegnasis)
 obssites <- vegnasis::obs
 obstaxa <- vegnasis::obsspp
 
 veg=clean.veg.log(obssites, obstaxa)
 
-x <-  veg |> fill.nativity.df() |> fill.type.df() |> mutate(symbol = fill.usda.symbols(taxon))
-veg.raw <- vegnasis::nasis.veg
+veg1 = as.VegLog(veg[1:10,])
+veg2 = as.VegLog(veg[50:60,])
+veg3 = c(veg1,veg2)
 
-veg <- clean.veg(veg.raw)
-
-veg= pre.fill.veg(veg)
-
-library(vegnasis)
 
 
 c("Site_Type", "Project_ID", "Observation_ID","Observer_Code",
