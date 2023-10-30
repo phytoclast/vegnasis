@@ -13,3 +13,15 @@ usdaplants <- usdaplants |> subset(!sym %in% PLANTS.illegit$Symbol)
 colnames(USDAfams) <- c("sym","taxon")
 usdaplants <- usdaplants |> dplyr::bind_rows(USDAfams)
 usethis::use_data(usdaplants, overwrite = T)
+
+
+obs <- read.delim('data_raw/Sites.txt')
+obssp <- read.delim('data_raw/Observed_Species.txt')
+
+obs <- subset(obs, Latitude != 0 & Observer_Code %in% c('BEL.JH', 'TOL.NB', 'GRR.NJL', 'GRR.GJS') &
+                Year >=2011 & !Observation_Type %in% c('Bogus', 'Floristics'))
+
+obssp <- subset(obssp, Observation_ID %in% obs$Observation_ID)
+
+usethis::use_data(obs, overwrite = T)
+usethis::use_data(obssp, overwrite = T)
