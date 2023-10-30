@@ -21,7 +21,55 @@ obssp <- read.delim('data_raw/Observed_Species.txt')
 obs <- subset(obs, Latitude != 0 & Observer_Code %in% c('BEL.JH', 'TOL.NB', 'GRR.NJL', 'GRR.GJS') &
                 Year >=2011 & !Observation_Type %in% c('Bogus', 'Floristics'))
 
-obssp <- subset(obssp, Observation_ID %in% obs$Observation_ID)
+obsspp <- subset(obssp, Observation_ID %in% obs$Observation_ID)
 
 usethis::use_data(obs, overwrite = T)
-usethis::use_data(obssp, overwrite = T)
+usethis::use_data(obsspp, overwrite = T)
+
+
+obssites <- vegnasis::obs
+obstaxa <- vegnasis::obsspp
+
+veg=clean.veg.log(obssites, obstaxa)
+
+x <-  veg |> fill.nativity.df() |> fill.type.df() |> mutate(symbol = fill.usda.symbols(taxon))
+veg.raw <- vegnasis::nasis.veg
+
+veg <- clean.veg(veg.raw)
+
+veg= pre.fill.veg(veg)
+
+library(vegnasis)
+
+
+c("Site_Type", "Project_ID", "Observation_ID","Observer_Code",
+"Observation_Serial","Observation_Description","Observation_Label","Observation_Type",
+"Latitude",  "Longitude", "Error",     "Date",
+"Prefix",    "Year",      "Mon",       "Day",
+"Nation",    "State",     "County",    "Island",
+"FIPS", "Elevation", "Community_Name", "Community_Description",
+"Structure", "Landscape", "HillslopePosition", "Position",
+"Aspect", "Slope", "PlotBearing", "Map.Unit",
+"Soil.Series", "Soil.Taxon", "Drainage.Class", "Restriction_Depth",
+"WT_Depth",  "MinWT_Depth", "Soil_Notes", "Litter_Cover",
+"Snag_Count", "Snag_Diam", "Plot_Area_m", "BA_Count",
+"BA_Factor", "Cowardin",  "HGM",       "f1",
+"f2",        "f3",        "s1",        "s2",
+"s3",        "t1",        "t2",        "t3",
+"t4",        "Tree_Cover", "Subcanopy_Cover", "TallShrub_Cover",
+"Shrub_Cover", "Herb_Cover", "Moss_Cover", "Aggregated_Overstory",
+"Aggregated_Subcanopy", "Aggregated_TallShrub", "Aggregated_Shrub", "Aggregated_Understory",
+"Estimated_Understory", "DWD_Hits1", "DWD_Hits2", "DWD_Hits3",
+"DWD_Hits4", "DWD_Hits5", "Transect_Length", "Log_Cover",
+"Rock_Cover", "Lichen_Cover", "Water_Cover", "MaxWater_Cover",
+"DBH_lower", "DBH_upper", "Canopy_lower", "Canopy_upper",
+"User_Pedon_ID", "User_Plot_ID", "SoilTexture", "TPI",
+"Upper",     "Middle",    "Lower",     "Coastal",
+"Floodplain", "Inland",    "Hydric",    "Nonhydric",
+"Aquatic",   "Wet",       "Moist",     "Dry",
+"Mucky",     "Rocky",     "Sandy",     "Loamy",
+"Calcareous", "Euic",      "Dysic",     "Salty",
+"Fresh",     "Natural",   "Seminatural", "Cultural",
+"MLRA",      "Cold",      "Cool",      "Mild",
+"Warm",      "Hot",       "Humid",     "Subhumid",
+"Arid","Microthermal", "Mesothermal", "Megathermal")
