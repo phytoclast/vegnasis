@@ -73,7 +73,7 @@ clean.veg <- function(x){
 
     plot = vegplotid,
     label = vegplotname,
-    # date = obsdate,
+    date = obsdate,
     symbol = plantsym,
     taxon = plantsciname,
     type = planttypegroup,
@@ -81,7 +81,7 @@ clean.veg <- function(x){
     #habit = NA_character_,
     BA = round(speciesbasalarea*10000/43560,1))
 
-  x <- x %>% subset(select= c("plot","label","symbol","taxon","type",
+  x <- x %>% subset(select= c("plot","label","date","symbol","taxon","type",
                               "nativity","cover","stratum.min","stratum.max","crown.min","crown.max","dbh.min","dbh.max","BA"))
   return(x)
 }
