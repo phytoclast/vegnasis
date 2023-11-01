@@ -8,6 +8,7 @@
 # This function takes a standardized vegetation plot dataframe and converts it to a community matrix that can be converted to a distance matrix. Parameters include options for transformations and whether to use absolute or relative cover. Choices for transformation include: "log" for log base 10, "sqrt" for square root, and nothing for no transformation.
 
 make.plot.matrix <- function(x, tr = NA, rc = TRUE, nr=FALSE, label='plot', taxon='taxon'){
+  x <- as.data.frame(x)#Tibbles lead to unexpected failures
   if(!label %in% 'plot'){
     plots <- data.frame(plot =   unique(x$plot)) |> mutate(rnum = 1:length(unique(x$plot)))
     x <- x |> left_join(plots)
