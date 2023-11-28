@@ -6,6 +6,7 @@
 \usage{
 \method{summary}{ESIS}(
   x,
+  group = NA,
   breaks = c(0.5, 5, 15),
   lowerQ = 0.25,
   upperQ = 0.75,
@@ -14,6 +15,8 @@
 }
 \arguments{
 \item{x}{Species composition data frame with standardized height, cover, and growth habit columns.}
+
+\item{group}{Optional string identifying column used to group plots.}
 
 \item{breaks}{Vector of user defined stratum breaks.}
 
