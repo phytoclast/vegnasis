@@ -12,7 +12,7 @@ flat.summary(veg.summ, breaks = NULL)
 \item{breaks}{Specify original stratum breaks if input data is missing strata (e.g. breaks = c(0.5, 2, 5, 12)).}
 }
 \value{
-Data frame with the multiple strata as row coverted to columns and displaying each taxon in a single row.
+Data frame with the multiple strata as row converted to columns and displaying each taxon in a single row.
 }
 \description{
 Flatten a summary of multiple relevé vegetation plots.
