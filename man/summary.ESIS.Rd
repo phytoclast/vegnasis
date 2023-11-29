@@ -8,8 +8,9 @@
   x,
   group = NA,
   breaks = c(0.5, 5, 15),
-  lowerQ = 0.25,
-  upperQ = 0.75,
+  lowerQ = 0.5,
+  upperQ = 0.95,
+  normalize = F,
   woodytypes = c("tree", "shrub/vine", "epiphyte")
 )
 }
@@ -20,9 +21,11 @@
 
 \item{breaks}{Vector of user defined stratum breaks.}
 
-\item{lowerQ}{Lower percentile for cover (proportion 0-1, not percentage).}
+\item{lowerQ}{Lower quantile for cover (proportion 0-1, not percentage).}
 
-\item{upperQ}{Upper percentile for cover (proportion 0-1, not percentage).}
+\item{upperQ}{Upper quantile for cover (proportion 0-1, not percentage).}
+
+\item{normalize}{If true, adjust upper and lower cover quantiles to average the same as mean cover. Useful for recovering mean value when database of record only allows an upper and a lower value for cover. Most useful when initial upper quantile is at least 0.95 or higher or else rare species will have zeros for both upper and lower bounds (will show lack of variability even after adjusting). Lower quantile should correspond roughly to occurrence frequency below which a taxon would be considered zero (e.g. a species occurring in less than 50% of the plot have a lower quantile of zero if LowerQ value set at less than 0.5).}
 
 \item{woodytypes}{A vector of woody habit "types" which will be treated among multiple strata. Others not listed will be maintained in the lowest stratum regardless of plant height.}
 }
@@ -30,8 +33,8 @@
 Data frame listing taxa in multiple rows by stratum and multiple measures of summarized abundances. Summary value column definitions:\cr
  \code{Bottom}=  Mean of canopy bottom height weighted by cover.mean.\cr
  \code{Top}=  Mean of canopy top height weighted by cover.mean.\cr
- \code{cover.Low}= The lower quantile of canopy cover of the taxon within this stratum, considering absences from a given plot as zeros.\cr
- \code{cover.High}= The upper quantile of canopy cover of the taxon within this stratum, considering absences from a given plot as zeros.\cr
+ \code{cover.Low}= If unadjusted, this is the lower quantile of canopy cover of the taxon within this stratum, considering absences from a given plot as zeros. If adjusted, the initial value will be increased or decreased to scale with the mean cover value. \cr
+ \code{cover.High}= If unadjusted, this is the upper quantile of canopy cover of the taxon within this stratum, considering absences from a given plot as zeros. If adjusted, the initial value will be increased or decreased to scale with the mean cover value. \cr
  \code{cover.mean}= The mean canopy cover of the taxon within this stratum, considering absences from a given plot as zeros.\cr
  \code{cover.pp}= The mean canopy cover of the taxon within this stratum, when present in plot, considering strata where absent as zeros, but ignoring from calculation if absent from every stratum in a plot.\cr
  \code{cover.ps}= The mean canopy cover of the taxon within this stratum, when present in the stratum (ignoring strata where absent).\cr

@@ -53,15 +53,16 @@ structure.fill.zero <- function(x){
 #' @param x Species composition data frame with standardized height, cover, and growth habit columns.
 #' @param group Optional string identifying column used to group plots.
 #' @param breaks Vector of user defined stratum breaks.
-#' @param lowerQ Lower percentile for cover (proportion 0-1, not percentage).
-#' @param upperQ Upper percentile for cover (proportion 0-1, not percentage).
+#' @param lowerQ Lower quantile for cover (proportion 0-1, not percentage).
+#' @param upperQ Upper quantile for cover (proportion 0-1, not percentage).
+#' @param normalize If true, adjust upper and lower cover quantiles to average the same as mean cover. Useful for recovering mean value when database of record only allows an upper and a lower value for cover. Most useful when initial upper quantile is at least 0.95 or higher or else rare species will have zeros for both upper and lower bounds (will show lack of variability even after adjusting). Lower quantile should correspond roughly to occurrence frequency below which a taxon would be considered zero (e.g. a species occurring in less than 50% of the plot have a lower quantile of zero if LowerQ value set at less than 0.5).
 #' @param woodytypes A vector of woody habit "types" which will be treated among multiple strata. Others not listed will be maintained in the lowest stratum regardless of plant height.
 #'
 #' @return Data frame listing taxa in multiple rows by stratum and multiple measures of summarized abundances. Summary value column definitions:\cr
 #'  \code{Bottom}=  Mean of canopy bottom height weighted by cover.mean.\cr
 #'  \code{Top}=  Mean of canopy top height weighted by cover.mean.\cr
-#'  \code{cover.Low}= The lower quantile of canopy cover of the taxon within this stratum, considering absences from a given plot as zeros.\cr
-#'  \code{cover.High}= The upper quantile of canopy cover of the taxon within this stratum, considering absences from a given plot as zeros.\cr
+#'  \code{cover.Low}= If unadjusted, this is the lower quantile of canopy cover of the taxon within this stratum, considering absences from a given plot as zeros. If adjusted, the initial value will be increased or decreased to scale with the mean cover value. \cr
+#'  \code{cover.High}= If unadjusted, this is the upper quantile of canopy cover of the taxon within this stratum, considering absences from a given plot as zeros. If adjusted, the initial value will be increased or decreased to scale with the mean cover value. \cr
 #'  \code{cover.mean}= The mean canopy cover of the taxon within this stratum, considering absences from a given plot as zeros.\cr
 #'  \code{cover.pp}= The mean canopy cover of the taxon within this stratum, when present in plot, considering strata where absent as zeros, but ignoring from calculation if absent from every stratum in a plot.\cr
 #'  \code{cover.ps}= The mean canopy cover of the taxon within this stratum, when present in the stratum (ignoring strata where absent).\cr
@@ -81,7 +82,7 @@ structure.fill.zero <- function(x){
 #' @examples x.filled <- fill.hts.df(x.cleaned)
 #' @examples x.ESIS <- summary.ESIS(x.filled, breaks = c(0.5, 5, 12))
 #'
-summary.ESIS <-  function(x, group = NA, breaks=c(0.5,5,15), lowerQ=0.25, upperQ=0.75,woodytypes = c('tree','shrub/vine', 'epiphyte')){
+summary.ESIS <-  function(x, group = NA, breaks=c(0.5,5,15), lowerQ=0.5, upperQ=0.95, normalize = F, woodytypes = c('tree','shrub/vine', 'epiphyte')){
   x = as.data.frame(x) |> mutate(dbh.min= ifelse(is.na(dbh.min), dbh.max,dbh.min))
   if(is.na(group)){x$group <- 1}else{
     x$group <- x[,group]}
@@ -134,18 +135,34 @@ summary.ESIS <-  function(x, group = NA, breaks=c(0.5,5,15), lowerQ=0.25, upperQ
   y.fill <- y.fill |> group_by(plot,group, symbol,taxon,type,stratum,stratum.label, stratum.min, stratum.max,Bottom,Top,dbh.Low, dbh.High, cover.ps) |> summarise(Cover = max(Cover), BA = max(BA), frq.strat=max(frq.strat))
   #get quantiles in consideration of zeros for absences
   y.fill <- y.fill |> group_by(group, taxon, symbol,type, stratum, stratum.label, stratum.min, stratum.max, Bottom, Top, dbh.Low, dbh.High, cover.ps) |>
-    summarise(cover.Low = round(quantile(Cover, lowerQ),1),
+    summarise(cover.Low = quantile(Cover, lowerQ),
               cover.mean = mean(Cover),
-              cover.High = round(quantile(Cover, upperQ),1),
+              cover.High = quantile(Cover, upperQ),
+              cover.min = round(min(Cover),1),
+              cover.max = round(max(Cover),1),
               BA.Low = round(quantile(BA, lowerQ),1),
               BA.mean = mean(BA),
               BA.High = round(quantile(BA, upperQ),1),
               frq.strat = round(mean(frq.strat),3))
+  #normalize to rescale quantiles to mean
+  if(normalize){
+  y.fill <- y.fill |> mutate(upper.x = cover.High + (cover.mean - (cover.High+cover.Low)/2),
+                             lower.x = cover.Low + (cover.mean - (cover.High+cover.Low)/2),
+                             upper.x = upper.x + (lower.x - pmax(lower.x, cover.min)),
+                             lower.x = pmax(lower.x, cover.min),
+                             lower.x = lower.x + (upper.x - pmin(upper.x, cover.max)),
+                             upper.x = pmin(upper.x, cover.max),
+                             cover.High = upper.x,
+                             cover.Low = lower.x)}
+
+
   y.fill <- y.fill |> group_by(group, symbol, taxon, type) |> mutate(taxon.cover = cover.agg(cover.mean), over.cover = cover.agg(ifelse(Top > 5,cover.mean,0)))
   y.fill <- y.fill |> group_by(group, type) |> mutate(type.top = max(Top))
   y.fill <- left_join(y.fill, f) |> mutate(BA.pp = round(BA.mean/frq.plot,1),
                                            cover.pp = round(cover.mean/frq.plot,1),
                                            BA.mean = round(BA.mean,1),
+                                           cover.Low = round(cover.Low,1),
+                                           cover.High = round(cover.High,1),
                                            cover.mean = round(cover.mean,1),
                                            frq.plot = round(frq.plot,3),
                                            stratum.max = ifelse(stratum.max > (floor((max(Top)+5)/5)*5),(floor((max(Top)+5)/5)*5),stratum.max))
