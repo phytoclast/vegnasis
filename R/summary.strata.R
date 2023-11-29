@@ -83,7 +83,7 @@ structure.fill.zero <- function(x){
 #' @examples x.filled <- fill.hts.df(x.cleaned)
 #' @examples x.ESIS <- summary.ESIS(x.filled, breaks = c(0.5, 5, 12))
 #'
-summary.ESIS <-  function(x, group = NA, breaks=c(0.5,5,15), lowerQ=0.5, upperQ=0.95, normalize = F, woodytypes = c('tree','shrub/vine', 'epiphyte')){
+summary.ESIS <-  function(x, group = NA, breaks=c(0.5,5,15), lowerQ=0.5, upperQ=0.95, normalize = FALSE, woodytypes = c('tree','shrub/vine', 'epiphyte')){
   x = as.data.frame(x) |> mutate(dbh.min= ifelse(is.na(dbh.min), dbh.max,dbh.min))
   if(is.na(group)){x$group <- 1}else{
     x$group <- x[,group]}

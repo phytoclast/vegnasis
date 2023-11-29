@@ -10,7 +10,7 @@
   breaks = c(0.5, 5, 15),
   lowerQ = 0.5,
   upperQ = 0.95,
-  normalize = F,
+  normalize = FALSE,
   woodytypes = c("tree", "shrub/vine", "epiphyte")
 )
 }
