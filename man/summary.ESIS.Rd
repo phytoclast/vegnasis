@@ -25,7 +25,7 @@
 
 \item{upperQ}{Upper quantile for cover (proportion 0-1, not percentage).}
 
-\item{normalize}{If true, adjust upper and lower cover quantiles to average the same as mean cover. Useful for recovering mean value when database of record only allows an upper and a lower value for cover. Most useful when initial upper quantile is at least 0.95 or higher or else rare species will have zeros for both upper and lower bounds (will show lack of variability even after adjusting). Lower quantile should correspond roughly to occurrence frequency below which a taxon would be considered zero (e.g. a species occurring in less than 50% of the plot have a lower quantile of zero if LowerQ value set at less than 0.5).}
+\item{normalize}{If true, adjust upper and lower cover quantiles to average the same as mean cover. Useful for recovering mean value when database of record only allows an upper and a lower value for cover. Most useful when initial upper quantile is at least 0.95 or higher or else rare species will have zeros for both upper and lower bounds (will show lack of variability even after adjusting). Lower quantile should correspond roughly to occurrence frequency below which a taxon would be considered zero (e.g. a species occurring in less than 50 percent of the plot have a lower quantile of zero if LowerQ value set at less than 0.5).}
 
 \item{woodytypes}{A vector of woody habit "types" which will be treated among multiple strata. Others not listed will be maintained in the lowest stratum regardless of plant height.}
 }
