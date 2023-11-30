@@ -3,7 +3,7 @@
 harmonize.taxa <- function(taxa, fix=FALSE){
   x  <-  data.frame(taxa=taxa)
   if(fix){
-  fixtaxa <- data.frame(america=c('Equisetum prealtum', 'Athyrium angustum', 'Cypripedium parviflorum' , 'Osmunda spectabilis'), auctnon=c('Equisetum hyemale', 'Athyrium filix-femina', 'Cypripedium calceolus', 'Osmunda regalis'))
+  fixtaxa <- data.frame(america=c('Cornus sericea', 'Equisetum prealtum', 'Athyrium angustum', 'Cypripedium parviflorum' , 'Osmunda spectabilis'), auctnon=c('Cornus alba','Equisetum hyemale', 'Athyrium filix-femina', 'Cypripedium calceolus', 'Osmunda regalis'))
   x <- x |> left_join(fixtaxa, by=c('taxa'='auctnon'), multiple = 'first')
   x <- x |> mutate(taxa = ifelse(is.na(america), taxa, america))
   }
