@@ -17,8 +17,8 @@
 #'
 extractTaxon <- function(rawnames, report = 'taxon'){
   x = data.frame(rawname = rawnames)
-  x <- x |> mutate(rawname = str_replace_all(rawname,'^x\\s|^X\\s','×'),
-                   rawname = str_replace_all(rawname,'\\sx\\s|\\sX\\s',' ×'),
+  x <- x |> mutate(rawname = str_replace_all(rawname,'^×\\s|^x\\s|^X\\s','×'),
+                   rawname = str_replace_all(rawname,'\\s×\\s|\\sx\\s|\\sX\\s',' ×'),
                    genus = trimws(str_split_fixed(rawname,'[[:space:]]',2)[,1]),
                    first = trimws(str_split_fixed(rawname,'[[:space:]]',2)[,2]),
                    second = ifelse(grepl('^[a-z]|^×',first) & !grepl('^ex\\w',first),
