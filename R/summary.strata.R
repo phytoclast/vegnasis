@@ -103,7 +103,7 @@ summary.ESIS <-  function(x, group = NA, breaks=c(0.5,5,15), lowerQ=0.5, upperQ=
 
     if(nrow(y0)>0){
       y0 <- y0 %>% mutate(stratum=i, stratum.label = paste0(brks[i], ifelse(i==nbks, "+",paste0("-", brks[i+1]))), ht.min= ht.min, ht.max = ht.max, stratum.min = brks[i], stratum.max = brks[i+1])
-      y1 <- y0 %>% group_by(plot, group, symbol, taxon, type, stratum, stratum.label, stratum.min, stratum.max) %>%
+      y1 <- y0 %>% group_by(plot, group, symbol, taxon, type, nativity, stratum, stratum.label, stratum.min, stratum.max) %>%
         summarise(Cover = cover.agg(cover),
                   ht.min=weighted.mean(ht.min, cover+0.001, na.rm=TRUE),
                   ht.max=weighted.mean(ht.max, cover+0.001, na.rm=TRUE),
@@ -116,7 +116,7 @@ summary.ESIS <-  function(x, group = NA, breaks=c(0.5,5,15), lowerQ=0.5, upperQ=
       if(is.null(y)){y <- y1}else{y <- rbind(y, y1)}}
   }
   #weighted mean of heights of each taxon stratum among all plots
-  y = y |> group_by(group, symbol,taxon,type,stratum, stratum.label,stratum.min, stratum.max) |>
+  y = y |> group_by(group, symbol,taxon,type,nativity, stratum, stratum.label,stratum.min, stratum.max) |>
     mutate(Bottom=round(weighted.mean(ht.min, Cover+0.001, na.rm=TRUE),1),
            Top=round(weighted.mean(ht.max, Cover+0.001, na.rm=TRUE),1),
            dbh.Low =  weighted.mean(dbh.min, Cover+0.001, na.rm=TRUE),
@@ -127,15 +127,15 @@ summary.ESIS <-  function(x, group = NA, breaks=c(0.5,5,15), lowerQ=0.5, upperQ=
 
   y = y |> group_by(group, plot) |> mutate(totalBA = sum(BA, na.rm = TRUE), overCover = ifelse(Top > 5, Cover, NA), grossCover = sum(overCover, na.rm = TRUE), BA = round(totalBA*Cover/(grossCover+0.000001),1))
   #get frequency in stratum
-  y = y |> group_by(group, plot,symbol,taxon,type) |> mutate(frq.strat = ifelse(sum(Cover)>0,1,0))
+  y = y |> group_by(group, plot,symbol,taxon,type,nativity) |> mutate(frq.strat = ifelse(sum(Cover)>0,1,0))
   #insert zeros for missing species found in other plots
   y.plot <- unique(subset(y, select=c("group", "plot")))
-  y.mid <- unique(subset(y, select=c("group","symbol","taxon","type","stratum","stratum.label","stratum.min", "stratum.max","Bottom","Top","dbh.Low","dbh.High","cover.ps")))
+  y.mid <- unique(subset(y, select=c("group","symbol","taxon","type","nativity","stratum","stratum.label","stratum.min", "stratum.max","Bottom","Top","dbh.Low","dbh.High","cover.ps")))
   y.fill <- merge(y.plot, y.mid, by='group') |> mutate(Cover = 0, BA = 0, frq.strat=0)
   y.fill <- rbind(y, y.fill)
-  y.fill <- y.fill |> group_by(plot,group, symbol,taxon,type,stratum,stratum.label, stratum.min, stratum.max,Bottom,Top,dbh.Low, dbh.High, cover.ps) |> summarise(Cover = max(Cover), BA = max(BA), frq.strat=max(frq.strat))
+  y.fill <- y.fill |> group_by(plot, group, symbol, taxon, type, nativity, stratum,stratum.label, stratum.min, stratum.max,Bottom,Top,dbh.Low, dbh.High, cover.ps) |> summarise(Cover = max(Cover), BA = max(BA), frq.strat=max(frq.strat))
   #get quantiles in consideration of zeros for absences
-  y.fill <- y.fill |> group_by(group, taxon, symbol,type, stratum, stratum.label, stratum.min, stratum.max, Bottom, Top, dbh.Low, dbh.High, cover.ps) |>
+  y.fill <- y.fill |> group_by(group, taxon, symbol,type, nativity, stratum, stratum.label, stratum.min, stratum.max, Bottom, Top, dbh.Low, dbh.High, cover.ps) |>
     summarise(cover.Low = quantile(Cover, lowerQ),
               cover.mean = mean(Cover),
               cover.High = quantile(Cover, upperQ),
@@ -147,17 +147,17 @@ summary.ESIS <-  function(x, group = NA, breaks=c(0.5,5,15), lowerQ=0.5, upperQ=
               frq.strat = round(mean(frq.strat),3))
   #normalize to rescale quantiles to mean
   if(normalize){
-  y.fill <- y.fill |> mutate(upper.x = cover.High + (cover.mean - (cover.High+cover.Low)/2),
-                             lower.x = cover.Low + (cover.mean - (cover.High+cover.Low)/2),
-                             upper.x = upper.x + (lower.x - pmax(lower.x, cover.min)),
-                             lower.x = pmax(lower.x, cover.min),
-                             lower.x = lower.x + (upper.x - pmin(upper.x, cover.max)),
-                             upper.x = pmin(upper.x, cover.max),
-                             cover.High = upper.x,
-                             cover.Low = lower.x)}
+    y.fill <- y.fill |> mutate(upper.x = cover.High + (cover.mean - (cover.High+cover.Low)/2),
+                               lower.x = cover.Low + (cover.mean - (cover.High+cover.Low)/2),
+                               upper.x = upper.x + (lower.x - pmax(lower.x, cover.min)),
+                               lower.x = pmax(lower.x, cover.min),
+                               lower.x = lower.x + (upper.x - pmin(upper.x, cover.max)),
+                               upper.x = pmin(upper.x, cover.max),
+                               cover.High = upper.x,
+                               cover.Low = lower.x)}
 
 
-  y.fill <- y.fill |> group_by(group, symbol, taxon, type) |> mutate(taxon.cover = cover.agg(cover.mean), over.cover = cover.agg(ifelse(Top > 5,cover.mean,0)))
+  y.fill <- y.fill |> group_by(group, symbol, taxon, type, nativity) |> mutate(taxon.cover = cover.agg(cover.mean), over.cover = cover.agg(ifelse(Top > 5,cover.mean,0)))
   y.fill <- y.fill |> group_by(group, type) |> mutate(type.top = max(Top))
   y.fill <- left_join(y.fill, f) |> mutate(BA.pp = round(BA.mean/frq.plot,1),
                                            cover.pp = round(cover.mean/frq.plot,1),
@@ -168,7 +168,7 @@ summary.ESIS <-  function(x, group = NA, breaks=c(0.5,5,15), lowerQ=0.5, upperQ=
                                            frq.plot = round(frq.plot,3),
                                            stratum.max = ifelse(stratum.max > (floor((max(Top)+5)/5)*5),(floor((max(Top)+5)/5)*5),stratum.max))
 
-  y.fill <- subset(y.fill, select=c(group, taxon, symbol, type, stratum, stratum.label, stratum.min, stratum.max, Bottom,Top, cover.Low, cover.High, cover.mean, cover.pp, cover.ps, frq.plot, frq.strat, dbh.Low, dbh.High, BA.Low, BA.High, BA.mean, BA.pp, taxon.cover,over.cover, type.top)) |> arrange(-type.top, type, -over.cover, -taxon.cover, -Top)
+  y.fill <- subset(y.fill, select=c(group, taxon, symbol, type, nativity, stratum, stratum.label, stratum.min, stratum.max, Bottom,Top, cover.Low, cover.High, cover.mean, cover.pp, cover.ps, frq.plot, frq.strat, dbh.Low, dbh.High, BA.Low, BA.High, BA.mean, BA.pp, taxon.cover,over.cover, type.top)) |> arrange(-type.top, type, -over.cover, -taxon.cover, -Top)
 
 
   return(y.fill)
