@@ -2,11 +2,11 @@
 #This function synonymizes taxa with BONAP or Kew's Plants of the World Online circa 2022.
 #' Harmonize taxa
 #' @description
-#' This function synonymizes taxa with BONAP (Biota of North America Program), Kew's Plants of the World Online (WFO) circa 2023, or USDA's PLANTS database.  This ensures that aggregating functions work off a shared taxonomic backbone. An option exists to replace commonly misapplied Old World binomials: Equisetum hyemale, Athyrium filix-femina, Cypripedium calceolus, and Osmunda regalis, with: Equisetum praealtum, Athyrium angustum, Cypripedium parviflorum, and Osmunda spectabilis, respectively.
+#' This function synonymizes taxa with BONAP (Biota of North America Program), Kew's Plants of the World Online (POW) circa 2023, or USDA's PLANTS database.  This ensures that aggregating functions work off a shared taxonomic backbone. An option exists to replace commonly misapplied Old World binomials: Equisetum hyemale, Athyrium filix-femina, Cypripedium calceolus, and Osmunda regalis, with: Equisetum praealtum, Athyrium angustum, Cypripedium parviflorum, and Osmunda spectabilis, respectively.
 #'
 #' @param taxa Plant name as recorded in original plot data
 #' @param fix Optional fix for commonly misapplied Old World binomials to ensure they are assigned to North American species before synonymizing.
-#' @param sensu Which taxonomy to follow for accepted names (options: BONAP = 'bonap'; Kew's WFO = 'kew'; USDA PLANTS = 'usda')
+#' @param sensu Which taxonomy to follow for accepted names (options: BONAP = 'bonap'; Kew's POW = 'kew'; USDA PLANTS = 'usda')
 #'
 #' @return Accepted name
 #' @export
