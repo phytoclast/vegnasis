@@ -9,7 +9,7 @@ extractTaxon(rawnames, report = "taxon")
 \arguments{
 \item{rawnames}{Vector of taxonomic names with or without authors and infrataxa.}
 
-\item{report}{What element of taxon name to report ("taxon", "genus", "binomial", "author").}
+\item{report}{What element of taxon name to report ("taxon", "genus", "binomial" (genus and specific epithet only), "epithet", "infrataxon" (variety/subspecies epithet), "author").}
 }
 \value{
 Name of taxon or author depending on report parameter ("taxon" = full taxon without author; "binomial" = genus and specific epithet; "author" = author of of lowest infrataxon for which author name is provided.)

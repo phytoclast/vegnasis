@@ -5,7 +5,7 @@
 #' This function takes a full taxonomic name complete with authors and infrataxa (variety and subspecies and forms) and parses out the different elements. Hybrids indicated by the letter 'X' are converted to the multiply '×' symbol and spaces are removed so that hybrid species can be treated with the same number of word elements as non hybrids.
 #'
 #' @param rawnames Vector of taxonomic names with or without authors and infrataxa.
-#' @param report What element of taxon name to report ("taxon", "genus", "binomial", "author").
+#' @param report What element of taxon name to report ("taxon", "genus", "binomial" (genus and specific epithet only), "epithet", "infrataxon" (variety/subspecies epithet), "author").
 #'
 #' @return Name of taxon or author depending on report parameter ("taxon" = full taxon without author; "binomial" = genus and specific epithet; "author" = author of of lowest infrataxon for which author name is provided.)
 #' @export
@@ -50,7 +50,8 @@ extractTaxon <- function(rawnames, report = 'taxon'){
                    # xxx5=NULL,
                    binomial = trimws(paste(genus, epithet)),
                    taxon = trimws(paste(binomial, infrarank1, infraname1, infrarank2, infraname2)),
+                   infrataxon = trimws(ifelse(!infraname2 %in% "", infraname2, infraname1)),
                    author = trimws(ifelse(!infraauthor2 %in% "", infraauthor2, ifelse(!infraauthor1 %in% "", infraauthor1, binomialauthor)))
   )
-  if(report == 'author'){return(x$author)}else if(report=='binomial'){return(x$binomial)}else if(report == 'genus'){return(x$genus)}else{return(x$taxon)}
+  if(report == 'author'){return(x$author)}else if(report=='binomial'){return(x$binomial)}else if(report == 'genus'){return(x$genus)}else if(report == 'infrataxon'){return(x$infrataxon)}else if(report == 'epithet'){return(x$epithet)}else{return(x$taxon)}
 }
