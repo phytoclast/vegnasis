@@ -1,16 +1,38 @@
 #upgrade taxonomy ----
 #This function synonymizes taxa with BONAP or Kew's Plants of the World Online circa 2022.
-harmonize.taxa <- function(taxa, fix=FALSE){
+#' Harmonize taxa
+#' @description
+#' This function synonymizes taxa with BONAP (Biota of North America Program), Kew's Plants of the World Online (WFO) circa 2023, or USDA's PLANTS database.  This ensures that aggregating functions work off a shared taxonomic backbone. An option exists to replace commonly misapplied Old World binomials: Equisetum hyemale, Athyrium filix-femina, Cypripedium calceolus, and Osmunda regalis, with: Equisetum praealtum, Athyrium angustum, Cypripedium parviflorum, and Osmunda spectabilis, respectively.
+#'
+#' @param taxa Plant name as recorded in original plot data
+#' @param fix Optional fix for commonly misapplied Old World binomials to ensure they are assigned to North American species before synonymizing.
+#' @param sensu Which taxonomy to follow for accepted names (options: BONAP = 'bonap'; Kew's WFO = 'kew'; USDA PLANTS = 'usda')
+#'
+#' @return Accepted name
+#' @export
+#'
+#' @examples
+#' veg <- vegnasis::nasis.veg |> clean.veg()
+#' veg$taxon <- harmonize.taxa(veg$taxon)
+#' taxa = c('Trientalis borealis', 'Athyrium filix-femina')
+#' taxa = harmonize.taxa(taxa, fix = TRUE, sensu = 'bonap'); taxa
+#' taxa = harmonize.taxa(taxa, fix = TRUE, sensu = 'usda'); taxa
+harmonize.taxa <- function(taxa, fix=FALSE, sensu = 'bonap'){
   x  <-  data.frame(taxa=taxa)
   if(fix){
-  fixtaxa <- data.frame(america=c('Cornus sericea', 'Equisetum prealtum', 'Athyrium angustum', 'Cypripedium parviflorum' , 'Osmunda spectabilis'), auctnon=c('Cornus alba','Equisetum hyemale', 'Athyrium filix-femina', 'Cypripedium calceolus', 'Osmunda regalis'))
-  x <- x |> left_join(fixtaxa, by=c('taxa'='auctnon'), multiple = 'first')
-  x <- x |> mutate(taxa = ifelse(is.na(america), taxa, america))
+    fixtaxa <- data.frame(america=c('Cornus sericea', 'Equisetum praealtum', 'Athyrium angustum', 'Cypripedium parviflorum' , 'Osmunda spectabilis'), auctnon=c('Cornus alba','Equisetum hyemale', 'Athyrium filix-femina', 'Cypripedium calceolus', 'Osmunda regalis'))
+    x <- x |> left_join(fixtaxa, by=c('taxa'='auctnon'), multiple = 'first')
+    x <- x |> mutate(taxa = ifelse(is.na(america), taxa, america))
   }
- x <- x |> left_join(syns[,c('acc','syn','ac.binomial')], by=c('taxa'='syn'), multiple = 'first')
-  x <- x |> mutate(ac.binomial = ifelse(is.na(ac.binomial), taxa, ac.binomial))
+  x <- x |> left_join(syns2, by = join_by(taxa==taxon), multiple = 'first')
 
-  return(x$ac.binomial)}
+  if(sensu %in% 'kew'){
+    x <- x |> mutate(return = ifelse(is.na(kew), taxa, kew))
+  }else if(sensu %in% 'usda'){
+    x <- x |> mutate(return = ifelse(is.na(usda), taxa, usda))
+  }else{
+    x <- x |> mutate(return = ifelse(is.na(bonap), taxa, bonap))}
+  return(x$return)}
 
 #fill USDA PLANTS Symbols ----
 #This function fills in missing USDA PLANTS symbols if they exist.

@@ -25,8 +25,16 @@ obsspp <- subset(obssp, Observation_ID %in% obs$Observation_ID)
 
 usethis::use_data(obs, overwrite = T)
 usethis::use_data(obsspp, overwrite = T)
-
-
+#clean taxon habits
+library(vegnasis)
+taxon.habits <- read.csv('data_raw/taxon.habits.csv', encoding = 'UTF-8')
+taxon.habits <- taxon.habits |> mutate(Scientific.Name = cleanEncoding(Scientific.Name), genus = cleanEncoding(genus))
+taxon.habits <- taxon.habits |> mutate(Scientific.Name = extractTaxon(Scientific.Name), genus = extractTaxon(Scientific.Name, 'genus'))
+usethis::use_data(taxon.habits, overwrite = T)
+#new synonymy table
+library(vegnasis)
+syns2 <- read.csv('data_raw/syns.csv', encoding = 'UTF-8')
+usethis::use_data(syns2, overwrite = T)
 
 library(vegnasis)
 obssites <- vegnasis::obs
