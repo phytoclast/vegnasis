@@ -12,7 +12,7 @@ get.structure <- function(x, simple = TRUE){
       !type %in% c('tree', 'shrub/vine', 'forb','grass/grasslike') ~ 'moss',
       TRUE ~ 'excluded'))
 
-    x.ht <- veg |> group_by(plot) |> summarise(ht.max = max(ht.max))
+    x.ht <- x |> group_by(plot) |> summarise(ht.max = max(ht.max))
 
     x2 <- x |> group_by(plot, stratum) |> summarise(cover = cover.agg(cover))
     x3 <- data.frame(plot = unique(x2$plot), tree = 0, sapling = 0, shrub=0, forb=0, grass=0, moss=0)
@@ -94,7 +94,7 @@ get.structure <- function(x, simple = TRUE){
       !type %in% c('tree', 'shrub/vine', 'herb') ~ 'moss',
       TRUE ~ 'excluded'))
 
-    x.ht <- veg |> group_by(plot) |> summarise(ht.max = max(ht.max))
+    x.ht <- x |> group_by(plot) |> summarise(ht.max = max(ht.max))
 
     x2 <- x |> group_by(plot, stratum) |> summarise(cover = cover.agg(cover))
     x3 <- data.frame(plot = unique(x2$plot), tree = 0, shrub=0, herb=0, moss=0)
@@ -116,7 +116,9 @@ get.structure <- function(x, simple = TRUE){
                                                                      TRUE~ case_when(tree < 60 ~ 'woodland',
                                                                                      TRUE ~ 'forest'))
                                    )))
-  }}
+  }
+  return(x3)
+  }
 
 #alternative cover aggregation
 get.structure.alt <- function(x, simple = TRUE){
@@ -131,7 +133,7 @@ get.structure.alt <- function(x, simple = TRUE){
       !type %in% c('tree', 'shrub/vine', 'forb','grass/grasslike') ~ 'moss',
       TRUE ~ 'excluded'))
 
-    x.ht <- veg |> group_by(plot) |> summarise(ht.max = max(ht.max))
+    x.ht <- x |> group_by(plot) |> summarise(ht.max = max(ht.max))
 
     x2 <- x |> group_by(plot, stratum) |> summarise(cover = cover.agg.stratum(cover))
     x3 <- data.frame(plot = unique(x2$plot), tree = 0, sapling = 0, shrub=0, forb=0, grass=0, moss=0)
@@ -213,7 +215,7 @@ get.structure.alt <- function(x, simple = TRUE){
       !type %in% c('tree', 'shrub/vine', 'herb') ~ 'moss',
       TRUE ~ 'excluded'))
 
-    x.ht <- veg |> group_by(plot) |> summarise(ht.max = max(ht.max))
+    x.ht <- x |> group_by(plot) |> summarise(ht.max = max(ht.max))
 
     x2 <- x |> group_by(plot, stratum) |> summarise(cover = cover.agg.stratum(cover))
     x3 <- data.frame(plot = unique(x2$plot), tree = 0, shrub=0, herb=0, moss=0)
@@ -235,4 +237,6 @@ get.structure.alt <- function(x, simple = TRUE){
                                                                      TRUE~ case_when(tree < 60 ~ 'woodland',
                                                                                      TRUE ~ 'forest'))
                                    )))
-  }}
+  }
+  return(x3)
+  }
