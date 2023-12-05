@@ -1,17 +1,19 @@
-usdaplants <- read.csv('data_raw/plantssym.csv', encoding = 'latin1')
-PLANTS <- read.csv('data_raw/PLANTSdownloadData.txt')
+library(vegnasis)
+PLANTS <- read.csv('data_raw/usdaplantsym.txt')
 USDAfams <- read.csv('data_raw/USDAfams.csv')
+USDAunk <- read.csv('data_raw/usdaunksym.txt')
+PLANTS <- PLANTS |> mutate(sym = ifelse(is.na(Synonym.Symbol)|Synonym.Symbol %in% '', Symbol, Synonym.Symbol), taxon = extractTaxon(Scientific.Name.with.Author), author = extractTaxon(Scientific.Name.with.Author, 'author'))
 
-PLANTS.illegit <- PLANTS |> subset(grepl('auct.',Genera.Binomial.Author) |
-                                     grepl('illeg.',Genera.Binomial.Author) |
-                                     grepl(' non',Genera.Binomial.Author) |
-                                     grepl('auct',Trinomial.Author) |
-                                     grepl('illeg.',Trinomial.Author) |
-                                     grepl(' non',Trinomial.Author),
-                                   select=c(Accepted.Symbol, Symbol, Scientific.Name, Genera.Binomial.Author, Trinomial.Author))
-usdaplants <- usdaplants |> subset(!sym %in% PLANTS.illegit$Symbol)
+
+PLANTS.illegit <- PLANTS |> subset(grepl('auct.',author) |
+                                     grepl('illeg.',author) |
+                                     grepl(' non',author) ,
+                                   select=c(sym, taxon, author))
+usdaplants <- PLANTS |> subset(!sym %in% PLANTS.illegit$sym, select=c(sym, taxon, author))
 colnames(USDAfams) <- c("sym","taxon")
-usdaplants <- usdaplants |> dplyr::bind_rows(USDAfams)
+colnames(USDAunk) <- c("sym","taxon")
+additional <- data.frame(sym='PRENA',taxon='Nabalus')
+usdaplants <- usdaplants |> dplyr::bind_rows(USDAfams) |> dplyr::bind_rows(USDAunk)|> dplyr::bind_rows(additional)
 usethis::use_data(usdaplants, overwrite = T)
 
 
