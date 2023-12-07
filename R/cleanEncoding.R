@@ -16,12 +16,14 @@
 cleanEncoding <- function(x){
   n = length(x)
   for(i in 1:n){#i=1
-    enc = stringi::stri_enc_detect(x[i])
-    enc <- enc[[1]]$Encoding[1]
-    if(!enc %in% 'UTF-8'){
-      if(enc %in% 'windows-1252'){
+    en <- stringi::stri_enc_detect(x[i])[[1]]
+    en <- data.frame(enc = en$Encoding, con = en$Confidence)
+    en <- en |> mutate(con = ifelse(con >= 0.8 & enc %in% 'UTF-8', con*2,con)) |> subset(con %in% max(con))
+    en <- en$enc[1]
+    if(!en %in% 'UTF-8'){
+      if(en %in% 'windows-1252'){
         x[i] <- stringi::stri_conv(x[i], from = 'windows-1252', to='UTF-8')
-      }else if(enc %in% 'ISO-8859-1'){
+      }else if(en %in% 'ISO-8859-1'){
         x[i] <- stringi::stri_conv(x[i], from = 'ISO-8859-1', to='UTF-8')
       }else{
         x[i] <- stringi::stri_conv(x[i], from = 'latin1', to='UTF-8')
