@@ -12,7 +12,8 @@
   lowerQ = 0.5,
   upperQ = 0.95,
   normalize = FALSE,
-  woodytypes = c("tree", "shrub/vine", "epiphyte")
+  woodytypes = c("tree", "shrub/vine", "epiphyte"),
+  forEDIT = FALSE
 )
 }
 \arguments{
@@ -31,6 +32,8 @@
 \item{normalize}{If true, adjust upper and lower cover quantiles to average the same as mean cover. Useful for recovering mean value when database of record only allows an upper and a lower value for cover. Most useful when initial upper quantile is at least 0.95 or higher or else rare species will have zeros for both upper and lower bounds (will show lack of variability even after adjusting). Lower quantile should correspond roughly to occurrence frequency below which a taxon would be considered zero (e.g. a species occurring in less than 50 percent of the plot have a lower quantile of zero if LowerQ value set at less than 0.5).}
 
 \item{woodytypes}{A vector of woody habit "types" which will be treated among multiple strata. Others not listed will be maintained in the lowest stratum regardless of plant height.}
+
+\item{forEDIT}{Should the output be modified for pasting into the NRCS "EDIT" database? (TRUE/FALSE)}
 }
 \value{
 Data frame listing taxa in multiple rows by stratum and multiple measures of summarized abundances. Summary value column definitions:\cr

@@ -11,7 +11,7 @@ summary.strata <-  function(x, breaks=c(0.5,5,15)){
       y0 <- y0 %>% mutate(stratum=i, stratum.label = paste0(brks[i], "-", ifelse(i==nbks, "+",brks[i+1])), bottom= brks[i], top = ifelse(i==nbks,brks[i]+1,brks[i+1]))
       y1 <- y0 %>% group_by(plot, type, stratum, stratum.label, bottom, top) %>% summarise(Cover = cover.agg(cover))
 
-    if(is.null(y)){y <- y1}else{y <- rbind(y, y1)}}
+      if(is.null(y)){y <- y1}else{y <- rbind(y, y1)}}
   }
   return(y)
 }
@@ -29,7 +29,7 @@ summary.crown.thickness <-  function(x, breaks=c(0.5,5,15)){
       y0 <- y0 %>% mutate(stratum=i, stratum.label = paste0(brks[i], "-", ifelse(i==nbks, "+",brks[i+1])), bottom= brks[i], top = ifelse(i==nbks,brks[i]+1,brks[i+1]))
       y1 <- y0 %>% group_by(plot, type, stratum, stratum.label, bottom, top) %>% summarise(Cover = cover.agg(cover))
 
-    if(is.null(y)){y <- y1}else{y <- rbind(y, y1)}}
+      if(is.null(y)){y <- y1}else{y <- rbind(y, y1)}}
   }
   return(y)
 }
@@ -56,6 +56,7 @@ structure.fill.zero <- function(x){
 #' @param lowerQ Lower quantile for cover (proportion 0-1, not percentage).
 #' @param upperQ Upper quantile for cover (proportion 0-1, not percentage).
 #' @param normalize If true, adjust upper and lower cover quantiles to average the same as mean cover. Useful for recovering mean value when database of record only allows an upper and a lower value for cover. Most useful when initial upper quantile is at least 0.95 or higher or else rare species will have zeros for both upper and lower bounds (will show lack of variability even after adjusting). Lower quantile should correspond roughly to occurrence frequency below which a taxon would be considered zero (e.g. a species occurring in less than 50 percent of the plot have a lower quantile of zero if LowerQ value set at less than 0.5).
+#' @param forEDIT Should the output be modified for pasting into the NRCS "EDIT" database? (TRUE/FALSE)
 #'
 #' @param woodytypes A vector of woody habit "types" which will be treated among multiple strata. Others not listed will be maintained in the lowest stratum regardless of plant height.
 #'
@@ -83,7 +84,7 @@ structure.fill.zero <- function(x){
 #' @examples x.filled <- fill.hts.df(x.cleaned)
 #' @examples x.ESIS <- summary.ESIS(x.filled, breaks = c(0.5, 5, 12))
 #'
-summary.ESIS <-  function(x, group = NA, breaks=c(0.5,5,15), lowerQ=0.5, upperQ=0.95, normalize = FALSE, woodytypes = c('tree','shrub/vine', 'epiphyte')){
+summary.ESIS <-  function(x, group = NA, breaks=c(0.5,5,15), lowerQ=0.5, upperQ=0.95, normalize = FALSE, woodytypes = c('tree','shrub/vine', 'epiphyte'), forEDIT = FALSE){
   x = as.data.frame(x) |> mutate(dbh.min= ifelse(is.na(dbh.min), dbh.max,dbh.min))
   if(is.na(group)){x$group <- 1}else{
     x$group <- x[,group]}
@@ -170,6 +171,29 @@ summary.ESIS <-  function(x, group = NA, breaks=c(0.5,5,15), lowerQ=0.5, upperQ=
 
   y.fill <- subset(y.fill, select=c(group, taxon, symbol, type, nativity, stratum, stratum.label, stratum.min, stratum.max, Bottom,Top, cover.Low, cover.High, cover.mean, cover.pp, cover.ps, frq.plot, frq.strat, dbh.Low, dbh.High, BA.Low, BA.High, BA.mean, BA.pp, taxon.cover,over.cover, type.top)) |> arrange(-type.top, type, -over.cover, -taxon.cover, -Top)
 
+  if(forEDIT){
+    y.fill <-  y.fill |> mutate(type = get.habit.name(get.habit.code(taxon), type='ESIS'),
+                                type = case_when(type %in% 'Grass/grass-like' ~ 'Grass/grass-like (Graminoids)',
+                                                 Top > 5 & type %in% c('Shrub/Subshrub') ~ 'Tree',
+                                                 TRUE ~ type),
+                                nativity = case_when(nativity %in% c('native','Native') ~ 'Native',
+                                                     nativity %in% c('introduced','Introduced') ~ 'Introduced',
+                                                     TRUE  ~ 'Unknown'),
+                                overstory = ifelse(Top > 5 & type %in% c("Tree","Shrub/Subshrub","Vine/Liana"), 1, 2),
+
+                                symbol = ifelse(is.na(symbol), case_when(grepl('moss',tolower(taxon)) ~ '2MOSS',
+                                                                         grepl('alga',tolower(taxon)) ~ '2ALGA',
+                                                                         TRUE ~ symbol), symbol),
+                                type = ifelse(is.na(type), case_when(symbol %in% 'POACEA' ~ 'Grass/grass-like (Graminoids)',
+                                                                     symbol %in% '2MOSS' ~ 'Nonvascular',
+                                                                     symbol %in% '2ALGA' ~ 'Biological Crusts',
+                                                                     TRUE ~ type), type))
+
+    y.fill <- y.fill |> group_by(type) |> mutate(type.top = weighted.mean(Top, w = cover.mean))
+
+    y.fill <- y.fill |> subset(select=c(group,overstory, taxon,symbol,type,nativity, cover.Low,cover.High, Bottom,Top, dbh.Low, dbh.High, BA.Low, BA.High, taxon.cover, over.cover, type.top,frq.plot)) |> arrange(group, overstory, desc(type.top), desc(over.cover), desc(taxon.cover), desc(Top))
+  }
+
 
   return(y.fill)
 }
@@ -188,6 +212,7 @@ summary.ESIS <-  function(x, group = NA, breaks=c(0.5,5,15), lowerQ=0.5, upperQ=
 #' @param normalize If true, adjust upper and lower cover quantiles to average the same as mean cover. Useful for recovering mean value when database of record only allows an upper and a lower value for cover. Most useful when initial upper quantile is at least 0.95 or higher or else rare species will have zeros for both upper and lower bounds (will show lack of variability even after adjusting). Lower quantile should correspond roughly to occurrence frequency below which a taxon would be considered zero (e.g. a species occurring in less than 50 percent of the plot have a lower quantile of zero if LowerQ value set at less than 0.5).
 #'
 #' @param woodytypes A vector of woody habit "types" which will be treated among multiple strata. Others not listed will be maintained in the lowest stratum regardless of plant height.
+#' @param forEDIT Should the output be modified for pasting into the NRCS "EDIT" database? (TRUE/FALSE)
 #'
 #' @return Data frame listing taxa in multiple rows by stratum and multiple measures of summarized abundances. Summary value column definitions:\cr
 #'  \code{Bottom}=  Mean of canopy bottom height weighted by cover.mean.\cr
@@ -213,7 +238,7 @@ summary.ESIS <-  function(x, group = NA, breaks=c(0.5,5,15), lowerQ=0.5, upperQ=
 #' @examples x.filled <- fill.hts.df(x.cleaned)
 #' @examples x.ESIS <- summary.ESIS.wt(x.filled, breaks = c(0.5, 5, 12))
 
-summary.ESIS.wt <-  function(x, group = NA, wt = NA, breaks=c(0.5,5,15), lowerQ=0.5, upperQ=0.95, normalize = FALSE, woodytypes = c('tree','shrub/vine', 'epiphyte')){
+summary.ESIS.wt <-  function(x, group = NA, wt = NA, breaks=c(0.5,5,15), lowerQ=0.5, upperQ=0.95, normalize = FALSE, woodytypes = c('tree','shrub/vine', 'epiphyte'), forEDIT = FALSE){
   x = as.data.frame(x) |> mutate(dbh.min= ifelse(is.na(dbh.min), dbh.max,dbh.min))
   if(is.na(group)){x$group <- 1}else{
     x$group <- x[,group]}
@@ -303,11 +328,34 @@ summary.ESIS.wt <-  function(x, group = NA, wt = NA, breaks=c(0.5,5,15), lowerQ=
 
   y.fill <- subset(y.fill, select=c(group, taxon, symbol, type, nativity, stratum, stratum.label, stratum.min, stratum.max, Bottom,Top, cover.Low, cover.High, cover.mean, cover.pp, cover.ps, frq.plot, frq.strat, dbh.Low, dbh.High, BA.Low, BA.High, BA.mean, BA.pp, taxon.cover,over.cover, type.top)) |> arrange(-type.top, type, -over.cover, -taxon.cover, -Top)
 
+  if(forEDIT){
+    y.fill <-  y.fill |> mutate(type = get.habit.name(get.habit.code(taxon), type='ESIS'),
+                                type = case_when(type %in% 'Grass/grass-like' ~ 'Grass/grass-like (Graminoids)',
+                                                 Top > 5 & type %in% c('Shrub/Subshrub') ~ 'Tree',
+                                                 TRUE ~ type),
+                                nativity = case_when(nativity %in% c('native','Native') ~ 'Native',
+                                                     nativity %in% c('introduced','Introduced') ~ 'Introduced',
+                                                     TRUE  ~ 'Unknown'),
+                                overstory = ifelse(Top > 5 & type %in% c("Tree","Shrub/Subshrub","Vine/Liana"), 1, 2),
+
+                                symbol = ifelse(is.na(symbol), case_when(grepl('moss',tolower(taxon)) ~ '2MOSS',
+                                                                         grepl('alga',tolower(taxon)) ~ '2ALGA',
+                                                                         TRUE ~ symbol), symbol),
+                                type = ifelse(is.na(type), case_when(symbol %in% 'POACEA' ~ 'Grass/grass-like (Graminoids)',
+                                                                     symbol %in% '2MOSS' ~ 'Nonvascular',
+                                                                     symbol %in% '2ALGA' ~ 'Biological Crusts',
+                                                                     TRUE ~ type), type))
+
+    y.fill <- y.fill |> group_by(type) |> mutate(type.top = weighted.mean(Top, w = cover.mean))
+
+    y.fill <- y.fill |> subset(select=c(group,overstory, taxon,symbol,type,nativity, cover.Low,cover.High, Bottom,Top, dbh.Low, dbh.High, BA.Low, BA.High, taxon.cover, over.cover, type.top,frq.plot)) |> arrange(group, overstory, desc(type.top), desc(over.cover), desc(taxon.cover), desc(Top))
+  }
+
 
   return(y.fill)
 }
 
-summary.ESIS.wt.noHmisc <-  function(x, group = NA, wt = NA, breaks=c(0.5,5,15), lowerQ=0.5, upperQ=0.95, normalize = FALSE, woodytypes = c('tree','shrub/vine', 'epiphyte')){
+summary.ESIS.wt.noHmisc <-  function(x, group = NA, wt = NA, breaks=c(0.5,5,15), lowerQ=0.5, upperQ=0.95, normalize = FALSE, woodytypes = c('tree','shrub/vine', 'epiphyte'), forEDIT = FALSE){
   x = as.data.frame(x) |> mutate(dbh.min= ifelse(is.na(dbh.min), dbh.max,dbh.min))
   if(is.na(group)){x$group <- 1}else{
     x$group <- x[,group]}
@@ -396,6 +444,29 @@ summary.ESIS.wt.noHmisc <-  function(x, group = NA, wt = NA, breaks=c(0.5,5,15),
                                            stratum.max = ifelse(stratum.max > (floor((max(Top)+5)/5)*5),(floor((max(Top)+5)/5)*5),stratum.max))
 
   y.fill <- subset(y.fill, select=c(group, taxon, symbol, type, nativity, stratum, stratum.label, stratum.min, stratum.max, Bottom,Top, cover.Low, cover.High, cover.mean, cover.pp, cover.ps, frq.plot, frq.strat, dbh.Low, dbh.High, BA.Low, BA.High, BA.mean, BA.pp, taxon.cover,over.cover, type.top)) |> arrange(-type.top, type, -over.cover, -taxon.cover, -Top)
+
+  if(forEDIT){
+    y.fill <-  y.fill |> mutate(type = get.habit.name(get.habit.code(taxon), type='ESIS'),
+                                type = case_when(type %in% 'Grass/grass-like' ~ 'Grass/grass-like (Graminoids)',
+                                                 Top > 5 & type %in% c('Shrub/Subshrub') ~ 'Tree',
+                                                 TRUE ~ type),
+                                nativity = case_when(nativity %in% c('native','Native') ~ 'Native',
+                                                     nativity %in% c('introduced','Introduced') ~ 'Introduced',
+                                                     TRUE  ~ 'Unknown'),
+                                overstory = ifelse(Top > 5 & type %in% c("Tree","Shrub/Subshrub","Vine/Liana"), 1, 2),
+
+                                symbol = ifelse(is.na(symbol), case_when(grepl('moss',tolower(taxon)) ~ '2MOSS',
+                                                                         grepl('alga',tolower(taxon)) ~ '2ALGA',
+                                                                         TRUE ~ symbol), symbol),
+                                type = ifelse(is.na(type), case_when(symbol %in% 'POACEA' ~ 'Grass/grass-like (Graminoids)',
+                                                                     symbol %in% '2MOSS' ~ 'Nonvascular',
+                                                                     symbol %in% '2ALGA' ~ 'Biological Crusts',
+                                                                     TRUE ~ type), type))
+
+    y.fill <- y.fill |> group_by(type) |> mutate(type.top = weighted.mean(Top, w = cover.mean))
+
+    y.fill <- y.fill |> subset(select=c(group,overstory, taxon,symbol,type,nativity, cover.Low,cover.High, Bottom,Top, dbh.Low, dbh.High, BA.Low, BA.High, taxon.cover, over.cover, type.top,frq.plot)) |> arrange(group, overstory, desc(type.top), desc(over.cover), desc(taxon.cover), desc(Top))
+  }
 
 
   return(y.fill)
