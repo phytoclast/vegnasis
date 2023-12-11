@@ -35,7 +35,7 @@ taxon.habits <- taxon.habits |> mutate(Scientific.Name = extractTaxon(Scientific
 usethis::use_data(taxon.habits, overwrite = T)
 #new synonymy table
 library(vegnasis)
-syns2 <- read.csv('data_raw/syns.csv', encoding = 'UTF-8')
+syns2 <- read.csv('data_raw/syn2.csv', encoding = 'UTF-8')
 usethis::use_data(syns2, overwrite = T)
 
 library(vegnasis)
