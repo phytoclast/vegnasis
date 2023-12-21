@@ -50,8 +50,9 @@ extractTaxon <- function(rawnames, report = 'taxon'){
                    # xxx5=NULL,
                    binomial = trimws(paste(genus, epithet)),
                    taxon = trimws(paste(binomial, infrarank1, infraname1, infrarank2, infraname2)),
+                   infrarank = trimws(ifelse(!infrarank2 %in% "", infrarank2, infrarank1)),
                    infrataxon = trimws(ifelse(!infraname2 %in% "", infraname2, infraname1)),
                    author = trimws(ifelse(!infraauthor2 %in% "", infraauthor2, ifelse(!infraauthor1 %in% "", infraauthor1, binomialauthor)))
   )
-  if(report == 'author'){return(x$author)}else if(report=='binomial'){return(x$binomial)}else if(report == 'genus'){return(x$genus)}else if(report == 'infrataxon'){return(x$infrataxon)}else if(report == 'epithet'){return(x$epithet)}else{return(x$taxon)}
+  if(report == 'author'){return(x$author)}else if(report=='binomial'){return(x$binomial)}else if(report == 'genus'){return(x$genus)}else if(report == 'infrarank'){return(x$infrarank)}else if(report == 'infrataxon'){return(x$infrataxon)}else if(report == 'epithet'){return(x$epithet)}else if(report == 'all'){return(x[,c('genus', 'epithet', 'infrarank', 'infrataxon')])}else{return(x$taxon)}
 }
