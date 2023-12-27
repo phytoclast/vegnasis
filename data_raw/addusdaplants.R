@@ -48,7 +48,13 @@ veg1 = as.VegLog(veg[1:10,])
 veg2 = as.VegLog(veg[50:60,])
 veg3 = c(veg1,veg2)
 
+#family link
+library(vegnasis)
+familylink <- read.csv('data_raw/familylink.csv', encoding = 'UTF-8')
+# gf <- familylink |> group_by(genus) |> mutate(ct = length(genus))
+familylink <- subset(familylink, !(genus %in% 'Banisteria' & family %in% 'Rhamnaceae'))
 
+usethis::use_data(familylink, overwrite = T)
 
 c("Site_Type", "Project_ID", "Observation_ID","Observer_Code",
 "Observation_Serial","Observation_Description","Observation_Label","Observation_Type",
