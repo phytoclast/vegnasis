@@ -1,3 +1,4 @@
+# setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 library(vegnasis)
 PLANTS <- read.csv('data_raw/usdaplantsym.txt')
 USDAfams <- read.csv('data_raw/USDAfams.csv')
@@ -50,9 +51,25 @@ veg3 = c(veg1,veg2)
 
 #family link
 library(vegnasis)
-familylink <- read.csv('data_raw/familylink.csv', encoding = 'UTF-8')
+# familylink <- read.csv('familylink.csv', encoding = 'UTF-8')
+
+# familylink <- familylink[-c(13820,13771),]
+# familylink <- familylink |> rbind(data.frame(family=c('Cactaceae','Cactaceae'), genus=c('X Pachgerocereus','X Pachebergia'), ac=TRUE))
+# # familylink <- familylink |> mutate(genus = ifelse(grepl('Pachgerocereus',genus), 'X Pachgerocereus',genus))
+# # familylink <- familylink |> mutate(genus = ifelse(grepl('Pachebergia',genus), 'X Pachebergia',genus))
+# familylink <- familylink |> subset(!(family %in% 'Taxaceae' & genus %in% 'Cephalotaxus'))
+# familylink <- familylink |> mutate(family = ifelse(genus %in% c('Calatola', 'Oecopetalum', 'Ottoschulzia'), 'Metteniusaceae',family))
+# familylink <- subset(familylink, !(genus %in% 'Banisteria' & family %in% 'Rhamnaceae'))
+# familylink <- familylink |> mutate(genus = extractTaxon(genus)) |> subset(select=c(family,genus)) |> unique()
+# new <- subset(genfams, is.na(family.kew) & !is.na(family), select = c(family, genus.kew)) |> unique()
+# colnames(new) <- c('family', 'genus')
+# new <- new |> mutate(family = ifelse(genus %in% c('×Dryostichum'), 'Dryopteridaceae',family))
+# familylink <- familylink |> rbind(new) |> unique()
+# write.csv(familylink, 'familylink2.csv', fileEncoding = 'UTF-8', row.names = FALSE)
+familylink <- read.csv('data_raw/familylink2.csv', encoding = 'UTF-8')
+
+
 # gf <- familylink |> group_by(genus) |> mutate(ct = length(genus))
-familylink <- subset(familylink, !(genus %in% 'Banisteria' & family %in% 'Rhamnaceae'))
 
 usethis::use_data(familylink, overwrite = T)
 
