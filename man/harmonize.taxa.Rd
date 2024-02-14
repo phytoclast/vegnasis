@@ -11,13 +11,13 @@ harmonize.taxa(taxa, fix = FALSE, sensu = "bonap")
 
 \item{fix}{Optional fix for commonly misapplied Old World binomials to ensure they are assigned to North American species before synonymizing.}
 
-\item{sensu}{Which taxonomy to follow for accepted names (options: BONAP = 'bonap'; Kew's POW = 'kew'; USDA PLANTS = 'usda')}
+\item{sensu}{Which taxonomy to follow for accepted names (options: BONAP = 'bonap'; Kew's POW = 'kew'; World Plants = 'wplants'; USDA PLANTS = 'usda')}
 }
 \value{
 Accepted name
 }
 \description{
-This function synonymizes taxa with BONAP (Biota of North America Program), Kew's Plants of the World Online (POW) circa 2023, or USDA's PLANTS database.  This ensures that aggregating functions work off a shared taxonomic backbone. An option exists to replace commonly misapplied Old World binomials: Equisetum hyemale, Athyrium filix-femina, Cypripedium calceolus, and Osmunda regalis, with: Equisetum praealtum, Athyrium angustum, Cypripedium parviflorum, and Osmunda spectabilis, respectively.
+This function synonymizes taxa with BONAP (Biota of North America Program), Kew's Plants of the World Online (POW) circa 2023 (https://powo.science.kew.org/), World Plants (https://www.worldplants.de/), or USDA's PLANTS database.  This ensures that aggregating functions work off a shared taxonomic backbone. An option exists to replace commonly misapplied Old World binomials: Equisetum hyemale, Athyrium filix-femina, Cypripedium calceolus, and Osmunda regalis, with: Equisetum praealtum, Athyrium angustum, Cypripedium parviflorum, and Osmunda spectabilis, respectively.
 }
 \examples{
 veg <- vegnasis::nasis.veg |> clean.veg()
