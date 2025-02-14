@@ -351,7 +351,7 @@ makeCrownShape <- function(ht.max=5, ht.min=1, crwd=2, dbh, crshape=c('pyramid',
 #' @examples
 cavhull <- function(x,y, concave = TRUE){
   n=10 #number of segments to search between convex faces
-  df <- data.frame(x=tree$x,y=tree$y)
+  df <- data.frame(x=floor(x*1000)/1000,y=floor(y*1000)/1000) |> unique()
   df <- df |> mutate(q = 1:nrow(df))
   rm(x,y)
 
