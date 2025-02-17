@@ -36,18 +36,21 @@ colormixer <- function(colorname, mixcolor, p){
 
 #These functions take shapes and assemble them according to plant attributes by stratum.
 make_tree <- function(ht.max, ht.min, crwd, dbh, crshape, stshape){
+  shapes <- vegnasis::shapes
   crown <- subset(shapes, shape %in% crshape) |> mutate(x=x*crwd, z=z*(ht.max-ht.min)+ht.min, obj='crown')
   base <- subset(shapes, shape %in% stshape) |> mutate(x=x*dbh/100*1.1, z=z*(ht.min), obj='stem')
   tree = rbind(crown, base)
   tree$ptord <- rownames(tree) |> as.numeric()
   return(tree)}
 make_shrub <- function(ht.max, ht.min,crwd, crshape, stshape){
+  shapes <- vegnasis::shapes
   crown <- subset(shapes, shape %in% crshape)  |> mutate(x=x*crwd, z=z*(ht.max-ht.min)+ht.min, obj='crown')
   base <- subset(shapes, shape %in% stshape) |> mutate(x=x*crwd*0.8, z=z*(ht.min), obj='stem')
   shrub = rbind(crown, base)
   shrub$ptord <- rownames(shrub) |> as.numeric()
   return(shrub)}
 make_herb <- function(ht.max,crwd, crshape){
+  shapes <- vegnasis::shapes
   herb <- subset(shapes, shape %in% crshape)  |> mutate(x=x*crwd, z=z*ht.max, obj='herb')
   herb$ptord <- rownames(herb) |> as.numeric()
   return(herb)}
