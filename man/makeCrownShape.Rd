@@ -43,6 +43,7 @@ Make Tree Crown Outline
 }
 \examples{
 #fractal tree with bend ---
+library(ggplot2)
 n=3
 lth=4
 wth = 0.5

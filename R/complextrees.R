@@ -184,6 +184,7 @@ skewStem <- function(stem, amp=0.2, phase=0, waves=1){
 #' @export
 #'
 #' @examples #fractal tree with bend ---
+#' library(ggplot2)
 #' n=3
 #' lth=4
 #' wth = 0.5
@@ -345,7 +346,7 @@ makeCrownShape <- function(ht.max=5, ht.min=1, crwd=2, dbh, crshape=c('pyramid',
 #' @param y Vector of x coordinates.
 #' @param concave Return concave if true, convex if false.
 #'
-#' @returns Vector of indices which determine the ordering of the appropriate points to create an outline around a set of xy points.
+#' @returns Vector of xy points with appropriate ordering to create an outline around a set of input xy points.
 #' @export
 #'
 #' @examples
@@ -353,7 +354,6 @@ cavhull <- function(x,y, concave = TRUE){
   n=10 #number of segments to search between convex faces
   df <- data.frame(x=floor(x*1000)/1000,y=floor(y*1000)/1000) |> unique()
   df <- df |> mutate(q = 1:nrow(df))
-  rm(x,y)
 
   #convex hull ----
   check <- TRUE #stopping rule
@@ -377,18 +377,23 @@ cavhull <- function(x,y, concave = TRUE){
       l0 = ((x1-x0)^2+(y1-y0)^2)^0.5
       a0 = acos((x1-x0)/l0)
       a0 = ifelse(y1 - y0 >=0,a0,-1*a0)
-      df <- df |> mutate(
-        l2 = ((x-x0)^2+(y-y0)^2)^0.5,
-        l1 = ((x-x1)^2+(y-y1)^2)^0.5,
-        a1=acos((l1^2+l0^2-l2^2)/(2*l1*l0)),#formula for corner of triangle known sides
-        a1=ifelse(is.na(a1),0,a1))
+      df <- df |> mutate(xr= x-x1,
+                         yr= y-y1,
+                         h=(xr^2+yr^2)^0.5,
+                         a1=acos(yr/h),
+                         a1=ifelse(xr >=0,a1,-1*a1),
+                         a1= a1+a0,
+                         xr = ifelse(h==0,0,h*sin(a1)),
+                         yr = ifelse(h==0,0,h*cos(a1)),
+                         xr = xr,
+                         a1=asin(yr/h),
+                         a1=ifelse(xr >=0,-a1,pi+a1))
 
-
-      amax = max(subset(df, !s %in% c(i-1,i) )$a1)
-      lmin = min(subset(df, !s %in% c(i-1,i) & a1 %in% amax)$l1)
+      amin = min(subset(df, !s %in% c(i-1,i) )$a1)
+      lmin = min(subset(df, !s %in% c(i-1,i) & a1 %in% amin)$l1)
       df <- df |> mutate(s = ifelse(s %in% 0,NA,s))
-      check <- is.na(subset(df,a1 %in% amax & l1 %in% lmin)$s)
-      df <- df |> mutate(s = ifelse(a1 == amax & is.na(s) & l1 %in% lmin, i+1, s))
+      check <- is.na(subset(df,a1 %in% amin & l1 %in% lmin)$s)
+      df <- df |> mutate(s = ifelse(a1 == amin & is.na(s) & l1 %in% lmin, i+1, s))
     }
   }
   #concave hull first degree ----
@@ -427,9 +432,13 @@ cavhull <- function(x,y, concave = TRUE){
       }
     }}
   #extract the indices of the dataframe cooresponding to the vertices to retain and their appropriate order
-  x <- df$s1
-  xna <- !is.na(x)
-  xnew <- order(x)
-  xnao <- xna[xnew]
-  return(xnew[xnao])
+  # s <- df$s1
+  # xna <- !is.na(s)
+  # xnew <- order(s)
+  # xnao <- xna[xnew]
+  # return(xnew[xnao])
+  #return only the xy instead of indices
+  df <- arrange(subset(df,!is.na(s1), select=c(s1,x,y)),s1)
+  df <- df |> mutate(s=1:nrow(df), s1=NULL)
+  return(df)
 }

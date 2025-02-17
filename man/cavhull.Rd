@@ -14,7 +14,7 @@ cavhull(x, y, concave = TRUE)
 \item{concave}{Return concave if true, convex if false.}
 }
 \value{
-Vector of indices which determine the ordering of the appropriate points to create an outline around a set of xy points.
+Vector of xy points with appropriate ordering to create an outline around a set of input xy points.
 }
 \description{
 Concave Hull
