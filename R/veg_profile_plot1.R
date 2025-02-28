@@ -15,12 +15,7 @@ veg_profile_plot1 <- function(plants, ytrans = 'identity', yratio=1, units = 'm'
   plants <- plants |> mutate(fill=colormixer(fill, fadecolor, round(1-1/(1+((yp-ypmin)/20)),2)),
                              color=colormixer(color, fadecolor, round(1-1/(1+((yp-ypmin)/20)),2)))
 
-  # plants <- plants |> mutate(depth = case_when(yp < ypmin+ypwid*(1/5) ~ 'A',
-  #                                              yp < ypmin+ypwid*(2/5) ~ 'B',
-  #                                              yp < ypmin+ypwid*(3/5) ~ 'C',
-  #                                              yp < ypmin+ypwid*(4/5) ~ 'D',
-  #                                              TRUE ~ 'E'))
-  groundline = data.frame(xn=c(xnmin:xnmax,xnmax,xnmin),
+    groundline = data.frame(xn=c(xnmin:xnmax,xnmax,xnmin),
                           zn=c((xnmin:xnmax)*0,-10,-10))|> mutate(zn = ifelse(zn == 0,zn+xn*xslope/100+
                                                                         xamplitude+xamplitude*sin(xn/xperiod*3.141592*2),zn))
   ground.A = groundline |> mutate(zn = ifelse(zn >= 0,zn+ypwid*yslope/100,zn), fill=colormixer(groundcolor, fadecolor, 0.8), color=groundcolor)
@@ -28,29 +23,6 @@ veg_profile_plot1 <- function(plants, ytrans = 'identity', yratio=1, units = 'm'
   ground.C = groundline |> mutate(zn = ifelse(zn >= 0,zn+ypwid*(3/5)*yslope/100,zn), fill=colormixer(groundcolor, fadecolor, 0.3), color=groundcolor)
   ground.D = groundline |> mutate(zn = ifelse(zn >= 0,zn+ypwid*(2/5)*yslope/100,zn), fill=colormixer(groundcolor, fadecolor, 0.2), color=groundcolor)
   ground.E = groundline |> mutate(zn = ifelse(zn >= 0,zn+ypwid*(1/5)*yslope/100,zn), fill=colormixer(groundcolor, fadecolor, 0.1), color=groundcolor)
-
-
-  # crowns1 <- plants |> subset(depth %in% 'E' & obj %in% c('crown','herb')) |>
-  #   mutate(fill=colormixer(fill, fadecolor, 0.8), color=colormixer(color, fadecolor, 0.8))
-  # crowns2 <- plants |> subset(depth %in% 'D' & obj %in% c('crown','herb')) |>
-  #   mutate(fill=colormixer(fill, fadecolor, 0.6), color=colormixer(color, fadecolor, 0.6))
-  # crowns3 <- plants |> subset(depth %in% 'C' & obj %in% c('crown','herb')) |>
-  #   mutate(fill=colormixer(fill, fadecolor, 0.4), color=colormixer(color, fadecolor, 0.4))
-  # crowns4 <- plants |> subset(depth %in% 'B' & obj %in% c('crown','herb'))|>
-  #   mutate(fill=colormixer(fill, fadecolor, 0.2), color=colormixer(color, fadecolor, 0.2))
-  # crowns5 <- plants |> subset(depth %in% 'A' & obj %in% c('crown','herb'))
-  #
-  # stems1 <- plants |> subset(depth %in% 'E' & obj %in% 'stem')|>
-  #   mutate(fill=colormixer(fill, fadecolor, 0.8), color=colormixer(color, fadecolor, 0.8))
-  # stems2 <- plants |> subset(depth %in% 'D' & obj %in% 'stem')|>
-  #   mutate(fill=colormixer(fill, fadecolor, 0.6), color=colormixer(color, fadecolor, 0.6))
-  # stems3 <- plants |> subset(depth %in% 'C' & obj %in% 'stem')|>
-  #   mutate(fill=colormixer(fill, fadecolor, 0.4), color=colormixer(color, fadecolor, 0.4))
-  # stems4 <- plants |> subset(depth %in% 'B' & obj %in% 'stem')|>
-  #   mutate(fill=colormixer(fill, fadecolor, 0.2), color=colormixer(color, fadecolor, 0.2))
-  # stems5 <- plants |> subset(depth %in% 'A' & obj %in% 'stem')
-  #
-  # plants2 <- rbind(crowns1,crowns2,crowns3,crowns4,crowns5,stems1,stems2,stems3,stems4,stems5)
 
   ground = data.frame(groundline, fill=groundcolor, color=groundcolor)
   #round up all the colors used to correctly assign objects in alphabetical order.
