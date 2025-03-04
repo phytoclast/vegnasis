@@ -8,7 +8,8 @@ makeCrownShape(
   ht.max = 5,
   ht.min = 1,
   crwd = 2,
-  dbh,
+  dbh = 0.3,
+  tip = 0.01,
   crshape = c("pyramid", "dome", "round", "column"),
   n = 5,
   bu = 0.8,
@@ -23,7 +24,9 @@ makeCrownShape(
 
 \item{crwd}{Crown width.}
 
-\item{dbh}{Tree diameter.}
+\item{dbh}{Stem base diameter.}
+
+\item{tip}{Thickness of stem tip.}
 
 \item{crshape}{Basic crown shape (pyramid, dome, round, or column).}
 

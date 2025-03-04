@@ -173,7 +173,8 @@ skewStem <- function(stem, amp=0.2, phase=0, waves=1){
 #' @param ht.max Height of the tree.
 #' @param ht.min Height of the lowest branches.
 #' @param crwd Crown width.
-#' @param dbh Tree diameter.
+#' @param dbh Stem base diameter.
+#' @param tip Thickness of stem tip.
 #' @param crshape Basic crown shape (pyramid, dome, round, or column).
 #' @param n Number of branches.
 #' @param bu Relative position (0-1) of highest branch attachment to tree relative to the top and bottom of the crown.
@@ -291,7 +292,7 @@ skewStem <- function(stem, amp=0.2, phase=0, waves=1){
 #'     # geom_point(data=tree, aes(x=x, y=y), color='green')+
 #'     coord_fixed()
 #'
-makeCrownShape <- function(ht.max=5, ht.min=1, crwd=2, dbh, crshape=c('pyramid','dome','round','column'), n=5, bu=0.8, bl=0, opposite = FALSE){
+makeCrownShape <- function(ht.max=5, ht.min=1, crwd=2, dbh=0.3, tip=0.01, crshape=c('pyramid','dome','round','column'), n=5, bu=0.8, bl=0, opposite = FALSE){
 
   h <- ht.max - ht.min
   wd <- crwd/2
@@ -326,7 +327,8 @@ makeCrownShape <- function(ht.max=5, ht.min=1, crwd=2, dbh, crshape=c('pyramid',
   #angle of branch
   shapes <- shapes |> mutate(l = pmax(dbh/2,((ty-by)^2+(tx-bx)^2)^0.5), a = 360/(2*pi)*acos((ty-by)/l))
   #branch diameter
-  shapes <- shapes |> mutate(d = dbh*pmin(l*2,(ht.max-by))/ht.max+0.01)
+  # shapes <- shapes |> mutate(d = dbh*pmin(l*2,(ht.max-by))/ht.max+0.01)
+  shapes <- shapes |> mutate(d = dbh*pmin(l*2/ht.max,(ht.max-by)/ht.max+tip*by/ht.max)+0.01)
   if(opposite){
     shapes2 <- shapes |> mutate(a = a*-1, tx = tx*-1, i=i+0.5) |> subset(!a %in% 0)
     shapes <- shapes |> rbind(shapes2) |> arrange(i)
