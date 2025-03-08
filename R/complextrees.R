@@ -117,8 +117,8 @@ attachBranch <- function(stem, branch, angle=90, bht, tht=NA, tx=NA){
     summarise(x= sum(amt*x)/sum(amt), y= sum(amt*y)/sum(amt), i= mean(i), type='base', center=0, side=xside, width=bwd)
 
 
-  #determine if stem if branch too close to top
-  if(stemax - bht < 0.05*(stemax-stemin)){
+  #determine if stem if branch too close to top, less than branch width
+  if(stemax - bht < bwd*2){
     #identify where to insert new numbering sequence to maintain correct vertex order
     xdi <- mean(subset(stem, type %in% 'tip')$i)
     #remove tip of stem
