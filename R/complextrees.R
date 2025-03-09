@@ -444,3 +444,41 @@ cavhull <- function(x,y, concave = TRUE){
   df <- df |> mutate(s=1:nrow(df), s1=NULL)
   return(df)
 }
+
+
+#' Rotate XY Coordinates
+#'
+#' @param x vector of x coordinates
+#' @param y vector of y coordinates
+#' @param a angle in degrees
+#' @param cx optional center of rotation x coordinate (default is center of point cloud)
+#' @param cy optional center of rotation y coordinate (default is center of point cloud)
+#'
+#' @returns data frame of rotated xy coordinates
+#' @export
+#'
+#' @examples df <- data.frame(
+#' @examples x=runif(10,0,10),
+#' @examples y=rnorm(10,5,5))
+#' @examples df2 <-  rotate(df$x,df$y, a=2)
+#' @examples plot(df$y ~ df$x)
+#' @examples points(df2$y ~ df2$x, col='red')
+rotate <- function(x, y, a, cx = NA, cy = NA){
+  df <- data.frame(x=x,y=y)
+
+  if(is.na(cx) | is.na(cy)){
+    cx <- mean(df$x)
+    cy <- mean(df$y)}
+
+  df$y0 <- df$y-cy
+  df$x0 <- df$x-cx
+  df$h <- ((df$x0)^2+(df$y0)^2)^0.5
+  df$a0 <- ifelse(df$h==0,0,acos(df$y0/df$h))
+  a1 <- a/360*2*pi
+  df$a0 <- ifelse(df$x0 >= 0,df$a0,-1*df$a0)
+  xr = ifelse(df$h==0,0,df$h*sin(df$a0+a1))+cx
+  yr = ifelse(df$h==0,0,df$h*cos(df$a0+a1))+cy
+
+  rdf <- data.frame(x=xr,y=yr)
+  return(rdf)
+}
