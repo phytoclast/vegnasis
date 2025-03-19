@@ -423,63 +423,64 @@ cavhull <- function(x,y, concavity = 0, curvy = FALSE, mag = 1, deep=FALSE){
       smax <- max(df$s, na.rm = TRUE)
       #visit each convex hull boundary and rotate to a common reference
       for(i in 1:smax){#i=2
-        i0 = ifelse(i == 1,smax,i-1)
-        x0 <- df[df$s %in% (i0),]$x
-        y0 <- df[df$s %in% (i0),]$y
-        x1 <- df[df$s %in% i,]$x
-        y1 <- df[df$s %in% i,]$y
-        l0 <- ((x1-x0)^2+(y1-y0)^2)^0.5
-        a0 = acos((x1-x0)/l0)
-        a0 = ifelse(y1 - y0 >=0,a0,-1*a0)
-        dfr <- vegnasis::rotate(x=df$x, y=df$y, a=a0/2/pi*360, cx=x0, cy=y0)
-        df <- df |> mutate(xr= dfr$x-x0,
-                           yr= dfr$y-y0,
-                           xs=NA,xa=NA,ys=NA,yl0=NA,ydiff=NA,microinc=NA)
-        #use wave to select closest concave points
-        en <- pmax(3,floor(pmin(n,l0/5)))*3
-        #deep curve
-        if(deep & k == concavity){
-          wave0 <- data.frame(x=(0:(en+1))/(en+1))
-          wave0 <- wave0 |> mutate(a=x*2*pi,y=(cos(a)^1-1)/2*mag)
-          wave <- data.frame(x=NA, y=NA, s=NA,l1=NA,a1=NA,xr=wave0$x*l0,
-                             yr=wave0$y*l0,h=NA,s1=NA, type='cave',
+        if(l0 > 0){
+          i0 = ifelse(i == 1,smax,i-1)
+          x0 <- df[df$s %in% (i0),]$x
+          y0 <- df[df$s %in% (i0),]$y
+          x1 <- df[df$s %in% i,]$x
+          y1 <- df[df$s %in% i,]$y
+          l0 <- ((x1-x0)^2+(y1-y0)^2)^0.5
+          a0 = acos((x1-x0)/l0)
+          a0 = ifelse(y1 - y0 >=0,a0,-1*a0)
+          dfr <- vegnasis::rotate(x=df$x, y=df$y, a=a0/2/pi*360, cx=x0, cy=y0)
+          df <- df |> mutate(xr= dfr$x-x0,
+                             yr= dfr$y-y0,
                              xs=NA,xa=NA,ys=NA,yl0=NA,ydiff=NA,microinc=NA)
-          wavr <- vegnasis::rotate(x=wave$xr, y=wave$yr, a=-a0/2/pi*360, cx=0,cy=0)
-          wave <- wave |> mutate(x=wavr$x+x0,y=wavr$y+y0) |> subset(!yr >=0)
-          df <- df |> rbind(rbind(wave))
-        }
-        df <- df |> mutate(xs = xr/l0, xa = xs*2*pi, ys = (cos(xa)^1-1)/2*mag,
-                           yl0 = (yr/l0), ydiff = yl0-ys)
-        curmax <- max(subset(df, xs > 0 & xs < 1)$ydiff)
-        curcur <- subset(df, xs >= 0 & xs <=1  & ydiff == curmax)$ys
-        currat <- ifelse(curmax == 0, 1, 1-curmax/abs(curcur))
-        currat <- ifelse(currat > 1,1,currat)
-        df <- df |> mutate(ys = ys*currat, ydiff = yl0-ys)
-        curmax <- max(subset(df, xs > 0 & xs < 1)$ydiff)
-        curcur <- subset(df, xs >  0 & xs < 1  & ydiff == curmax)$ys
-        currat2 <- ifelse(curmax == 0, 1, 1-curmax/abs(curcur))
-        currat2 <- ifelse(currat2 > 1,1,currat2)
-        df <- df |> mutate(ys = ys*currat2, ydiff = yl0-ys)
-        df$microinc <- NA
-        #introduce wave
-        if(curvy & k == concavity){
-          wave0 <- data.frame(x=(0:(en+1))/(en+1))
-          wave0 <- wave0 |> mutate(a=x*2*pi,y=(cos(a)^1-1)/2*mag)
-          wave <- data.frame(x=NA, y=NA, s=NA,l1=NA,a1=NA,xr=wave0$x*l0,
-                             yr=wave0$y*l0*currat*currat2,h=NA,s1=NA, type='wave',
-                             xs=NA,xa=NA,ys=NA,yl0=NA,ydiff=NA,microinc=NA)
-          wavr <- vegnasis::rotate(x=wave$xr, y=wave$yr, a=-a0/2/pi*360, cx=0,cy=0)
-          wave <- wave |> mutate(x=wavr$x+x0,y=wavr$y+y0) |> subset(!yr >=0)
-          df <- df |> rbind(rbind(wave))
-        }
-        pickthispoint <- min(abs(subset(df, xs >= 0 & xs <=1)$ydiff))
-        df <- df |> mutate(microinc = ifelse((xs >  0 & xs < 1  & round(abs(ydiff),10) %in% round(pickthispoint,10) | type %in% 'wave') & is.na(s1),xr,NA))
+          #use wave to select closest concave points
+          en <- pmax(3,floor(pmin(n,l0/5)))*3
+          #deep curve
+          if(deep & k == concavity){
+            wave0 <- data.frame(x=(0:(en+1))/(en+1))
+            wave0 <- wave0 |> mutate(a=x*2*pi,y=(cos(a)^1-1)/2*mag)
+            wave <- data.frame(x=NA, y=NA, s=NA,l1=NA,a1=NA,xr=wave0$x*l0,
+                               yr=wave0$y*l0,h=NA,s1=NA, type='cave',
+                               xs=NA,xa=NA,ys=NA,yl0=NA,ydiff=NA,microinc=NA)
+            wavr <- vegnasis::rotate(x=wave$xr, y=wave$yr, a=-a0/2/pi*360, cx=0,cy=0)
+            wave <- wave |> mutate(x=wavr$x+x0,y=wavr$y+y0) |> subset(!yr >=0)
+            df <- df |> rbind(rbind(wave))
+          }
+          df <- df |> mutate(xs = xr/l0, xa = xs*2*pi, ys = (cos(xa)^1-1)/2*mag,
+                             yl0 = (yr/l0), ydiff = yl0-ys)
+          curmax <- max(subset(df, xs > 0 & xs < 1)$ydiff)
+          curcur <- subset(df, xs >= 0 & xs <=1  & ydiff == curmax)$ys
+          currat <- ifelse(curmax == 0, 1, 1-curmax/abs(curcur))
+          currat <- ifelse(currat < 0,0, ifelse(currat > 1,1,currat))
+          df <- df |> mutate(ys = ys*currat, ydiff = yl0-ys)
+          curmax <- max(subset(df, xs > 0 & xs < 1)$ydiff)
+          curcur <- subset(df, xs >  0 & xs < 1  & ydiff == curmax)$ys
+          currat2 <- ifelse(curmax == 0, 1, 1-curmax/abs(curcur))
+          currat2 <- ifelse(currat2 < 0,0, ifelse(currat2 > 1,1,currat2))
+          df <- df |> mutate(ys = ys*currat2, ydiff = yl0-ys)
+          df$microinc <- NA
+          #introduce wave
+          if(curvy & k == concavity){
+            wave0 <- data.frame(x=(0:(en+1))/(en+1))
+            wave0 <- wave0 |> mutate(a=x*2*pi,y=(cos(a)^1-1)/2*mag)
+            wave <- data.frame(x=NA, y=NA, s=NA,l1=NA,a1=NA,xr=wave0$x*l0,
+                               yr=wave0$y*l0*currat*currat2,h=NA,s1=NA, type='wave',
+                               xs=NA,xa=NA,ys=NA,yl0=NA,ydiff=NA,microinc=NA)
+            wavr <- vegnasis::rotate(x=wave$xr, y=wave$yr, a=-a0/2/pi*360, cx=0,cy=0)
+            wave <- wave |> mutate(x=wavr$x+x0,y=wavr$y+y0) |> subset(!yr >=0)
+            df <- df |> rbind(rbind(wave))
+          }
+          pickthispoint <- min(abs(subset(df, xs >= 0 & xs <=1)$ydiff))
+          df <- df |> mutate(microinc = ifelse((xs >  0 & xs < 1  & round(abs(ydiff),10) %in% round(pickthispoint,10) | type %in% 'wave') & is.na(s1),xr,NA))
 
-        df$microinc <- renumber(df$microinc)
+          df$microinc <- renumber(df$microinc)
 
-        df <- df |> mutate(s1 = ifelse(!is.na(microinc) & is.na(s), i0+microinc/1000,s1))
-        df <- df |> subset(type %in% 'core' | !is.na(s1))
-      }
+          df <- df |> mutate(s1 = ifelse(!is.na(microinc) & is.na(s), i0+microinc/1000,s1))
+          df <- df |> subset(type %in% 'core' | !is.na(s1))
+        }}
       df <- df |> mutate(s = renumber(s1), s1 = s)
     }
   }
