@@ -117,8 +117,8 @@ attachBranch <- function(stem, branch, angle=90, bht, tht=NA, tx=NA){
     summarise(x= sum(amt*x)/sum(amt), y= sum(amt*y)/sum(amt), i= mean(i), type='base', center=0, side=xside, width=bwd)
 
 
-  #determine if stem if branch too close to top
-  if(stemax - bht < 0.05*(stemax-stemin)){
+  #determine if stem if branch too close to top, less than branch width
+  if(stemax - bht < bwd*2){
     #identify where to insert new numbering sequence to maintain correct vertex order
     xdi <- mean(subset(stem, type %in% 'tip')$i)
     #remove tip of stem
@@ -346,16 +346,33 @@ makeCrownShape <- function(ht.max=5, ht.min=1, crwd=2, dbh=0.3, tip=0.01, crshap
 #'
 #' @param x Vector of x coordinates.
 #' @param y Vector of x coordinates.
-#' @param concave Return concave if true, convex if false.
+#' @param concavity Degrees of concavity: 0 = convex, 1 = first order, 2 = second order...
+#' @param curvy Adds more vertices between truce vertices for a smoother border.
+#' @param mag Magnitude of curve (search deeper for vertices), representing proportion relative to distance between convex vertices.
+#' @param deep Retain vertices of curve even when no vertices are found.
 #'
 #' @returns Vector of xy points with appropriate ordering to create an outline around a set of input xy points.
 #' @export
 #'
 #' @examples
-cavhull <- function(x,y, concave = TRUE){
-  n=10 #number of segments to search between convex faces
+#' @examples df <- data.frame(
+#' @examples x=c(runif(50,0,50)),
+#' @examples y=c(rnorm(50,5,15)),
+#' @examples s = NA)
+#' @examples d1 <- cavhull(df$x,df$y, concavity = 0)
+#' @examples d2 <- cavhull(df$x,df$y, concavity = 1)
+#' @examples d3 <- cavhull(df$x,df$y, concavity = 2, curvy = T)
+#' @examples
+#' @examples ggplot()+
+#' @examples geom_polygon(data=d1,aes(x=x,y=y), color='blue', fill='blue')+
+#' @examples geom_polygon(data=d2,aes(x=x,y=y), color='red', fill='red')+
+#' @examples geom_polygon(data=d3,aes(x=x,y=y), color='green', fill='green')+
+#' @examples geom_point(data=df,aes(x=x,y=y))+
+#' @examples coord_fixed()
+
+cavhull <- function(x,y, concavity = 0, curvy = FALSE, mag = 1, deep=FALSE){
+  n=5 #number of segments to search between convex faces
   df <- data.frame(x=floor(x*1000)/1000,y=floor(y*1000)/1000) |> unique()
-  df <- df |> mutate(q = 1:nrow(df))
 
   #convex hull ----
   check <- TRUE #stopping rule
@@ -399,48 +416,128 @@ cavhull <- function(x,y, concave = TRUE){
     }
   }
   #concave hull first degree ----
-  df <- df |> mutate(s1 = s)
-  if(concave){
-    smax <- max(df$s, na.rm = TRUE)
-    #visit each convex hull boundary and rotate to a common reference
-    for(i in 1:smax){
-      i0=ifelse(i == 1,smax,i-1)
-      x0 <- df[df$s %in% (i0),]$x
-      y0 <- df[df$s %in% (i0),]$y
-      x1 <- df[df$s %in% i,]$x
-      y1 <- df[df$s %in% i,]$y
-      l0 <- ((x1-x0)^2+(y1-y0)^2)^0.5
-      a0 = acos((x1-x0)/l0)
-      a0 = ifelse(y1 - y0 >=0,a0,-1*a0)
-      df <- df |> mutate(xr= x-x0,
-                         yr= y-y0,
-                         h=(xr^2+yr^2)^0.5,
-                         a1=acos(yr/h),
-                         a1=ifelse(xr >=0,a1,-1*a1),
-                         a1= a1+a0,
-                         xr = ifelse(h==0,0,h*sin(a1)),
-                         yr = ifelse(h==0,0,h*cos(a1)),
-                         xr = xr/l0)
-      bottom <- min(l0,abs(min(df[df$xr > -1.25 & df$xr < 1.25 ,]$yr)))*-1
-      df <- df |> mutate(yr= yr/(bottom))
-      #find nearest vertex within n segments of the hull boundary
-      for(j in 1:n){
-        psmin1 <- (subset(df, xr >= (j-1)/n & xr < j/n)$yr)
+  df <- df |> mutate(s1 = s, type = 'core')
 
-        smin1 <- ifelse(length(psmin1)>0,min(psmin1),1)
+  if(concavity > 0){
+    for(k in 1:concavity){ #k=1
+      smax <- max(df$s, na.rm = TRUE)
+      #visit each convex hull boundary and rotate to a common reference
+      for(i in 1:smax){#i=2
+        i0 = ifelse(i == 1,smax,i-1)
+        x0 <- df[df$s %in% (i0),]$x
+        y0 <- df[df$s %in% (i0),]$y
+        x1 <- df[df$s %in% i,]$x
+        y1 <- df[df$s %in% i,]$y
+        l0 <- ((x1-x0)^2+(y1-y0)^2)^0.5
+        a0 = acos((x1-x0)/l0)
+        a0 = ifelse(y1 - y0 >=0,a0,-1*a0)
+        dfr <- vegnasis::rotate(x=df$x, y=df$y, a=a0/2/pi*360, cx=x0, cy=y0)
+        df <- df |> mutate(xr= dfr$x-x0,
+                           yr= dfr$y-y0,
+                           xs=NA,xa=NA,ys=NA,yl0=NA,ydiff=NA,microinc=NA)
+        #use wave to select closest concave points
+        en <- pmax(3,floor(pmin(n,l0/5)))*3
+        #deep curve
+        if(deep & k == concavity){
+          wave0 <- data.frame(x=(0:(en+1))/(en+1))
+          wave0 <- wave0 |> mutate(a=x*2*pi,y=(cos(a)^1-1)/2*mag)
+          wave <- data.frame(x=NA, y=NA, s=NA,l1=NA,a1=NA,xr=wave0$x*l0,
+                             yr=wave0$y*l0,h=NA,s1=NA, type='cave',
+                             xs=NA,xa=NA,ys=NA,yl0=NA,ydiff=NA,microinc=NA)
+          wavr <- vegnasis::rotate(x=wave$xr, y=wave$yr, a=-a0/2/pi*360, cx=0,cy=0)
+          wave <- wave |> mutate(x=wavr$x+x0,y=wavr$y+y0) |> subset(!yr >=0)
+          df <- df |> rbind(rbind(wave))
+        }
+        df <- df |> mutate(xs = xr/l0, xa = xs*2*pi, ys = (cos(xa)^1-1)/2*mag,
+                           yl0 = (yr/l0), ydiff = yl0-ys)
+        curmax <- max(subset(df, xs > 0 & xs < 1)$ydiff)
+        curcur <- subset(df, xs >= 0 & xs <=1  & ydiff == curmax)$ys
+        currat <- ifelse(curmax == 0, 1, 1-curmax/abs(curcur))
+        currat <- ifelse(currat > 1,1,currat)
+        df <- df |> mutate(ys = ys*currat, ydiff = yl0-ys)
+        curmax <- max(subset(df, xs > 0 & xs < 1)$ydiff)
+        curcur <- subset(df, xs >  0 & xs < 1  & ydiff == curmax)$ys
+        currat2 <- ifelse(curmax == 0, 1, 1-curmax/abs(curcur))
+        currat2 <- ifelse(currat2 > 1,1,currat2)
+        df <- df |> mutate(ys = ys*currat2, ydiff = yl0-ys)
+        df$microinc <- NA
+        #introduce wave
+        if(curvy & k == concavity){
+          wave0 <- data.frame(x=(0:(en+1))/(en+1))
+          wave0 <- wave0 |> mutate(a=x*2*pi,y=(cos(a)^1-1)/2*mag)
+          wave <- data.frame(x=NA, y=NA, s=NA,l1=NA,a1=NA,xr=wave0$x*l0,
+                             yr=wave0$y*l0*currat*currat2,h=NA,s1=NA, type='wave',
+                             xs=NA,xa=NA,ys=NA,yl0=NA,ydiff=NA,microinc=NA)
+          wavr <- vegnasis::rotate(x=wave$xr, y=wave$yr, a=-a0/2/pi*360, cx=0,cy=0)
+          wave <- wave |> mutate(x=wavr$x+x0,y=wavr$y+y0) |> subset(!yr >=0)
+          df <- df |> rbind(rbind(wave))
+        }
+        pickthispoint <- min(abs(subset(df, xs >= 0 & xs <=1)$ydiff))
+        df <- df |> mutate(microinc = ifelse((xs >  0 & xs < 1  & round(abs(ydiff),10) %in% round(pickthispoint,10) | type %in% 'wave') & is.na(s1),xr,NA))
 
-        df <- df |> mutate(s1 = case_when(xr >= (j-1)/n & xr < j/n & yr %in% smin1 & yr < 0.5 ~ i0+j/n/100,
-                                          TRUE ~ s1))
+        df$microinc <- renumber(df$microinc)
+
+        df <- df |> mutate(s1 = ifelse(!is.na(microinc) & is.na(s), i0+microinc/1000,s1))
+        df <- df |> subset(type %in% 'core' | !is.na(s1))
       }
-    }}
-  #extract the indices of the dataframe cooresponding to the vertices to retain and their appropriate order
-  # s <- df$s1
-  # xna <- !is.na(s)
-  # xnew <- order(s)
-  # xnao <- xna[xnew]
-  # return(xnew[xnao])
-  #return only the xy instead of indices
-  df <- arrange(subset(df,!is.na(s1), select=c(s1,x,y)),s1)
-  df <- df |> mutate(s=1:nrow(df), s1=NULL)
-  return(df)
+      df <- df |> mutate(s = renumber(s1), s1 = s)
+    }
+  }
+  df <- subset(df, !is.na(s), select=c(x,y,s)) |> arrange(s)
+  return(df)}
+
+#' Rotate XY Coordinates
+#'
+#' @param x vector of x coordinates
+#' @param y vector of y coordinates
+#' @param a angle in degrees
+#' @param cx optional center of rotation x coordinate (default is center of point cloud)
+#' @param cy optional center of rotation y coordinate (default is center of point cloud)
+#'
+#' @returns data frame of rotated xy coordinates
+#' @export
+#'
+#' @examples df <- data.frame(
+#' @examples x=runif(10,0,10),
+#' @examples y=rnorm(10,5,5))
+#' @examples df2 <-  rotate(df$x,df$y, a=2)
+#' @examples plot(df$y ~ df$x)
+#' @examples points(df2$y ~ df2$x, col='red')
+rotate <- function(x, y, a, cx = NA, cy = NA){
+  df <- data.frame(x=x,y=y)
+
+  if(is.na(cx) | is.na(cy)){
+    cx <- mean(df$x)
+    cy <- mean(df$y)}
+
+  df$y0 <- df$y-cy
+  df$x0 <- df$x-cx
+  df$h <- ((df$x0)^2+(df$y0)^2)^0.5
+  df$a0 <- ifelse(df$h==0,0,acos(df$y0/df$h))
+  a1 <- a/360*2*pi
+  df$a0 <- ifelse(df$x0 >= 0,df$a0,-1*df$a0)
+  xr = ifelse(df$h==0,0,df$h*sin(df$a0+a1))+cx
+  yr = ifelse(df$h==0,0,df$h*cos(df$a0+a1))+cy
+
+  rdf <- data.frame(x=xr,y=yr)
+  return(rdf)
 }
+
+#' Renumber a set of numbers
+#'
+#' @param x vector of numbers, including no data.
+#'
+#' @returns vector of numbers converted to sequential integers, ignoring but maintaining no data. Used inside other functions which rearrange vertices for plotting polygons.
+#' @export
+#'
+#' @examples
+renumber <- function(x){
+  n <- length(x)
+  df <- data.frame(s=x, neworder = NA, ind = 1:n)
+  dfsort <- df[order(df$s),]
+  n2 <- length(x[!is.na(x)])
+  if(n2>0){
+    dfsort[!is.na(dfsort$s),]$neworder <- 1:n2
+    s <- dfsort[order(dfsort$ind),]$neworder}else{s <- x}
+  return(s)}
+

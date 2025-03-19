@@ -4,18 +4,39 @@
 \alias{cavhull}
 \title{Concave Hull}
 \usage{
-cavhull(x, y, concave = TRUE)
+cavhull(x, y, concavity = 0, curvy = FALSE, mag = 1, deep = FALSE)
 }
 \arguments{
 \item{x}{Vector of x coordinates.}
 
 \item{y}{Vector of x coordinates.}
 
-\item{concave}{Return concave if true, convex if false.}
+\item{concavity}{Degrees of concavity: 0 = convex, 1 = first order, 2 = second order...}
+
+\item{curvy}{Adds more vertices between truce vertices for a smoother border.}
+
+\item{mag}{Magnitude of curve (search deeper for vertices), representing proportion relative to distance between convex vertices.}
+
+\item{deep}{Retain vertices of curve even when no vertices are found.}
 }
 \value{
 Vector of xy points with appropriate ordering to create an outline around a set of input xy points.
 }
 \description{
 Concave Hull
+}
+\examples{
+df <- data.frame(
+x=c(runif(50,0,50)),
+y=c(rnorm(50,5,15)),
+s = NA)
+d1 <- cavhull(df$x,df$y, concavity = 0)
+d2 <- cavhull(df$x,df$y, concavity = 1)
+d3 <- cavhull(df$x,df$y, concavity = 2, curvy = T)
+ggplot()+
+geom_polygon(data=d1,aes(x=x,y=y), color='blue', fill='blue')+
+geom_polygon(data=d2,aes(x=x,y=y), color='red', fill='red')+
+geom_polygon(data=d3,aes(x=x,y=y), color='green', fill='green')+
+geom_point(data=df,aes(x=x,y=y))+
+coord_fixed()
 }
