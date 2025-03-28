@@ -4,7 +4,15 @@
 \alias{cavhull}
 \title{Concave Hull}
 \usage{
-cavhull(x, y, concavity = 0, curvy = FALSE, mag = 1, deep = FALSE)
+cavhull(
+  x,
+  y,
+  concavity = 0,
+  curvy = FALSE,
+  maxdepth = NA,
+  minspan = 0,
+  mag = 1
+)
 }
 \arguments{
 \item{x}{Vector of x coordinates.}
@@ -15,7 +23,11 @@ cavhull(x, y, concavity = 0, curvy = FALSE, mag = 1, deep = FALSE)
 
 \item{curvy}{Adds more vertices between truce vertices for a smoother border.}
 
-\item{mag}{Magnitude of curve (search deeper for vertices), representing proportion relative to distance between convex vertices.}
+\item{maxdepth}{Maximum depth of concave curve.}
+
+\item{minspan}{Minimum distance between vertices for concavity.}
+
+\item{mag}{Magnitude of search for deeper vertices, representing proportion relative to distance between convex vertices.}
 
 \item{deep}{Retain vertices of curve even when no vertices are found.}
 }
