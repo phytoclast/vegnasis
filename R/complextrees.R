@@ -452,7 +452,6 @@ hull.buffer <- function(x, y, s, b){
 #' @param maxdepth Maximum depth of concave curve.
 #' @param minspan Minimum distance between vertices for concavity.
 #' @param mag Magnitude of search for deeper vertices, representing proportion relative to distance between convex vertices.
-#' @param deep Retain vertices of curve even when no vertices are found.
 #'
 #' @returns Vector of xy points with appropriate ordering to create an outline around a set of input xy points.
 #' @export

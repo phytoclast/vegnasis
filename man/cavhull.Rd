@@ -28,8 +28,6 @@ cavhull(
 \item{minspan}{Minimum distance between vertices for concavity.}
 
 \item{mag}{Magnitude of search for deeper vertices, representing proportion relative to distance between convex vertices.}
-
-\item{deep}{Retain vertices of curve even when no vertices are found.}
 }
 \value{
 Vector of xy points with appropriate ordering to create an outline around a set of input xy points.
