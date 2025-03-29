@@ -40,13 +40,13 @@ makeStem <- function(lth, wth, tip=0.01, inc=10){
 #' @param angle Angle of branch from the vertical in degrees.
 #' @param bht Height of branch attachment point on stem.
 #' @param tht Optional total height of tree instead of specifying angle.
-#' @param tx
+#' @param tx Optional total width of crown to determine angle when used with branch tip height.
 #'
 #' @returns Stem object with attached branch.
 #' @export
 #'
 #' @examples
-attachBranch <- function(stem, branch, angle=90, bht, tht=NA, tx=NA){
+attachBranch <- function(stem, branch, angle=90, bht, tht=NA, tx=NA, retip=FALSE){
   #establish permanent columns to end up with
   original <- colnames(stem)
 
@@ -117,14 +117,16 @@ attachBranch <- function(stem, branch, angle=90, bht, tht=NA, tx=NA){
     summarise(x= sum(amt*x)/sum(amt), y= sum(amt*y)/sum(amt), i= mean(i), type='base', center=0, side=xside, width=bwd)
 
 
+  # #manually determine whether to remove stem tip
+  # if(retip){
   #determine if stem if branch too close to top, less than branch width
-  if(stemax - bht < bwd*2){
+  if(stemax - bht < bwd & angle < 0.5*pi){
     #identify where to insert new numbering sequence to maintain correct vertex order
     xdi <- mean(subset(stem, type %in% 'tip')$i)
     #remove tip of stem
-    steminternal <- stem |> subset(!type %in% 'tip' & !(y > (stemax - 0.05*(stemax-stemin)) & type %in% 'mid'))
+    steminternal <- stem |> subset(!type %in% 'tip' & !(y > (stemax - bwd) & type %in% 'mid'))
     #assemble branch with new base, omitting internal vertices
-    branchinternal <- branch |> subset(select=original) |> rbind(newbase[,original]) |> mutate(i = xdi + i/10000, type=paste0('b',type), inside = NULL, h=NULL,a=NULL)  |> arrange(i)
+    branchinternal <- branch |> subset(angle < 0.25*pi | inside >= 0) |> subset(select=original) |> rbind(newbase[,original]) |> mutate(i = xdi + i/10000, type=paste0('b',type), inside = NULL, h=NULL,a=NULL)  |> arrange(i)
   }else{
     #remove stem vertices that may be covered by new branch
     steminternal <- stem |> subset(!(x >= min(internal$x) & x <= max(internal$x) & y >= min(internal$y) & y <= max(internal$y))) |> subset(select=original)
