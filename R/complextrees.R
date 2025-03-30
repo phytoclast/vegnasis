@@ -400,7 +400,7 @@ hull.buffer <- function(x, y, s, b){
     l0 <- ((x1-x0)^2+(y1-y0)^2)^0.5
     l2 <- ((x1-x2)^2+(y1-y2)^2)^0.5
 
-    a0 = acos((x1-x0)/l0)
+    a0 = acos(pmin(1,(x1-x0)/l0))
     a0 = ifelse(y1 - y0 >=0,a0,-1*a0)
     dfr <- vegnasis::rotate(x=x1, y=y1, a=a0/2/pi*360, cx=x0, cy=y0)
     xr1 <- dfr$x[1]
@@ -408,7 +408,7 @@ hull.buffer <- function(x, y, s, b){
     dfr <- vegnasis::rotate(x=x2, y=y2, a=a0/2/pi*360, cx=x0, cy=y0)
     xr2 <- dfr$x
     yr2 <- dfr$y
-    a2 <- acos((xr2-xr1)/l2)
+    a2 <- acos(pmin(1,(xr2-xr1)/l2))
     a2 <- ifelse(yr2 - yr1 >=0,a2,-1*a2)
     a3 <- pi-(pi-a2)/2
     yr3 <- f*sin(a3)+yr1
@@ -551,8 +551,8 @@ cavhull <- function(x,y, concavity = 0, curvy = FALSE, maxdepth=NA, minspan=0, m
                              xs=NA,xa=NA,ys=NA,yl0=NA,ydiff=NA,microinc=NA)
           #use wave to select closest concave points
           en <- pmax(3,floor(pmin(n,l0/5)))*3
-
-          df <- df |> mutate(xs = xr/l0, xa = xs*2*pi, ys = (cos(xa)^1-1)/2*mag,
+          #rounding of xs necessary due to inexact numbers; sometimes 1 is not 1.
+          df <- df |> mutate(xs = round(xr/l0,6), xa = xs*2*pi, ys = (cos(xa)^1-1)/2*mag,
                              yl0 = (yr/l0), ydiff = yl0-ys)
           curmax <- max(subset(df, xs > 0 & xs < 1)$ydiff)
           curcur <- subset(df, xs >= 0 & xs <=1  & ydiff == curmax)$ys
