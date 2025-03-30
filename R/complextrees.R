@@ -491,26 +491,26 @@ cavhull <- function(x,y, concavity = 0, curvy = FALSE, maxdepth=NA, minspan=0, m
                      a1=acos((x-x1)/l1)/2/pi*360,
                      a1=ifelse(y-y1 >=0,a1,-1*a1))
   amin = min(subset(df, !s %in% 1)$a1)
-  df <- df |> mutate(s = ifelse(a1 == amin & is.na(s), 0, s))
+  lmin = min(subset(df, !s %in% 1 & a1 %in% amin)$l1)
+  df <- df |> mutate(s = ifelse(a1 == amin & l1 == lmin & is.na(s), 0, s))
   for(i in 1:nrow(df)){
-    if(check){
+    if(check){#i=5
       x0 <- df[df$s %in% (i-1),]$x
       y0 <- df[df$s %in% (i-1),]$y
       x1 <- df[df$s %in% i,]$x
       y1 <- df[df$s %in% i,]$y
       l0 = ((x1-x0)^2+(y1-y0)^2)^0.5
-      a0 = acos((x1-x0)/l0)
+      a0 = round(acos((x1-x0)/l0),9)
       a0 = ifelse(y1 - y0 >=0,a0,-1*a0)
       df <- df |> mutate(xr= x-x1,
                          yr= y-y1,
-                         h=(xr^2+yr^2)^0.5,
-                         a1=acos(yr/h),
+                         l1=round((xr^2+yr^2)^0.5,9),
+                         a1=round(acos(yr/l1),9),
                          a1=ifelse(xr >=0,a1,-1*a1),
                          a1= a1+a0,
-                         xr = ifelse(h==0,0,h*sin(a1)),
-                         yr = ifelse(h==0,0,h*cos(a1)),
-                         xr = xr,
-                         a1=asin(yr/h),
+                         xr = round(ifelse(l1==0,0,l1*sin(a1)),9),
+                         yr = round(ifelse(l1==0,0,l1*cos(a1)),9),
+                         a1=asin(round(yr/l1,9)),
                          a1=ifelse(xr >=0,-a1,pi+a1))
 
       amin = min(subset(df, !s %in% c(i-1,i) )$a1)
@@ -527,7 +527,7 @@ cavhull <- function(x,y, concavity = 0, curvy = FALSE, maxdepth=NA, minspan=0, m
     if(is.na(maxdepth)){maxdepth=-1*minXY(x=df$x,y=df$y)/2}else{maxdepth=-1*maxdepth}
     buff0 <- hull.buffer(df$x, df$y, df$s, b=maxdepth)
     buff <- data.frame(x=buff0$x, y=buff0$y, s=NA,l1=NA,a1=NA,xr=NA,
-                       yr=NA,h=NA,s1=NA, type='core1')
+                       yr=NA,s1=NA, type='core1')
     df <- df |> rbind(rbind(buff))
   }
   if(concavity > 0){
@@ -551,7 +551,7 @@ cavhull <- function(x,y, concavity = 0, curvy = FALSE, maxdepth=NA, minspan=0, m
                              xs=NA,xa=NA,ys=NA,yl0=NA,ydiff=NA,microinc=NA)
           #use wave to select closest concave points
           en <- pmax(3,floor(pmin(n,l0/5)))*3
-          #rounding of xs necessary due to inexact numbers; sometimes 1 is not 1.
+
           df <- df |> mutate(xs = round(xr/l0,6), xa = xs*2*pi, ys = (cos(xa)^1-1)/2*mag,
                              yl0 = (yr/l0), ydiff = yl0-ys)
           curmax <- max(subset(df, xs > 0 & xs < 1)$ydiff)
@@ -559,10 +559,11 @@ cavhull <- function(x,y, concavity = 0, curvy = FALSE, maxdepth=NA, minspan=0, m
           currat <- ifelse(curmax == 0, 1, 1-curmax/abs(curcur))
           currat <- ifelse(currat < 0,0, ifelse(currat > 1,1,currat))
           df <- df |> mutate(ys = ys*currat, ydiff = yl0-ys)
-          curmax <- max(subset(df, xs > 0 & xs < 1)$ydiff)
-          curcur <- subset(df, xs >  0 & xs < 1  & ydiff == curmax)$ys
-          currat2 <- ifelse(curmax == 0, 1, 1-curmax/abs(curcur))
+          curmax2 <- max(subset(df, xs > 0 & xs < 1)$ydiff)
+          curcur2 <- subset(df, xs >  0 & xs < 1  & ydiff == curmax2)$ys
+          currat2 <- ifelse(curmax2 == 0, 1, 1-curmax2/abs(curcur2))
           currat2 <- ifelse(currat2 < 0,0, ifelse(currat2 > 1,1,currat2))
+          # df <- df |> mutate(check = xs <1)
           df <- df |> mutate(ys = ys*currat2, ydiff = yl0-ys)
           df$microinc <- NA
           #introduce wave
@@ -570,7 +571,7 @@ cavhull <- function(x,y, concavity = 0, curvy = FALSE, maxdepth=NA, minspan=0, m
             wave0 <- data.frame(x=(0:(en+1))/(en+1))
             wave0 <- wave0 |> mutate(a=x*2*pi,y=(cos(a)^1-1)/2*mag)
             wave <- data.frame(x=NA, y=NA, s=NA,l1=NA,a1=NA,xr=wave0$x*l0,
-                               yr=wave0$y*l0*currat*currat2,h=NA,s1=NA, type='wave',
+                               yr=wave0$y*l0*currat*currat2,s1=NA, type='wave',
                                xs=NA,xa=NA,ys=NA,yl0=NA,ydiff=NA,microinc=NA)
             wavr <- vegnasis::rotate(x=wave$xr, y=wave$yr, a=-a0/2/pi*360, cx=0,cy=0)
             wave <- wave |> mutate(x=wavr$x+x0,y=wavr$y+y0) |> subset(!yr >=0)
