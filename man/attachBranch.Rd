@@ -4,7 +4,7 @@
 \alias{attachBranch}
 \title{Attach branch to stem}
 \usage{
-attachBranch(stem, branch, angle = 90, bht, tht = NA, tx = NA)
+attachBranch(stem, branch, angle = 90, bht, tht = NA, tx = NA, retip = FALSE)
 }
 \arguments{
 \item{stem}{Name of the primary stem object.}
@@ -17,7 +17,7 @@ attachBranch(stem, branch, angle = 90, bht, tht = NA, tx = NA)
 
 \item{tht}{Optional total height of tree instead of specifying angle.}
 
-\item{tx}{}
+\item{tx}{Optional total width of crown to determine angle when used with branch tip height.}
 }
 \value{
 Stem object with attached branch.

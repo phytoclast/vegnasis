@@ -22,14 +22,26 @@ make_hex_stand <- function(hects=1, minsize=1){
 }
 
 #This mixes a background color to an objects color to help object fade into distance and give illusion of depth
+#' Color mixer
+#'
+#' @param colorname Name or hex code for main color of object (can include alpha for transparency).
+#' @param mixcolor Color used for fading into (maintaining the same alpha as main color).
+#' @param p proportion of fading into the mix color.
+#'
+#' @returns Faded color.
+#' @export
+#'
+#' @examples crowncolor='darkgreen'; fadecolor = "#D9F2FF"
+#' @examples colormixer(crowncolor, fadecolor, 0.5)
 colormixer <- function(colorname, mixcolor, p){
-  ccc <- col2rgb(colorname)
-  ccc <- data.frame(r = ccc[1,],   g = ccc[2,],   b = ccc[3,])
+  ccc <- col2rgb(colorname, alpha = TRUE)
+  ccc <- data.frame(r = ccc[1,],   g = ccc[2,],   b = ccc[3,], a = ccc[4,])
   mmm <- col2rgb(mixcolor)
   new <- ccc |> mutate(r = r*(1-p)+mmm[1,1]*p,
                        g = g*(1-p)+mmm[2,1]*p,
-                       b = b*(1-p)+mmm[3,1]*p)
-  new <- rgb(new$r,new$g,new$b, maxColorValue = 255)
+                       b = b*(1-p)+mmm[3,1]*p,
+                       a = a)
+  new <- rgb(new$r, new$g, new$b, alpha = new$a,  maxColorValue = 255)
   return(new)
 }
 
