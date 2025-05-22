@@ -3,7 +3,7 @@
 #' @param taxa Vector of taxon names
 #' @param State State postal abbreviation
 #'
-#' @return Vector of statuses: "yes" = documented in the state; "not" = not documented in the state; "unknown" = distribution unknown.
+#' @return Vector of statuses: "pass" = documented in the state; "check" = not documented in the state; "unknown" = distribution unknown.
 #' @export
 #'
 #' @examples veg.raw <- vegnasis::veg.raw20250414
@@ -18,7 +18,7 @@ check.phytogeography <- function(taxa,State){
 
   vtaxon <- extractTaxon(harmonize.taxa(taxa, sensu = 'usda'),report ='binomial')
   v <- data.frame(taxa=taxa,vtaxon=vtaxon)
-  v <- v |> mutate(habit = get.habit.code(vtaxon), documented = ifelse(vtaxon %in% u$utaxon, 'yes','not'),
-                   documented = ifelse(documented %in% 'not' & grepl('^N',habit) | is.na(taxa) | grepl('×', taxa), 'unknown',documented))
+  v <- v |> mutate(habit = get.habit.code(vtaxon), documented = ifelse(vtaxon %in% u$utaxon, 'pass','check'),
+                   documented = ifelse(documented %in% 'check' & grepl('^N',habit) | is.na(taxa) | grepl('×', taxa), 'unknown',documented))
   return(v$documented)
 }

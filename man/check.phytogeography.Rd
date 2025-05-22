@@ -12,7 +12,7 @@ check.phytogeography(taxa, State)
 \item{State}{State postal abbreviation}
 }
 \value{
-Vector of statuses: "yes" = documented in the state; "not" = not documented in the state; "unknown" = distribution unknown.
+Vector of statuses: "pass" = documented in the state; "check" = not documented in the state; "unknown" = distribution unknown.
 }
 \description{
 This tool checks a list of species against a known state distribution, documented with vouchers deposited in a herbarium. If the plant comes up not documented, it is possible that plant was identified incorrectly or the wrong PLANTS symbol was used. But it is also possible that the plant represents a new record of the species in that state, and should be vouchered. At this time, only USDA PLANTS database as of 2025 is consulted. Checking  local state flora databases or alternative websites like bonap.net is recommended to be certain as taxonomic opinions may vary. Non-vascular plants and hybrids are excluded from consideration due to less comprehensive documentation.
