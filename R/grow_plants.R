@@ -1,4 +1,22 @@
 #This function prepares strata for plotting.
+#' Prepare strata for drawing plant profiles.
+#'
+#'
+#'This function takes a standardized vegetation dataframe and fills in details necessary to construct diagrammatic representation of the plants within a vegetation. Among the details are assumptions regarding missing stem diameters, crown widths, and density. Plant dimension and placement are randomized slightly after initial values are established. For best results, be sure to limit to one plot record at a time. Dimensions of the plot sets up the number of plants needing to be planted to fill the desired limits, but the xy limits themselves are set in a seperate graphing function.
+
+#' @param veg Standardized vegetation plot data frame.
+#' @param plength Plot length to be viewed on the x-axis.
+#' @param pwidth Plot width to be viewed as depth into the screen from the side profile perspective (or y-axis in top-down horizonal view).
+#'
+#' @returns Data frame with coordinates for plant outlines
+#' @export
+#'
+#' @examples
+#' veg.raw <-  vegnasis::nasis.veg
+#' veg <- clean.veg(veg.raw)
+#' veg.select <- subset(veg,  grepl('2022MI165021.P',plot))
+#' plants <- grow_plants(veg.select)
+
 grow_plants <- function(veg, plength = 50, pwidth=20){
   veg <- veg  |> fill.type.df() |> fill.hts.df()
   #check to see if habit code exists, then only fill in missing values---
@@ -11,7 +29,7 @@ grow_plants <- function(veg, plength = 50, pwidth=20){
   veg <- veg |> mutate(cw =  case_when(grepl('^T', habit) | ht.max > 5 ~ pmax(est_crown_width(dbh.r),1),
                                        grepl('^S', habit) ~ pmax(pmin(3,ht.max),1),
                                        TRUE ~ 1))
-  veg <- veg |> mutate(density =  density_from_cw(cover, cw))
+  veg <- veg |> mutate(density =  nstem(cover, cw))
   veg <- veg |> mutate(BA.r =  BA_per_ha(density, dbh.r))
 
   veg <- veg |> group_by(plot) |> mutate(BA.sum = sum(BA, na.rm = T), BA.rsum = sum(BA.r, na.rm = T), BA.sum = ifelse(is.na(BA.sum) | BA.sum <=0, BA.rsum,BA.sum), BA.ratio = BA.sum/BA.rsum,  BA.rsum = NULL)#
@@ -21,18 +39,18 @@ grow_plants <- function(veg, plength = 50, pwidth=20){
                        cw = ifelse(ht.max <= 5, cw, round(cw*BA.ratio^-0.5,1)))
 
   veg <- veg |> mutate(crshape0 = case_when(grepl('^T', habit) & grepl('NE', habit) ~ 'conifer1',
-                                           grepl('^T', habit) & grepl('N', habit) ~ 'conifer3',
-                                           grepl('^T', habit) & grepl('P', habit) ~ 'palm',
-                                           grepl('^T', habit) & grepl('F', habit) ~ 'palm',
-                                           grepl('^T', habit) & grepl('BE', habit) ~ 'blob2',
-                                           grepl('^T', habit)  ~ 'blob1',
-                                           grepl('^S', habit) & grepl('P', habit) ~ 'palm',
-                                           grepl('^S', habit) & grepl('F', habit) ~ 'palm',
-                                           grepl('^S', habit) & grepl('BE', habit) ~ 'blob2',
-                                           grepl('^S', habit) ~ 'cloud1',
-                                           grepl('FE', habit) ~ 'ferny',
-                                           grepl('^H', habit) & grepl('F', habit) ~ 'forby',
-                                           grepl('^H', habit) & type %in% 'grass/grasslike' ~ 'grassy'),
+                                            grepl('^T', habit) & grepl('N', habit) ~ 'conifer3',
+                                            grepl('^T', habit) & grepl('P', habit) ~ 'palm',
+                                            grepl('^T', habit) & grepl('F', habit) ~ 'palm',
+                                            grepl('^T', habit) & grepl('BE', habit) ~ 'blob2',
+                                            grepl('^T', habit)  ~ 'blob1',
+                                            grepl('^S', habit) & grepl('P', habit) ~ 'palm',
+                                            grepl('^S', habit) & grepl('F', habit) ~ 'palm',
+                                            grepl('^S', habit) & grepl('BE', habit) ~ 'blob2',
+                                            grepl('^S', habit) ~ 'cloud1',
+                                            grepl('FE', habit) ~ 'ferny',
+                                            grepl('^H', habit) & grepl('F', habit) ~ 'forby',
+                                            grepl('^H', habit) & type %in% 'grass/grasslike' ~ 'grassy'),
                        crfill0 = case_when(grepl('^T', habit) & grepl('NE', habit) ~ '#1A801A',
                                            grepl('^T', habit) & grepl('N', habit) ~ 'green',
                                            grepl('^T', habit) & grepl('P', habit) ~ 'green',
@@ -61,11 +79,11 @@ grow_plants <- function(veg, plength = 50, pwidth=20){
                                             grepl('^H', habit) & type %in% 'grass/grasslike' ~ '#4D8000'),
 
                        stshape0 = case_when(grepl('^T', habit) & grepl('N', habit) ~ 'trunk',
-                                           grepl('^T', habit)  ~ 'trunk',
-                                           grepl('^S', habit)  ~ 'sticks',
-                                           grepl('FE', habit) ~ NA,
-                                           grepl('F', habit) ~ NA,
-                                           type %in% 'grass/grasslike' ~ NA),
+                                            grepl('^T', habit)  ~ 'trunk',
+                                            grepl('^S', habit)  ~ 'sticks',
+                                            grepl('FE', habit) ~ NA,
+                                            grepl('F', habit) ~ NA,
+                                            type %in% 'grass/grasslike' ~ NA),
                        stfill0 = case_when(grepl('^T', habit) & grepl('N', habit) ~ 'orange',
                                            grepl('^T', habit)  ~ 'orange',
                                            grepl('^S', habit)  ~ 'orange',
@@ -83,7 +101,7 @@ grow_plants <- function(veg, plength = 50, pwidth=20){
                                      grepl('^H', habit)  ~ 'H'),
                        stems = round(plength*pwidth/10000*density,0) #count number of stem objects required plot size.
   )
-#Check if user defined values exist for shape, fill, and color.
+  #Check if user defined values exist for shape, fill, and color.
   if('crshape' %in% colnames(veg)){
     veg <- veg |> mutate(crshape = ifelse(is.na(crshape), crshape0, crshape), crshape0=NULL)}else{
       veg <- veg |> mutate(crshape = crshape0, crshape0=NULL)}
@@ -114,13 +132,31 @@ grow_plants <- function(veg, plength = 50, pwidth=20){
   stand <- make_hex_stand(plength/100,1) |> subset(yp >= mean(yp)-pwidth/2 & yp < mean(yp)+pwidth/2) |> mutate(wtn = wt, stratid = NA)
 
   #assign stump locations per stratum
-  for (i in 1:nrow(strats)){#i=1
+  stand <- stand |> mutate(shd = 0,d = 0)
+
+  for(i in 1:nrow(strats)){#i=1
     thistrat = strats$seq[i]
+    thiscw = strats$cw[i]
     nstems = strats$stems[i]
-    newstumps <- sample(stand$stumpid, size = nstems, prob = stand$wtn^2, replace = T)
-    stand <- stand |> mutate(wtn = ifelse(stand$stumpid %in% newstumps, 0.0001, wtn),
-                             stratid = ifelse(stand$stumpid %in% newstumps, thistrat,stratid))
+    for(n in 1:nstems){#n=1
+      empty <- stand[is.na(stand$stratid),]
+      if(nrow(empty) > 0){
+        empty <- empty[sample(1:nrow(empty),size=1, replace = FALSE, prob = empty$wt),]$stumpid
+
+        newtree <- subset(stand, stumpid %in% empty)
+        newtree <- newtree |> mutate(cwd = thiscw)
+        stand <- stand |> mutate(d = ((newtree$yp-yp)^2+(newtree$xp-xp)^2)^0.5,
+                                 shd = ifelse(d < newtree$cwd/2, shd+0.1,shd),
+                                 wt = ifelse(shd <= 0, 1,ifelse(shd <= 0.1, 0.1, 0.01)),
+                                 stratid = ifelse(stumpid %in% empty, thistrat, stratid))}
+    }
   }
+
+
+
+
+
+
 
   #Create shapes of the right size, then distribute into the stump positions.
   for (i in 1:nrow(strats)){#i=1
