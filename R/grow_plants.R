@@ -18,6 +18,17 @@
 #' plants <- grow_plants(veg.select)
 
 grow_plants <- function(veg, plength = 50, pwidth=20){
+  strats <- setstrats(veg, plength = plength, pwidth=pwidth)
+  stand <- setstand(strats, plength = plength, pwidth=pwidth)
+  plants <- setplants(strats, stand)
+  return(plants)
+}
+
+
+########
+
+
+setstrats <- function(veg, plength = 50, pwidth=20){
   veg <- veg  |> fill.type.df() |> fill.hts.df()
   #check to see if habit code exists, then only fill in missing values---
   if(!'habit'%in% colnames(veg)){veg <- veg |> mutate(habit = get.habit.code(taxon))
@@ -126,8 +137,15 @@ grow_plants <- function(veg, plength = 50, pwidth=20){
   strats <- veg |> subset(fun %in% c('T','S','H') & stems > 0) |> arrange(plot,-ht.max, -cover)#reduce to strata which have models and are not empty of stems
   strats$seq <- c(1:nrow(strats))
   strats <- strats |> group_by(plot) |> mutate(seqmin = min(seq), seq = seq-seqmin+1, seqmin = NULL)
+  return(strats)
+}
 
 
+########
+
+
+
+setstand <- function(strats, plength = 50, pwidth=20){
   #Establish a stand 50 by 20 m.
   stand <- make_hex_stand(plength/100,1) |> subset(yp >= mean(yp)-pwidth/2 & yp < mean(yp)+pwidth/2) |> mutate(wtn = wt, stratid = NA)
 
@@ -151,12 +169,14 @@ grow_plants <- function(veg, plength = 50, pwidth=20){
                                  stratid = ifelse(stumpid %in% empty, thistrat, stratid))}
     }
   }
+  return(stand)
+}
 
 
+########
 
 
-
-
+setplants <- function(strats, stand){
 
   #Create shapes of the right size, then distribute into the stump positions.
   for (i in 1:nrow(strats)){#i=1
@@ -171,6 +191,7 @@ grow_plants <- function(veg, plength = 50, pwidth=20){
     if(i==1){plants <- plant0}else{plants <- rbind(plants,plant0)}
   }
 
+
   #randomize sizes and positions
   plants <- plants |> group_by(stumpid) |>
     mutate(ht.max = max(z), crwd = max(x)-min(x),
@@ -179,6 +200,7 @@ grow_plants <- function(veg, plength = 50, pwidth=20){
            xr = (rnorm(1,(ht.max+0.01), (ht.max+0.01)/10)/(ht.max+0.01)+rnorm(1,crwd, crwd/10)/crwd)/2,#deviation in width partially related to height
            xn = x*xr+xpp,#resized width and put on new position
            zn = z*zr*(1-1/15))#resized height adjusted downward show that variation is less than max height in the field
-
+plants <- subset(plants, !fill %in% c('NULL','NA'))
   return(plants)
 }
+

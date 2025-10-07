@@ -201,7 +201,7 @@ tree.002 <- function(ht.max,
     cstem <- attachBranch(cstem, branchB, shapes$a[i], shapes$by[i])#branches to attach crown
   }
   crown <- cstem |> subset(grepl('tip',type))
-  crown <- vegnasis::cavhull(x=crown$x,y=crown$y, concave = F)
+  crown <- vegnasis::cavhull(x=crown$x,y=crown$y, concavity = 0)
 
 
   crown <- crown |> mutate(z=y, shape = 'hardwoodcrown',  fill='green', color='darkgreen', obj='crown', ptord=i) |> select(c("x","z","shape","fill","color","obj","ptord"))
