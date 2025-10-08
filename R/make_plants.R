@@ -94,6 +94,17 @@ make_plant<- function(fun, ht.max, ht.min,crwd,dbh, crshape, stshape){
   return(plant)
 }
 
+make_plant.overhead<- function(crwd, dbh, crshape, stshape){
+  crshape <- case_when(crshape %in% c('conifer','conifer1','conifer2','conifer3','palm','boreal') ~ 'conifer',
+                       TRUE ~ 'hardwood')
+  crown <- subset(overheadshapes, shape %in% crshape) |> mutate(x=x*crwd, y=y*crwd, obj='crown')
+  base <- subset(overheadshapes, shape %in% 'circle') |> mutate(x=x*dbh/100*1.1, y=y*dbh/100*1.1, obj='stem')
+  plant = rbind(crown, base)
+  plant$ptord <- rownames(plant) |> as.numeric()
+
+  return(plant)
+}
+
 
 ####
 tree.001 <- function(ht.max,

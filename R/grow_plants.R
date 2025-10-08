@@ -204,3 +204,31 @@ plants <- subset(plants, !fill %in% c('NULL','NA'))
   return(plants)
 }
 
+
+
+setplants.overhead <- function(strats, stand){
+
+  #Create shapes of the right size, then distribute into the stump positions.
+  for (i in 1:nrow(strats)){#i=1
+    thistrat <- strats[i,]
+    plant0 <- make_plant.overhead(crwd=thistrat$cw,dbh=thistrat$dbh.r,
+                                  crshape=thistrat$crshape, stshape=thistrat$stshape)
+    stumps0 <- stand |> subset(stratid %in% i)
+    plant0 <- merge(stumps0, plant0) |> mutate(objid = paste0(stratid,obj,stumpid))
+    colors0 <- subset(thistrat, select=c(crfill, stfill, crcolor, stcolor))
+    plant0 <- merge(plant0,colors0) |> mutate(fill = ifelse(obj %in% c('crown','herb'), crfill, stfill),
+                                              color = ifelse(obj %in% c('crown','herb'), crcolor, stcolor),
+                                              crfill = NULL, stfill = NULL, crcolor = NULL, stcolor = NULL)
+    if(i==1){plants <- plant0}else{plants <- rbind(plants,plant0)}
+  }
+
+  #randomize sizes and positions
+  plants <- plants |> group_by(stumpid) |>
+    mutate(crwd = max(x)-min(x),
+           xpp = xp + runif(1, min = -0.8, max = 0.8),#shift position on grid
+           ypp = yp + runif(1, min = -0.8, max = 0.8),#shift position on grid
+           xn = x+xpp,#resized width and put on new position
+           yn = y+ypp)#resized width and put on new position
+  plants <- subset(plants, !fill %in% c('NULL','NA'))
+  return(plants)
+}
