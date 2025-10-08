@@ -38,7 +38,7 @@ veg_overhead_plot <- function(plants, units = 'm', gridalpha=0.3, groundcolor="#
     crowns0 <- plants0 |> subset(obj %in% c('crown','herb'))
     gp = gp+
       geom_polygon(data=stems0, aes(x=xn,y=yn,group=objid, fill=fill, color=color), alpha=1, linewidth=0.01)+
-      geom_polygon(data=crowns0, aes(x=xn,y=yn,group=objid, fill=fill, color=color), alpha=1, linewidth=0.01)
+      geom_polygon(data=crowns0, aes(x=xn,y=yn,group=objid, fill=fill), color=NULL, alpha=1, linewidth=0.01)
 
   }
   gp = gp +
