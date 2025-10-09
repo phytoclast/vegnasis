@@ -1,4 +1,39 @@
-veg_profile_plot1 <- function(plants, ytrans = 'identity', yratio=1, units = 'm', skycolor = "#D9F2FF80", fadecolor = "#D9F2FF", gridalpha=0.3, groundcolor="#808066", xlim=c(0,50), ylim=c(-1, zmax+5), xticks=5, yticks=5, xslope=0, yslope=0, xperiod=10, xamplitude=0){
+#' Draw plant profile diagram of vegetation
+#'
+#' This function takes a processed set of strata from one vegetation plot record and displays a generic drawing of plants according to size and density in the vegetation.
+#'
+#' @param plants Processed strata with plant templates.
+#' @param ytrans Y-axis transformation. Default is 'identity' (no transformation). For tall vegetetation a 'sqrt' (or 'pseudo_log' which allows zeros) may be needed to emphasize short understory plants.
+#' @param yratio Sets aspect ratio of horizonal and vertical axis. A value greater than 1 will stretch the vegetation to appear taller and narrower. A value between 5 and 10 is needed to compesate for y-axis transformation.
+#' @param units Sets the units of measure. Default is meters ("m"). Feet is an alternative ("ft").
+#' @param skycolor Sets the color of the sky background (use named value like "white" or a hexcode.
+#' @param fadecolor Sets the color of the background haze into which the forground color is blended to simulate depth.
+#' @param gridalpha A number from 0 to 1 to vary the visibility (opacity) of the background scale grid. Use 0 for no grid.
+#' @param groundcolor Sets the color of the bare ground.
+#' @param xlim A vector setting the maximum and minimum limits of the x-axis of the graph (meters only). Default is 0-50 m.
+#' @param ylim A vector setting the maximum and minimum limits of the y-axis (or "z"" for up and down) of the graph (meters only). Default is from -1 to 5 m above tree highest vegetation.
+#' @param xticks The interval for major grid lines along the x-axis, expressed in prescribed units of measure (default is 5 m).
+#' @param yticks The interval for major grid lines along the y-axis, expressed in prescribed units of measure (default is 5 m).
+#' @param xslope slope in the X-axis.(across the screen)
+#' @param yslope slope in the y-axis (into the screen)
+#' @param xperiod distance between peaks in undulating slopes.
+#' @param xamplitude vertical distance between highs and lows.
+#'
+#' @returns ggplot object displaying vegetation profile.
+#' @export
+#'
+#' @examples veg.raw <-  vegnasis::nasis.veg
+#' @examples veg <- clean.veg(veg.raw)
+#' @examples veg.select <- subset(veg,  grepl('2022MI165021.P',plot))
+#' @examples plants <- grow_plants(veg.select)
+#' @examples #standard aspect ratio
+#' @examples veg_profile_plot(plants)
+#' @examples #transformed aspect ratio
+#' @examples veg_profile_plot(plants, 'sqrt', 5)
+#' @examples #Set many custum parameters.
+#' @examples veg_profile_plot(plants, unit='m',  skycolor = rgb(0.8,0.98,1), fadecolor = 'lightgray', gridalpha = 0.1, groundcolor = rgb(0.55,0.45,0.2))
+
+veg_profile_plot <- function(plants, ytrans = 'identity', yratio=1, units = 'm', skycolor = "#D9F2FF80", fadecolor = "#D9F2FF", gridalpha=0.3, groundcolor="#808066", xlim=c(0,50), ylim=c(-1, zmax+5), xticks=5, yticks=5, xslope=0, yslope=0, xperiod=10, xamplitude=0){
   require(ggplot2)
 
   #rearrange stems depth drawing order
