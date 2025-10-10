@@ -1,3 +1,24 @@
+#' Draw plant overhead diagram of vegetation
+#'
+#' @param plants Processed strata with overhead plant templates.
+#' @param units Sets the units of measure. Default is meters ("m"). Feet is an alternative ("ft").
+#' @param gridalpha A number from 0 to 1 to vary the visibility (opacity) of the background scale grid. Use 0 for no grid.
+#' @param groundcolor Sets the color of the bare ground.
+#' @param xlim A vector setting the maximum and minimum limits of the x-axis of the graph (meters only). Default is 0-50 m.
+#' @param ylim A vector setting the maximum and minimum limits of the y-axis of the graph (meters only). Default is 15-35 m.
+#' @param xticks The interval for major grid lines along the x-axis, expressed in prescribed units of measure (default is 5 m).
+#'
+#' @returns ggplot object featuring vegetation overhead diagram.
+#' @export
+#'
+#' @examples veg.raw <-  vegnasis::nasis.veg
+#' @examples veg <- clean.veg(veg.raw)
+#' @examples veg <- subset(veg,  grepl('2022MI165021.P',plot))
+#' @examples strats <- setstrats(veg, plength = 50, pwidth=20)
+#' @examples stand <- setstand(strats, plength = 50, pwidth=20)
+#' @examples plants <- setplants.overhead(strats, stand)
+#' @examples veg_overhead_plot(plants)
+
 veg_overhead_plot <- function(plants, units = 'm', gridalpha=0.3, groundcolor="#808066", xlim=c(0,50), ylim=c(15,35), xticks=5){
   require(ggplot2)
 

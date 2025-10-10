@@ -9,12 +9,12 @@ grow_plants(veg, plength = 50, pwidth = 20)
 \arguments{
 \item{veg}{Standardized vegetation plot data frame.}
 
-\item{plength}{Plot length to be viewed on the x-axis.}
+\item{plength}{Plot diagram length to be viewed on the x-axis.}
 
-\item{pwidth}{Plot width to be viewed as depth into the screen from the side profile perspective (or y-axis in top-down horizonal view).}
+\item{pwidth}{Plot diagram width to be viewed as depth into the screen from the side profile perspective (or y-axis in top-down horizontal view).}
 }
 \value{
-Data frame with coordinates for plant outlines
+Data frame with coordinates for plant outlines for plotting profile diagram.
 }
 \description{
 This function takes a standardized vegetation dataframe and fills in details necessary to construct diagrammatic representation of the plants within a vegetation. Among the details are assumptions regarding missing stem diameters, crown widths, and density. Plant dimension and placement are randomized slightly after initial values are established. For best results, be sure to limit to one plot record at a time. Dimensions of the plot sets up the number of plants needing to be planted to fill the desired limits, but the xy limits themselves are set in a seperate graphing function.

@@ -57,7 +57,7 @@ veg_profile_plot(
 \item{xamplitude}{vertical distance between highs and lows.}
 }
 \value{
-ggplot object displaying vegetation profile.
+ggplot object featuring vegetation profile diagram.
 }
 \description{
 This function takes a processed set of strata from one vegetation plot record and displays a generic drawing of plants according to size and density in the vegetation.

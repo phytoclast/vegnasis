@@ -19,7 +19,7 @@
 #' @param xperiod distance between peaks in undulating slopes.
 #' @param xamplitude vertical distance between highs and lows.
 #'
-#' @returns ggplot object displaying vegetation profile.
+#' @returns ggplot object featuring vegetation profile diagram.
 #' @export
 #'
 #' @examples veg.raw <-  vegnasis::nasis.veg
