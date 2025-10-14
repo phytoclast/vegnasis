@@ -18,6 +18,10 @@
 #' @param yslope slope in the y-axis (into the screen)
 #' @param xperiod distance between peaks in undulating slopes.
 #' @param xamplitude vertical distance between highs and lows.
+#' @param xphase relative phase of landscape undulation.
+#' @param wt depth to water table (m).
+#' @param px Vector of break points along gradient defined with plength.
+#' @param py Vector of ground elevation at each break point (should have the same number as px). This will add to any slopes or curves modifying ground elevation.
 #'
 #' @returns ggplot object featuring vegetation profile diagram.
 #' @export
@@ -33,7 +37,8 @@
 #' @examples #Set many custum parameters.
 #' @examples veg_profile_plot(plants, unit='m',  skycolor = rgb(0.8,0.98,1), fadecolor = 'lightgray', gridalpha = 0.1, groundcolor = rgb(0.55,0.45,0.2))
 
-veg_profile_plot <- function(plants, ytrans = 'identity', yratio=1, units = 'm', skycolor = "#D9F2FF80", fadecolor = "#D9F2FF", gridalpha=0.3, groundcolor="#808066", xlim=c(0,50), ylim=c(-1, zmax+5), xticks=5, yticks=5, xslope=0, yslope=0, xperiod=10, xamplitude=0){
+veg_profile_plot <- function(plants, ytrans = 'identity', yratio=1, units = 'm', skycolor = "#D9F2FF80", fadecolor = "#D9F2FF", gridalpha=0.3, groundcolor="#808066", xlim=c(0,50), ylim=c(-1, zmax+5), xticks=5, yticks=5, xslope=0, yslope=0, xperiod=10, xamplitude=0, xphase=0, wt=-2,
+                             px=c(), py=c()){
   require(ggplot2)
 
   #rearrange stems depth drawing order
@@ -44,15 +49,23 @@ veg_profile_plot <- function(plants, ytrans = 'identity', yratio=1, units = 'm',
   ypwid <- ypmax-ypmin
   iters = round(ypwid,0)
   ypinc <- ypwid/iters
-  plants <- plants |> arrange(yp,stumpid, objid, ptord) |> mutate(zn = zn+(xp*xslope/100)+((yp-ypmin)*yslope/100)+
-                                                                    xamplitude+xamplitude*sin(xp/xperiod*3.141592*2)) #implement slope
+  plants <- plants |> arrange(yp,stumpid, objid, ptord) |> mutate(zn = zn+(xp*xslope/100)+((yp-ypmin)*yslope/100)+xamplitude+xamplitude*sin(xp/xperiod*pi*2+xphase*pi*2))
+
+
+  plants <- plants |> mutate(zn = zn + slopebreaks(xp, px,py))
+
+  #implement slope
   zmax <- max(plants$zn, na.rm =TRUE)
   plants <- plants |> mutate(fill=colormixer(fill, fadecolor, round(1-1/(1+((yp-ypmin)/20)),2)),
                              color=colormixer(color, fadecolor, round(1-1/(1+((yp-ypmin)/20)),2)))
 
     groundline = data.frame(xn=c(xnmin:xnmax,xnmax,xnmin),
-                          zn=c((xnmin:xnmax)*0,-10,-10))|> mutate(zn = ifelse(zn == 0,zn+xn*xslope/100+
-                                                                        xamplitude+xamplitude*sin(xn/xperiod*3.141592*2),zn))
+                          zn=c((xnmin:xnmax)*0,-10,-10))|>
+      mutate(zn = ifelse(zn == 0,zn+xn*xslope/100+xamplitude+xamplitude*sin(xn/xperiod*pi*2+xphase*pi*2)+
+                           slopebreaks(xn,px,py),zn))
+
+
+    wt = data.frame(xn=c(xnmin,xnmax,xnmax,xnmin),zn=c(wt,wt,-10,-10))
   ground.A = groundline |> mutate(zn = ifelse(zn >= 0,zn+ypwid*yslope/100,zn), fill=colormixer(groundcolor, fadecolor, 0.8), color=groundcolor)
   ground.B = groundline |> mutate(zn = ifelse(zn >= 0,zn+ypwid*(4/5)*yslope/100,zn), fill=colormixer(groundcolor, fadecolor, 0.5), color=groundcolor)
   ground.C = groundline |> mutate(zn = ifelse(zn >= 0,zn+ypwid*(3/5)*yslope/100,zn), fill=colormixer(groundcolor, fadecolor, 0.3), color=groundcolor)
@@ -105,6 +118,7 @@ veg_profile_plot <- function(plants, ytrans = 'identity', yratio=1, units = 'm',
       geom_polygon(data=crowns0, aes(x=xn,y=zn,group=objid, fill=fill, color=color), alpha=1, linewidth=0.01)
   }
   gp = gp +
+    geom_polygon(data=wt,aes(x=xn,y=zn), color='#0033FF99',fill='#33CCFF', alpha=0.33)+
     scale_fill_manual(values=pfill)+
     scale_color_manual(values=pcolor)+
     theme(legend.position = "none",
@@ -125,3 +139,16 @@ veg_profile_plot <- function(plants, ytrans = 'identity', yratio=1, units = 'm',
   return(gp)
 
 }
+
+
+slopebreaks <- function(x, px, py){
+  if(length(px)>0){
+    xmin=min(x);xmax=max(x)
+    y=x*0
+    py <- c(py[1],py,py[length(py)])
+    px <- c(xmin,px,xmax)
+    n <- length(px)-1
+    for(i in 1:n){
+      y = ifelse(x >= px[i] & x <= px[i+1],
+                 (x-px[i+1])*(py[i]-py[i+1])/(px[i]-px[i+1])+py[i+1],y)}
+    return(y)}else{return(x*0)}}

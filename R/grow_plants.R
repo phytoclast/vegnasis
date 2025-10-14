@@ -72,6 +72,8 @@ setstrats <- function(veg, plength = 50, pwidth=20){
                                             grepl('^S', habit) & grepl('BE', habit) ~ 'blob2',
                                             grepl('^S', habit) ~ 'cloud1',
                                             grepl('FE', habit) ~ 'ferny',
+                                            grepl('^H.F', habit) ~ 'forby',
+                                            grepl('^H.G', habit) ~ 'grassy',
                                             grepl('^H', habit) & grepl('F', habit) ~ 'forby',
                                             grepl('^H', habit) & type %in% 'grass/grasslike' ~ 'grassy'),
                        crfill0 = case_when(grepl('^T', habit) & grepl('NE', habit) ~ '#1A801A',
@@ -85,6 +87,8 @@ setstrats <- function(veg, plength = 50, pwidth=20){
                                            grepl('^S', habit) & grepl('BE', habit) ~ '#1A801A',
                                            grepl('^S', habit) ~ 'green',
                                            grepl('FE', habit) ~ 'green',
+                                           grepl('^H.F', habit) ~ 'green',
+                                           grepl('^H.G', habit) ~ 'green',
                                            grepl('^H', habit) & grepl('F', habit) ~ 'magenta',
                                            grepl('^H', habit) & type %in% 'grass/grasslike' ~ 'yellowgreen'),
                        crcolor0 = case_when(grepl('^T', habit) & grepl('NE', habit) ~ 'darkgreen',
@@ -98,6 +102,8 @@ setstrats <- function(veg, plength = 50, pwidth=20){
                                             grepl('^S', habit) & grepl('BE', habit) ~ 'darkgreen',
                                             grepl('^S', habit) ~ 'darkgreen',
                                             grepl('FE', habit) ~ 'darkgreen',
+                                            grepl('^H.F', habit) ~ 'darkgreen',
+                                            grepl('^H.G', habit) ~ 'darkgreen',
                                             grepl('^H', habit) & grepl('F', habit) ~ 'darkgreen',
                                             grepl('^H', habit) & type %in% 'grass/grasslike' ~ '#4D8000'),
 
@@ -132,8 +138,8 @@ setstrats <- function(veg, plength = 50, pwidth=20){
     veg <- veg |> mutate(crfill = ifelse(is.na(crfill), crfill0, crfill), crfill0=NULL)}else{
       veg <- veg |> mutate(crfill = crfill0, crfill0=NULL)}
   if('crcolor' %in% colnames(veg)){
-    veg <- veg |> mutate(crcolor = ifelse(is.na(crcolor), crcolor0, crcolor), crcolor0=NULL)}else{
-      veg <- veg |> mutate(crcolor = crcolor0, crcolor0=NULL)}
+    veg <- veg |> mutate(crcolor = ifelse(is.na(crcolor), darkener(crfill), crcolor), crcolor0=NULL)}else{
+      veg <- veg |> mutate(crcolor = darkener(crfill), crcolor0=NULL)}
 
   if('stshape' %in% colnames(veg)){
     veg <- veg |> mutate(stshape = ifelse(is.na(stshape), stshape0, stshape), stshape0=NULL)}else{
@@ -142,8 +148,8 @@ setstrats <- function(veg, plength = 50, pwidth=20){
     veg <- veg |> mutate(stfill = ifelse(is.na(stfill), stfill0, stfill), stfill0=NULL)}else{
       veg <- veg |> mutate(stfill = stfill0, stfill0=NULL)}
   if('stcolor' %in% colnames(veg)){
-    veg <- veg |> mutate(stcolor = ifelse(is.na(stcolor), stcolor0, stcolor), stcolor0=NULL)}else{
-      veg <- veg |> mutate(stcolor = stcolor0, stcolor0=NULL)}
+    veg <- veg |> mutate(stcolor = ifelse(is.na(stcolor), darkener(stfill), stcolor), stcolor0=NULL)}else{
+      veg <- veg |> mutate(stcolor = darkener(stfill), stcolor0=NULL)}
 
 
   strats <- veg |> subset(fun %in% c('T','S','H') & stems > 0) |> arrange(plot,-ht.max, -cover)#reduce to strata which have models and are not empty of stems
@@ -272,5 +278,49 @@ setplants.overhead <- function(strats, stand){
            xn = x+xpp,#resized width and put on new position
            yn = y+ypp)#resized width and put on new position
   plants <- subset(plants, !fill %in% c('NULL','NA'))
+  return(plants)
+}
+
+
+
+darkener <- function(cl){
+  cl <- col2rgb(cl) |> rgb2hsv()
+  cl[3,] <- cl[3,]*0.7
+  cl <- hsv(cl[1,],cl[2,],cl[3,])
+  return(cl)
+}
+
+
+#' Split vegetation along gradient
+#'
+#' This function allows for multiple vegetation structures or compositions along a gradient set at user define positions.
+#'
+#' @param ... Two or more vegetation data frames. Will iterate if more breaks than vegetation types.
+#' @param plength Length of plot diagram in meters.
+#' @param pwidth Width of plot diagram in meters.
+#' @param px Vector of vegetation break points along the lengths as defined in plength.
+#'
+#' @returns Plants data frame with vegetation mosaic ready for plotting as a profile diagram.
+#' @export
+#'
+#' @examples
+splitveg <- function(..., plength = 50, pwidth=20, px){
+  x <- list(...)
+
+  ppx <- c(0,px,plength)
+  npi <- length(ppx)-1
+
+  while(length(x) <  npi){#repeat vegetation if excess breaks
+    x <- c(x,x)
+  }
+
+  for(i in 1:npi){#i=4
+    npL <- ppx[i+1]-ppx[i]
+    veg <- x[[i]]
+    strats <- setstrats(veg, plength = npL, pwidth=pwidth)
+    stand <- setstand(strats, plength = npL, pwidth=pwidth)
+    stand <- stand |> mutate(xp = xp+ppx[i])
+    plants0 <- setplants(strats, stand) |> mutate(objid = paste0(objid,'z',i)) #ensure objects remain unique between iterations
+    if(i==1){plants <- plants0}else{plants <- rbind(plants,plants0)}}
   return(plants)
 }
