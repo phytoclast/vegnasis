@@ -284,6 +284,7 @@ setplants.overhead <- function(strats, stand){
 
 
 darkener <- function(cl){
+  cl <- ifelse(cl %in% c('NA','NULL'), '#FFFFFF00',cl)
   cl <- col2rgb(cl) |> rgb2hsv()
   cl[3,] <- cl[3,]*0.7
   cl <- hsv(cl[1,],cl[2,],cl[3,])
