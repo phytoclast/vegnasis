@@ -42,8 +42,8 @@ veg_profile_plot <- function(plants, ytrans = 'identity', yratio=1, units = 'm',
   require(ggplot2)
 
   #rearrange stems depth drawing order
-  xnmax <- max(plants$xn, na.rm =TRUE)
-  xnmin <- min(plants$xn, na.rm =TRUE)
+  xnmax <- xlim[2]+0.1
+  xnmin <- xlim[1]-0.1
   ypmax <- max(plants$yp, na.rm =TRUE)+0.01
   ypmin <- min(plants$yp, na.rm =TRUE)-0.01
   ypwid <- ypmax-ypmin
