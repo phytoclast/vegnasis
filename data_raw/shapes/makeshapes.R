@@ -1,4 +1,5 @@
 #convert svg ----
+# remotes::install_github('coolbutuseless/svgparser')
 library(svgparser)
 setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
@@ -79,5 +80,55 @@ saveRDS(shapes,'shapes.RDS')
 shapes <- readRDS('shapes.RDS')
 usethis::use_data(shapes, overwrite = T)
 
+##############
+library(svgparser)
+library(vegnasis)
+library(stringr)
+setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 
+convert.SVG <- function(filename){
+
+  blob <- svgparser::read_svg(filename, obj_type = 'data.frame')
+
+  blob$x <- (blob$x - (max(blob$x) + min(blob$x))/2) / (max(blob$x) - min(blob$x))
+  blob$y <- 1-1*(blob$y - min(blob$y)) / (max(blob$y) - min(blob$y))
+  blob <- subset(blob, select=c(x,y))
+  return(blob)
+}
+
+
+fl <- list.files('C:/scripts/vegnasis/data_raw/shapes/detailed')
+fl <- fl |> subset(grepl('svg$', fl))
+fl <- data.frame(file=fl)
+fl <- fl |> mutate(name = str_split_fixed(file, '\\.', 2)[,1])
+# write.csv(fl, 'C:/scripts/vegnasis/data_raw/shapes/detailed/fl.csv', row.names = F)
+fl <- read.csv('C:/scripts/vegnasis/data_raw/shapes/detailed/fl.csv')
+
+for(i in 1:nrow(fl)){#i=1
+  thissvg <- fl[i,'file']
+  filename <- paste0('C:/scripts/vegnasis/data_raw/shapes/detailed/',thissvg)
+  thissvg <- convert.SVG(filename)
+  thisname <- fl[i,'name']
+  thiscolor <- fl[i,'crfill']
+  thissvg <- thissvg |> mutate(z=y, shape=thisname, fill=(thiscolor), color=darkener(thiscolor))
+  thissvg <- thissvg[,c(c("x","z","shape","fill","color"))]
+  if(i==1){shapes2 <- thissvg}else{shapes2 <- rbind(shapes2, thissvg)}
+}
+shapes1 <- readRDS('C:/scripts/vegnasis/data_raw/shapes/shapes.RDS')
+shapes <- rbind(shapes1, shapes2)
+usethis::use_data(shapes, overwrite = T)
+detailedshapes <- fl
+usethis::use_data(detailedshapes, overwrite = T)
+
+library(ggplot2)
+ggplot()+
+  geom_polygon(data=blob, aes(x=x,y=y), fill='springgreen4')
+
+filtercrowns('fir',50,20,10,110)
+thisshape <- 'subalpine'
+filename <- paste0('C:/scripts/vegnasis/data_raw/shapes/detailed/',thisshape,'.svg')
+thissvg <- convert.SVG(filename)
+
+ggplot()+
+  geom_polygon(data=thissvg, aes(x=x,y=y), fill='springgreen4')
 

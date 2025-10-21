@@ -49,12 +49,12 @@ colormixer <- function(colorname, mixcolor, p){
 #These functions take shapes and assemble them according to plant attributes by stratum.
 make_tree <- function(ht.max, ht.min, crwd, dbh, crshape, stshape){
   shapes <- vegnasis::shapes
-  if(crshape %in% 'boreal'){
+  if(crshape %in% 'branch.conifer'){
     tree <- tree.001(ht.max,
                      ht.min,
                      crwd,
                      dbh)
-  }else if(crshape %in% 'hardwood'){
+  }else if(crshape %in% 'branch.hardwood'){
     tree <- tree.002(ht.max,
                      ht.min,
                      crwd,
@@ -62,7 +62,7 @@ make_tree <- function(ht.max, ht.min, crwd, dbh, crshape, stshape){
   }else{
 
     crown <- subset(shapes, shape %in% crshape) |> mutate(x=x*crwd, z=z*(ht.max-ht.min)+ht.min, obj='crown')
-    base <- subset(shapes, shape %in% stshape) |> mutate(x=x*dbh/100*1.1, z=z*(ht.min), obj='stem')
+    base <- subset(shapes, shape %in% stshape) |> mutate(x=x*dbh/100*1.1, z=z*(2*ht.min+ht.max)/3, obj='stem')
     tree = rbind(crown, base)
     tree$ptord <- rownames(tree) |> as.numeric()}
 
@@ -94,8 +94,13 @@ make_plant<- function(fun, ht.max, ht.min,crwd,dbh, crshape, stshape){
   return(plant)
 }
 
+
+
 make_plant.overhead<- function(crwd, dbh, crshape, stshape){
-  crshape <- case_when(crshape %in% c('conifer','conifer1','conifer2','conifer3','palm','boreal') ~ 'conifer',
+  crshape <- case_when(crshape %in% c('conifer','conifer1','conifer2','conifer3','palm','boreal',
+                                      "araucaria","cactus", "fanpalm","featherpalm","fir_old",
+                                      "fir","hemlock","longleaf_sap","palmetto","spruce",
+                                      "subalpine","wcedar","wpine", "ypine","yucca") ~ 'conifer',
                        TRUE ~ 'hardwood')
   crown <- subset(overheadshapes, shape %in% crshape) |> mutate(x=x*crwd, y=y*crwd, obj='crown')
   base <- subset(overheadshapes, shape %in% 'circle') |> mutate(x=x*dbh/100*1.1, y=y*dbh/100*1.1, obj='stem')

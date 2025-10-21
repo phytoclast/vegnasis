@@ -151,6 +151,12 @@ setstrats <- function(veg, plength = 50, pwidth=20){
     veg <- veg |> mutate(stcolor = ifelse(is.na(stcolor), darkener(stfill), stcolor), stcolor0=NULL)}else{
       veg <- veg |> mutate(stcolor = darkener(stfill), stcolor0=NULL)}
 
+#replace generic crown shapes of detailed crowns with specifics
+
+  veg <- veg |> mutate(crshape = mapply(FUN=filtercrowns, crshape, ht.max,ht.min,cw,dbh.r))
+
+
+
 
   strats <- veg |> subset(fun %in% c('T','S','H') & stems > 0) |> arrange(plot,-ht.max, -cover)#reduce to strata which have models and are not empty of stems
   strats$seq <- c(1:nrow(strats))
@@ -282,16 +288,6 @@ setplants.overhead <- function(strats, stand){
 }
 
 
-
-darkener <- function(cl){
-  cl <- ifelse(cl %in% c('NA','NULL'), '#FFFFFF00',cl)
-  cl <- col2rgb(cl) |> rgb2hsv()
-  cl[3,] <- cl[3,]*0.7
-  cl <- hsv(cl[1,],cl[2,],cl[3,])
-  return(cl)
-}
-
-
 #' Split vegetation along gradient
 #'
 #' This function allows for multiple vegetation structures or compositions along a gradient set at user define positions.
@@ -325,3 +321,24 @@ splitveg <- function(..., plength = 50, pwidth=20, px){
     if(i==1){plants <- plants0}else{plants <- rbind(plants,plants0)}}
   return(plants)
 }
+
+
+#Helper functions
+#takes fill color and creates darker outline color of same hue.
+darkener <- function(cl){
+  cl <- ifelse(cl %in% c('NA','NULL'), '#FFFFFF00',cl)
+  cl <- col2rgb(cl) |> rgb2hsv()
+  cl[3,] <- cl[3,]*0.7
+  cl <- hsv(cl[1,],cl[2,],cl[3,])
+  return(cl)
+}
+#Replaces generic crown name with specific crown type according to specified range in crown aspect ratio and dbh. Stretching crowns beyond their original design will distort the natural shape, so custom crowns are to be drawn at certain range of aspect ratios. Dbh is proxy for crown age, with larger trees provided with a more irregular crown than younger trees.
+filtercrowns<-function(crshape, ht.max,ht.min,cw,dbh.r){
+  y=subset(detailedshapes, genname %in% crshape &
+             (is.na(wrmin) | wrmin < (ht.max-ht.min)/cw) &
+             (is.na(wrmax) | wrmax >= (ht.max-ht.min)/cw) &
+             (is.na(dbhmin) | dbhmin < dbh.r) &
+             (is.na(dbhmax) | dbhmax >= dbh.r))
+  y=y$name[1]
+  if(length(y) < 1 | is.na(y)){y=crshape}
+  return(y)}

@@ -8,7 +8,7 @@ Install the development version from Github:
 
 ## Website
 
-..
+https://phytoclast.github.io/vegbook/
 
 ## Citation
 
