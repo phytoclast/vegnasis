@@ -4,6 +4,9 @@ library(aqp)
 library(sf)
 library(mapview)
 
+pedons20251212 <- readRDS('data_raw/pedons20251212.RDS')
+usethis::use_data(pedons20251212, overwrite = T)
+
 veg.raw <- vegnasis::veg.raw20250414
 plots.raw <- vegnasis::vegplot20250414
 colnames(plots.raw)
