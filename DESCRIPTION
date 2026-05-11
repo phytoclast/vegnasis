@@ -13,4 +13,4 @@ Depends:
     R (>= 3.5),
     dplyr (>= 1.1.0),
     stringr
-RoxygenNote: 7.3.3
+Config/roxygen2/version: 8.0.0

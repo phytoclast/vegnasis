@@ -1,6 +1,13 @@
 #Function estimates the vegetation structure based on differential dominance of trees, shrubs, and herbs.
 
 get.structure <- function(x, simple = TRUE){
+
+  if(max(x$cover) >= 100){
+    x <- within(x,{
+      cover = ifelse(cover >= 100,99,cover)
+    })
+    warning("Cover values greater than or equal to 100 have been reduced to 99 to avoid log zero calculation.")
+  }
   if(simple == FALSE){
     x <- x |> mutate(stratum = case_when(
       is.na(ht.max) | is.na(type) ~ 'excluded',
@@ -11,6 +18,8 @@ get.structure <- function(x, simple = TRUE){
       type %in% c('forb') ~ 'forb',
       !type %in% c('tree', 'shrub/vine', 'forb','grass/grasslike') ~ 'moss',
       TRUE ~ 'excluded'))
+
+
 
     x.ht <- x |> group_by(plot) |> summarise(ht.max = max(ht.max))
 
