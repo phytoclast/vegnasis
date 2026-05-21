@@ -4,10 +4,14 @@
 \alias{pre.fill.veg}
 \title{Fill in missing columns with blanks}
 \usage{
-pre.fill.veg(x)
+pre.fill.veg(x, include = NA, exclude = FALSE)
 }
 \arguments{
 \item{x}{User developed data frame with a variable number standard and non-standard column names.}
+
+\item{include}{Additional columns to retain from original data frame.}
+
+\item{exclude}{Exclude columns (crshape, crfill, crcolor, stshape, stfill, stcolor, cw) used to generate diagrams (T/F).}
 }
 \value{
 Vegetation data frame with required columns.

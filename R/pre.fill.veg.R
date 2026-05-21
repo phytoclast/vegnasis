@@ -49,6 +49,8 @@
 #' "cw" = Optional user defined crown width (m).
 #'
 #' @param x User developed data frame with a variable number standard and non-standard column names.
+#' @param include Additional columns to retain from original data frame.
+#' @param exclude Exclude columns (crshape, crfill, crcolor, stshape, stfill, stcolor, cw) used to generate diagrams (T/F).
 #'
 #' @returns Vegetation data frame with required columns.
 #' @export
@@ -62,7 +64,7 @@
 #' @examples #Identify columns containing data corresponding to standard column names.
 #' @examples mydata <- mydata |> mutate(taxon=obsspp, cover=abund, plot=obsite)
 #' @examples veg <- mydata |> pre.fill.veg()
-pre.fill.veg <- function(x){
+pre.fill.veg <- function(x, include=NA, exclude=FALSE){
   if(!'plot' %in% colnames(x)){x$plot=NA_character_}
   if(!'label' %in% colnames(x)){x$label=NA_character_}
   if(!'date' %in% colnames(x)){x$date=NA}
@@ -89,10 +91,12 @@ pre.fill.veg <- function(x){
   if(!'stfill' %in% colnames(x)){x$stfill=NA_character_}
   if(!'stcolor' %in% colnames(x)){x$stcolor=NA_character_}
   if(!'cw' %in% colnames(x)){x$cw=NA_real_}
-
-    x <- x %>% subset(select= c("plot","label", "date", "lat", "lon","symbol","taxon","type","habit",
-                                "nativity","cover","stratum.min","stratum.max","crown.min","crown.max","dbh.min","dbh.max","BA","crshape",
-                                "crfill","crcolor","stshape","stfill","stcolor","cw"))
+  basecols <- c("plot","label", "date", "lat", "lon","symbol","taxon","type","habit",
+                "nativity","cover","stratum.min","stratum.max","crown.min","crown.max","dbh.min","dbh.max","BA","crshape","crfill","crcolor","stshape","stfill","stcolor","cw")
+  finalcols <- c(basecols, include)
+  if(exclude){finalcols <- finalcols[!finalcols %in% c('crshape', 'crfill', 'crcolor', 'stshape', 'stfill', 'stcolor', 'cw')]}
+  finalcols <- finalcols[!is.na(finalcols)]
+    x <- x %>% subset(select=finalcols)
   return(x)
 }
 
