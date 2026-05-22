@@ -93,7 +93,7 @@ pre.fill.veg <- function(x, include=NA, exclude=FALSE){
   if(!'cw' %in% colnames(x)){x$cw=NA_real_}
   basecols <- c("plot","label", "date", "lat", "lon","symbol","taxon","type","habit",
                 "nativity","cover","stratum.min","stratum.max","crown.min","crown.max","dbh.min","dbh.max","BA","crshape","crfill","crcolor","stshape","stfill","stcolor","cw")
-  finalcols <- c(basecols, include)
+  finalcols <- unique(c(basecols, include))
   if(exclude){finalcols <- finalcols[!finalcols %in% c('crshape', 'crfill', 'crcolor', 'stshape', 'stfill', 'stcolor', 'cw')]}
   finalcols <- finalcols[!is.na(finalcols)]
     x <- x %>% subset(select=finalcols)
