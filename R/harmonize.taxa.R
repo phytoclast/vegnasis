@@ -24,7 +24,7 @@ harmonize.taxa <- function(taxa, fix=FALSE, sensu = 'bonap'){
     x <- x |> left_join(fixtaxa, by=c('taxa'='auctnon'), multiple = 'first')
     x <- x |> mutate(taxa = ifelse(is.na(america), taxa, america))
   }
-  x <- x |> left_join(syns2, by = join_by(taxa==taxon), multiple = 'first')
+  x <- x |> left_join(syns3, by = join_by(taxa==taxon), multiple = 'first')
 
 
   if(sensu %in% 'wplants'){
