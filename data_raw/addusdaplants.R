@@ -30,15 +30,65 @@ usethis::use_data(obs, overwrite = T)
 usethis::use_data(obsspp, overwrite = T)
 #clean taxon habits
 library(vegnasis)
-taxon.habits <- read.csv('data_raw/taxon.habits.csv', encoding = 'UTF-8')
+taxon.habits <- read.csv('data_raw/taxon.habits.csv', encoding = 'latin1')
 taxon.habits <- taxon.habits |> mutate(Scientific.Name = cleanEncoding(Scientific.Name), genus = cleanEncoding(genus))
 taxon.habits <- taxon.habits |> mutate(Scientific.Name = extractTaxon(Scientific.Name), genus = extractTaxon(Scientific.Name, 'genus'))
+# taxon.habits1 <-  vegnasis::taxon.habits
 usethis::use_data(taxon.habits, overwrite = T)
-#new synonymy table
+
+#new genus habits
+library(vegnasis)
+genus.habits <- read.csv('data_raw/genus.habits.csv', encoding = 'latin1')
+nvagenustaxonomy <- read.csv('data_raw/nvagenustaxonomy.csv')
+nvagenustaxonomy <- nvagenustaxonomy |> mutate(GH = case_when(grepl('algae|Cyano', type) ~ 'N.A',
+                                                              grepl('bryophyte', type) ~ 'N.B',
+                                                              grepl('lich', type) ~ 'N.L'),
+                                               ht.max = 0)
+
+genus.habits <- subset(genus.habits, !genus %in% nvagenustaxonomy$genus & !grepl('^N',GH))
+genus.habits <- rbind(genus.habits, nvagenustaxonomy[,colnames(genus.habits)])
+
+
+
+usethis::use_data(taxon.habits, overwrite = T)
+
+#new taxonomy
+library(vegnasis)
+apg <- read.csv('data_raw/apg.csv', encoding = 'latin1')
+apg$kingdom <- 'Plantae'
+apg$APG_IV_sort <- apg$APG_IV_sort + 800000
+apg <- apg[,c("APG_IV_sort","kingdom", "phylum","subphylum","superclass","class","subclass","superorder","order","family")]
+nvafamily <- read.csv('data_raw/nvafamilytaxonomy.csv') |> arrange(kingdom, phylum, class, order, family)
+nvafamily <- nvafamily |> mutate(subphylum=NA, superclass=NA, subclass=NA, superorder=NA)
+nvafamily <- nvafamily |> group_by(kingdom,phylum) |> mutate(n = length(family), nsort=1:(n)[1]) |> ungroup()
+nvafamily <- nvafamily |> mutate(sort2 = case_when(phylum %in% 'Cyanobacteria' ~ 1,
+                                                   phylum %in% 'Rhodophyta' ~ 2,
+                                                   phylum %in% 'Chlorophyta' ~ 3,
+                                                   phylum %in% 'Charophyta' ~ 4,
+                                                   phylum %in% 'Anthocerotophyta' ~ 5,
+                                                   phylum %in% 'Marchantiophyta' ~ 6,
+                                                   phylum %in% 'Bryophyta' ~ 7,
+                                                   phylum %in% 'Tracheophyta' ~ 8,
+                                                   phylum %in% 'Ochrophyta' ~ 9,
+                                                   phylum %in% 'Ascomycota' ~ 10,
+                                                   ),
+                                 APG_IV_sort = sort2*100000+nsort)
+apg <- rbind(apg, nvafamily[,colnames(apg)]) |> arrange(APG_IV_sort)
+
+usethis::use_data(apg, overwrite = T)
+
+#new synonymy table 2026-07-13
 library(vegnasis)
 # syns2 <- read.csv('data_raw/syn2.csv', encoding = 'UTF-8')
-syns2 <- readRDS('data_raw/syns3.RDS')
-usethis::use_data(syns2, overwrite = T)
+syns3 <- readRDS('data_raw/syns3.RDS')
+nva <- read.csv('data_raw/nvanomenclature.csv')
+syns3$gbif=NA
+nva <- nva |> mutate(author=auth, kew=NA,bonap=NA,wplants=NA) |> subset(select = colnames(syns2))
+syns3 <- syns3 |> subset(!taxon %in% nva$taxon)
+syns3 <- rbind(syns3, nva)
+syns3 <- syns3 |> mutate(usda = ifelse(nchar(usda) < 1, NA,usda), gbif = ifelse(nchar(gbif) < 1, NA,gbif))
+#syns3 <- syns3 |> group_by(taxon) |> mutate(n=length(taxon)) |> ungroup()
+usethis::use_data(syns3, overwrite = T)
 
 library(vegnasis)
 obssites <- vegnasis::obs
@@ -68,6 +118,9 @@ library(vegnasis)
 # familylink <- familylink |> rbind(new) |> unique()
 # write.csv(familylink, 'familylink2.csv', fileEncoding = 'UTF-8', row.names = FALSE)
 familylink <- read.csv('data_raw/familylink2.csv', encoding = 'UTF-8')
+nvagenustaxonomy <- read.csv('data_raw/nvagenustaxonomy.csv')
+familylink <- subset(familylink, !genus %in% nvagenustaxonomy$genus)
+familylink <- familylink |> rbind(nvagenustaxonomy[,colnames(familylink)]) |> unique()
 
 
 # gf <- familylink |> group_by(genus) |> mutate(ct = length(genus))

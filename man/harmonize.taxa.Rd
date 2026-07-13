@@ -17,7 +17,7 @@ harmonize.taxa(taxa, fix = FALSE, sensu = "bonap")
 Accepted name
 }
 \description{
-This function synonymizes taxa with BONAP (Biota of North America Program), Kew's Plants of the World Online (POW) circa 2023 (https://powo.science.kew.org/), World Plants (https://www.worldplants.de/), or USDA's PLANTS database.  This ensures that aggregating functions work off a shared taxonomic backbone. An option exists to replace commonly misapplied Old World binomials: Equisetum hyemale, Athyrium filix-femina, Cypripedium calceolus, and Osmunda regalis, with: Equisetum praealtum, Athyrium angustum, Cypripedium parviflorum, and Osmunda spectabilis, respectively.
+This function synonymizes taxa with BONAP (Biota of North America Program), Kew's Plants of the World Online (POW) circa 2023 (https://powo.science.kew.org/), World Plants (https://www.worldplants.de/), or USDA's PLANTS database.  This ensures that aggregating functions work off a shared taxonomic backbone. An option exists to replace commonly misapplied Old World binomials: Equisetum hyemale, Athyrium filix-femina, Cypripedium calceolus, and Osmunda regalis, with: Equisetum praealtum, Athyrium angustum, Cypripedium parviflorum, and Osmunda spectabilis, respectively. New as of 2026: Algae, lichens, and bryophytes are synonymized with GBIF circa 2026, unless USDA is specified (lichens and bryophytes only).
 }
 \examples{
 veg <- vegnasis::nasis.veg |> clean.veg()
