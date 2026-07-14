@@ -40,11 +40,25 @@ usethis::use_data(taxon.habits, overwrite = T)
 #new genus habits
 library(vegnasis)
 genus.habits <- read.csv('data_raw/genus.habits.csv', encoding = 'latin1')
+# gho <- read.csv('data_raw/gho.csv')
+# usethis::use_data(gho, overwrite = T)
+
+
 nvagenustaxonomy <- read.csv('data_raw/nvagenustaxonomy.csv')
-nvagenustaxonomy <- nvagenustaxonomy |> mutate(GH = case_when(grepl('algae|Cyano', type) ~ 'N.A',
-                                                              grepl('bryophyte', type) ~ 'N.B',
+nvafamilytaxonmy <- read.csv('data_raw/nvafamilytaxonomy.csv')
+nvagenustaxonomy <- nvagenustaxonomy |> left_join(nvafamilytaxonmy)
+nvagenustaxonomy <- nvagenustaxonomy |> mutate(GH = case_when(grepl('Cyano', type) ~ 'N.AC',
+                                                              grepl('brown', type) ~ 'N.AB',
+                                                              grepl('red', type) ~ 'N.AR',
+                                                              grepl('yellow', type) ~ 'N.AY',
+                                                              grepl('green', type) ~ 'N.AG',
+                                                              grepl('bry', type) & grepl('Ant',phylum)  ~ 'N.BH',
+                                                              grepl('bry', type) & grepl('Mar',phylum) ~ 'N.BL',
+                                                              grepl('bry', type) & grepl('Bry',phylum) ~ 'N.BM',
+                                                              grepl('bry', type)  ~ 'N.B',
                                                               grepl('lich', type) ~ 'N.L'),
                                                ht.max = 0)
+
 
 genus.habits <- subset(genus.habits, !genus %in% nvagenustaxonomy$genus & !grepl('^N',GH))
 genus.habits <- rbind(genus.habits, nvagenustaxonomy[,colnames(genus.habits)])
@@ -81,17 +95,17 @@ genus.habits <- genus.habits |> rbind(ghab2) |> unique()
 g <- rbind(c('Leucothrinax', 'T.P',0),
       c('Flavocetraria', 'N.L',0),
       c('Oreopteris', 'H.FE',.5),
-      c('Cladopodiella', 'N.B',0),
-      c('Aulocomnium', 'N.B',0),
-      c('Limprichtia', 'N.B',0),
-      c('Eualaria', 'N.A',0),
+      c('Cladopodiella', 'N.BL',0),
+      c('Aulocomnium', 'N.BM',0),
+      c('Limprichtia', 'N.BM',0),
+      c('Eualaria', 'N.AB',0),
       c('Victoria', 'H2A',.1)
 )
 colnames(g) <- colnames(genus.habits)
 genus.habits <- genus.habits |> rbind(g)
 
 usethis::use_data(genus.habits, overwrite = T)
-
+get.habit.code('Vaucheria') |> get.habit.name()
 
 
 
