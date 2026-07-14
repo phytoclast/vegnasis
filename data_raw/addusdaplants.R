@@ -33,6 +33,7 @@ library(vegnasis)
 taxon.habits <- read.csv('data_raw/taxon.habits.csv', encoding = 'latin1')
 taxon.habits <- taxon.habits |> mutate(Scientific.Name = cleanEncoding(Scientific.Name), genus = cleanEncoding(genus))
 taxon.habits <- taxon.habits |> mutate(Scientific.Name = extractTaxon(Scientific.Name), genus = extractTaxon(Scientific.Name, 'genus'))
+
 # taxon.habits1 <-  vegnasis::taxon.habits
 usethis::use_data(taxon.habits, overwrite = T)
 
@@ -50,7 +51,49 @@ genus.habits <- rbind(genus.habits, nvagenustaxonomy[,colnames(genus.habits)])
 
 
 
-usethis::use_data(taxon.habits, overwrite = T)
+#usethis::use_data(taxon.habits, overwrite = T)
+
+#expand habits of synonym genera
+taxon.habits <-  vegnasis::taxon.habits
+
+syns3 <- vegnasis::syns3
+syns3 <- mutate(syns3, gbif = case_when(!is.na(bonap) ~ bonap,
+                                        !is.na(kew) ~ kew,
+                                        !is.na(wplants) ~ wplants,
+                                        !is.na(usda) ~ usda,
+                                        TRUE ~ gbif))
+synshabits <- syns3[,c('taxon', 'gbif')] |> left_join(taxon.habits[,c("Scientific.Name", 'Stem', 'GH','ht.max')], by=join_by(gbif==Scientific.Name))
+synshabits$genus <- extractTaxon(synshabits$taxon, 'genus')
+synshabits <- synshabits |> subset(!is.na(Stem)) |> group_by(genus, Stem, GH) |> mutate(n = length(taxon)) |> group_by(genus, Stem) |> mutate(p=n/max(n), maxp=max(p), n2 = length(taxon)) |>
+  group_by(genus) |> mutate(p2=n2/max(n2), maxp2=max(p2), ht.max=mean(ht.max)) |> ungroup()
+synshabits <- synshabits |> mutate(keep = ifelse(maxp==p & maxp >= 0.9,1,0), keep2 = ifelse(maxp2==p2 & maxp2 >= 0.9,1,0)) |> group_by(genus) |> mutate(maxkeep = max(keep)*max(keep2)) |> ungroup()
+synshabits <- synshabits |> subset(keep==1 & keep2==1 & !genus %in% genus.habits$genus, select = c(genus, GH, ht.max)) |> unique()
+synshabits <- synshabits |> mutate(ht.max = vegnasis::ht.round(ht.max))
+
+genus.habits <- genus.habits |> rbind(synshabits) |> unique()
+
+ghab2 <- syns3 |> mutate(genus = extractTaxon(taxon, 'genus'),acgenus = extractTaxon(gbif, 'genus'))
+ghab2 <- ghab2[,c('taxon', 'gbif', 'genus','acgenus')] |> left_join(genus.habits, by=join_by(acgenus==genus))
+ghab2 <- ghab2 |> group_by(genus, GH) |> mutate(n = length(taxon)) |> group_by(genus) |> mutate(p=n/max(n), maxp=max(p)) |> ungroup()
+
+ghab2 <- ghab2 |> subset(grepl('^N',GH) & p >= 0.9 & p==maxp & !genus %in% genus.habits$genus, select = c(genus, GH, ht.max)) |> unique()
+genus.habits <- genus.habits |> rbind(ghab2) |> unique()
+g <- rbind(c('Leucothrinax', 'T.P',0),
+      c('Flavocetraria', 'N.L',0),
+      c('Oreopteris', 'H.FE',.5),
+      c('Cladopodiella', 'N.B',0),
+      c('Aulocomnium', 'N.B',0),
+      c('Limprichtia', 'N.B',0),
+      c('Eualaria', 'N.A',0),
+      c('Victoria', 'H2A',.1)
+)
+colnames(g) <- colnames(genus.habits)
+genus.habits <- genus.habits |> rbind(g)
+
+usethis::use_data(genus.habits, overwrite = T)
+
+
+
 
 #new taxonomy
 library(vegnasis)
