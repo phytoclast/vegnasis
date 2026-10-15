@@ -30,9 +30,11 @@ usethis::use_data(obs, overwrite = T)
 usethis::use_data(obsspp, overwrite = T)
 #clean taxon habits
 library(vegnasis)
-taxon.habits <- read.csv('data_raw/taxon.habits.csv', encoding = 'latin1')
-taxon.habits <- taxon.habits |> mutate(Scientific.Name = cleanEncoding(Scientific.Name), genus = cleanEncoding(genus))
+taxon.habits <- read.csv('data_raw/taxon.habits.csv', encoding = 'UTF-8')
+# taxon.habits <- taxon.habits |> mutate(Scientific.Name = cleanEncoding(Scientific.Name), genus = cleanEncoding(genus))
 taxon.habits <- taxon.habits |> mutate(Scientific.Name = extractTaxon(Scientific.Name), genus = extractTaxon(Scientific.Name, 'genus'))
+taxon.habits <- taxon.habits |> mutate(GH = paste0(Stem,Size,Leaf))
+
 
 # taxon.habits1 <-  vegnasis::taxon.habits
 usethis::use_data(taxon.habits, overwrite = T)
