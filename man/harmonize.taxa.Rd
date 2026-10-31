@@ -4,14 +4,16 @@
 \alias{harmonize.taxa}
 \title{Harmonize taxa}
 \usage{
-harmonize.taxa(taxa, fix = FALSE, sensu = "bonap")
+harmonize.taxa(taxa, sensu = "bonap", ignore.na = TRUE, fix = FALSE)
 }
 \arguments{
 \item{taxa}{Plant name as recorded in original plot data}
 
-\item{fix}{Optional fix for commonly misapplied Old World binomials to ensure they are assigned to North American species before synonymizing.}
-
 \item{sensu}{Which taxonomy to follow for accepted names (options: BONAP = 'bonap'; Kew's POW = 'kew'; World Plants = 'wplants'; USDA PLANTS = 'usda')}
+
+\item{ignore.na}{Ignore missing synonyms and retain original names. If false, missing values will propagate, revealing that the chosen taxonomy within this geography doesn't address this name.}
+
+\item{fix}{Optional fix for commonly misapplied Old World binomials to ensure they are assigned to North American species before synonymizing.}
 }
 \value{
 Accepted name
